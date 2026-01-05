@@ -21,6 +21,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/order/tracking/{order}', [App\Http\Controllers\OrderController::class, 'tracking'])->name('order.tracking');
 });
 
+// Payment Routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/payment/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.callback');
+    Route::get('/payment/failed', [App\Http\Controllers\PaymentController::class, 'failed'])->name('payment.failed');
+});
+
+// Razorpay Webhook (no auth required)
+Route::post('/payment/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
+
 // Support Ticket Routes
 Route::get('/support/create', [App\Http\Controllers\SupportController::class, 'create'])->name('support.create');
 Route::post('/support/store', [App\Http\Controllers\SupportController::class, 'store'])->name('support.store');

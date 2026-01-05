@@ -15,10 +15,18 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrderPlaced;
 use App\Notifications\NewOrderNotification;
 use App\Models\User;
+use App\Services\RazorpayService;
 use Exception;
 
 class CheckoutController extends Controller
 {
+    protected $razorpayService;
+
+    public function __construct(RazorpayService $razorpayService)
+    {
+        $this->razorpayService = $razorpayService;
+    }
+
     /**
      * Display checkout page
      */
@@ -153,22 +161,41 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            // Send notifications
-            try {
-                // Send notification to user
-                $user = Auth::user();
-                $user->notify(new OrderPlaced($order));
+            // Handle payment method
+            if ($validated['payment_method'] === 'razorpay') {
+                // Create Razorpay order
+                $razorpayOrder = $this->razorpayService->createOrder($order);
 
-                // Send notification to admin
-                $admins = User::where('role', 'admin')->get();
-                Notification::send($admins, new NewOrderNotification($order));
-            } catch (Exception $e) {
-                Log::error('Error sending notifications: ' . $e->getMessage());
-                // Don't fail the order if notifications fail
+                if (!$razorpayOrder['success']) {
+                    // Razorpay order creation failed
+                    return redirect()->route('cart.index')
+                                   ->with('error', 'Unable to initialize payment. Please try again.');
+                }
+
+                // Return to checkout with payment details
+                return view('checkout.payment', [
+                    'order' => $order,
+                    'razorpayOrder' => $razorpayOrder
+                ]);
+
+            } else {
+                // COD - Send notifications immediately
+                try {
+                    // Send notification to user
+                    $user = Auth::user();
+                    $user->notify(new OrderPlaced($order));
+
+                    // Send notification to admin
+                    $admins = User::where('role', 'admin')->get();
+                    Notification::send($admins, new NewOrderNotification($order));
+                } catch (Exception $e) {
+                    Log::error('Error sending notifications: ' . $e->getMessage());
+                    // Don't fail the order if notifications fail
+                }
+
+                return redirect()->route('order.success', $order->id)
+                               ->with('success', 'Order placed successfully!');
             }
-
-            return redirect()->route('order.success', $order->id)
-                           ->with('success', 'Order placed successfully!');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();

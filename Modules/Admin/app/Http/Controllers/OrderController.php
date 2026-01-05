@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\OrderShipped;
+use App\Notifications\OrderDelivered;
+use App\Notifications\OrderCancelled;
 
 class OrderController extends Controller
 {
@@ -82,18 +85,39 @@ class OrderController extends Controller
 
             DB::beginTransaction();
 
+            $oldStatus = $order->status;
             $order->update(['status' => $request->status]);
 
             // Log status change
             Log::info('Order status updated', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
-                'old_status' => $order->getOriginal('status'),
+                'old_status' => $oldStatus,
                 'new_status' => $request->status,
                 'updated_by' => auth()->id()
             ]);
 
             DB::commit();
+
+            // Send email notifications for status changes
+            try {
+                if ($order->user) {
+                    switch ($request->status) {
+                        case 'shipped':
+                            $order->user->notify(new OrderShipped($order));
+                            break;
+                        case 'delivered':
+                            $order->user->notify(new OrderDelivered($order));
+                            break;
+                        case 'cancelled':
+                            $order->user->notify(new OrderCancelled($order));
+                            break;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Error sending order status notification: ' . $e->getMessage());
+                // Don't fail the status update if notification fails
+            }
 
             return redirect()->back()->with('success', 'Order status updated successfully');
         } catch (\Exception $e) {
