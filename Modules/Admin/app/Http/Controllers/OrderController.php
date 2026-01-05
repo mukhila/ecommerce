@@ -80,37 +80,49 @@ class OrderController extends Controller
     {
         try {
             $request->validate([
-                'status' => 'required|in:pending,processing,shipped,delivered,cancelled'
+                'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+                'cancellation_reason' => 'required_if:status,cancelled|nullable|string|max:1000'
             ]);
 
             DB::beginTransaction();
 
             $oldStatus = $order->status;
-            $order->update(['status' => $request->status]);
+            $newStatus = $request->status;
+
+            // Handle cancellation specially to restore stock
+            if ($newStatus === 'cancelled') {
+                $reason = $request->input('cancellation_reason', 'Cancelled by administrator');
+
+                if (!$order->cancelOrder($reason)) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'Unable to cancel order');
+                }
+            } else {
+                // Regular status update
+                $order->update(['status' => $newStatus]);
+            }
 
             // Log status change
             Log::info('Order status updated', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
                 'old_status' => $oldStatus,
-                'new_status' => $request->status,
+                'new_status' => $newStatus,
                 'updated_by' => auth()->id()
             ]);
 
             DB::commit();
 
             // Send email notifications for status changes
+            // Note: Cancellation notification is handled by cancelOrder() method
             try {
-                if ($order->user) {
-                    switch ($request->status) {
+                if ($order->user && $newStatus !== 'cancelled') {
+                    switch ($newStatus) {
                         case 'shipped':
                             $order->user->notify(new OrderShipped($order));
                             break;
                         case 'delivered':
                             $order->user->notify(new OrderDelivered($order));
-                            break;
-                        case 'cancelled':
-                            $order->user->notify(new OrderCancelled($order));
                             break;
                     }
                 }
