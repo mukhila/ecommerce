@@ -3,16 +3,51 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Analytics\RevenueAnalyticsRepository;
+use App\Repositories\Analytics\SalesAnalyticsRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+    protected $revenueRepo;
+    protected $salesRepo;
+
+    public function __construct(
+        RevenueAnalyticsRepository $revenueRepo,
+        SalesAnalyticsRepository $salesRepo
+    ) {
+        $this->revenueRepo = $revenueRepo;
+        $this->salesRepo = $salesRepo;
+    }
+
     /**
-     * Display a listing of the resource.
+     * Display admin dashboard with real analytics data
      */
     public function index()
     {
-        return view('admin::dashboard');
+        // Get default date range (last 30 days)
+        $startDate = Carbon::now()->subDays(30)->format('Y-m-d');
+        $endDate = Carbon::now()->format('Y-m-d');
+
+        // Fetch analytics data
+        $data = [
+            'revenue' => $this->revenueRepo->getRevenueStats($startDate, $endDate),
+            'dailyRevenue' => $this->revenueRepo->getDailyRevenue(30),
+            'topProducts' => $this->salesRepo->getTopSellingProducts(10, $startDate, $endDate),
+            'categoryPerformance' => $this->salesRepo->getCategoryPerformance($startDate, $endDate),
+            'lowStock' => $this->salesRepo->getLowStockProducts(10),
+            'outOfStock' => $this->salesRepo->getOutOfStockProducts(),
+            'salesTrends' => $this->salesRepo->getSalesTrends('daily', 30),
+            'paymentMethods' => $this->salesRepo->getSalesByPaymentMethod($startDate, $endDate),
+        ];
+
+        // Add permission checks for role-based visibility
+        $data['canViewFinancial'] = Gate::allows('view_financial_reports');
+        $data['isAdmin'] = auth()->guard('admin')->user()->isAdmin();
+
+        return view('admin::dashboard', compact('data'));
     }
 
     public function profile()

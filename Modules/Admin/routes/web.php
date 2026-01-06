@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Admin\Http\Controllers\AdminController;
+use Modules\Admin\Http\Controllers\AnalyticsController;
+use Modules\Admin\Http\Controllers\SearchController;
+use Modules\Admin\Http\Controllers\ReportController;
 use Modules\Admin\Http\Controllers\Auth\LoginController;
 use Modules\Admin\Http\Controllers\CategoryController;
 use Modules\Admin\Http\Controllers\AttributeController;
@@ -34,10 +37,40 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
-        
+
         // Change Password
         Route::get('/change-password', [AdminController::class, 'changePassword'])->name('password.change');
         Route::post('/change-password', [AdminController::class, 'updatePassword'])->name('password.update');
+
+        // Analytics Routes (Admin & Staff)
+        Route::middleware('admin.role:admin,staff')->group(function () {
+            Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+            Route::get('analytics/revenue', [AnalyticsController::class, 'revenue'])->name('analytics.revenue');
+            Route::get('analytics/sales', [AnalyticsController::class, 'sales'])->name('analytics.sales');
+            Route::get('analytics/chart-data', [AnalyticsController::class, 'chartData'])->name('analytics.chart-data');
+        });
+
+        // Search Routes (Admin & Staff)
+        Route::middleware('admin.role:admin,staff')->group(function () {
+            Route::get('search/global', [SearchController::class, 'global'])->name('search.global');
+            Route::get('search/orders', [SearchController::class, 'orders'])->name('search.orders');
+            Route::get('search/products', [SearchController::class, 'products'])->name('search.products');
+            Route::get('search/customers', [SearchController::class, 'customers'])->name('search.customers');
+            Route::get('search/tickets', [SearchController::class, 'tickets'])->name('search.tickets');
+            Route::get('search/suggestions', [SearchController::class, 'suggestions'])->name('search.suggestions');
+        });
+
+        // Report Routes (Admin Only)
+        Route::middleware('admin.role:admin')->group(function () {
+            Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+            Route::get('reports/revenue/pdf', [ReportController::class, 'revenuePdf'])->name('reports.revenue.pdf');
+            Route::get('reports/sales/pdf', [ReportController::class, 'salesPdf'])->name('reports.sales.pdf');
+            Route::get('reports/customer/pdf', [ReportController::class, 'customerPdf'])->name('reports.customer.pdf');
+            Route::get('reports/order/pdf', [ReportController::class, 'orderPdf'])->name('reports.order.pdf');
+            Route::get('reports/orders/excel', [ReportController::class, 'ordersExcel'])->name('reports.orders.excel');
+            Route::get('reports/products/excel', [ReportController::class, 'productsExcel'])->name('reports.products.excel');
+            Route::get('reports/customers/excel', [ReportController::class, 'customersExcel'])->name('reports.customers.excel');
+        });
 
         // Category Routes
         Route::resource('categories', CategoryController::class);
