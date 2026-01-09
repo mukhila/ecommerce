@@ -107,7 +107,13 @@ class CartController extends Controller
                     return $item->attributes == $attributes;
                 });
             } else {
-                $cartItem = $cartItemQuery->whereNull('attributes')->first();
+                // Handle both NULL and empty/null JSON values
+                $cartItem = $cartItemQuery->where(function($q) {
+                    $q->whereNull('attributes')
+                      ->orWhere('attributes', 'null')
+                      ->orWhere('attributes', '[]')
+                      ->orWhere('attributes', '');
+                })->first();
             }
 
             if ($cartItem) {

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductReview;
 use App\Models\ReviewImage;
 use App\Models\ReviewHelpfulVote;
-use Modules\Product\app\Models\Product;
+use Modules\Product\Models\Product;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
