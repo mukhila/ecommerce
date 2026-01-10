@@ -13,7 +13,7 @@ class ProductAttribute extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['product_id', 'attribute_id', 'attribute_value_id'];
+    protected $fillable = ['product_id', 'attribute_id', 'attribute_value_id', 'stock', 'price'];
 
     public function product()
     {

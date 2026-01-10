@@ -193,14 +193,16 @@
                                 <h4 class="sub-title {{ $loop->first ? '' : 'mt-3' }}">{{ $attributeName }}:</h4>
                                 <div class="variation-box size-box">
                                     <ul class="select-size">
-                                        @foreach($attributeGroup as $attr)
+                                    @foreach($attributeGroup as $attr)
                                             <li>
                                                 <a href="javascript:void(0)"
-                                                   class="attribute-option {{ $loop->first ? 'active' : '' }}"
+                                                   class="attribute-option"
                                                    data-attribute-id="{{ $attributeId }}"
                                                    data-value-id="{{ $attr->attributeValue->id ?? '' }}"
                                                    data-attribute-name="{{ $attributeName }}"
-                                                   data-value="{{ $attr->attributeValue->value ?? 'N/A' }}">
+                                                   data-value="{{ $attr->attributeValue->value ?? 'N/A' }}"
+                                                   data-stock="{{ $attr->stock ?? '' }}"
+                                                   data-price="{{ $attr->price ?? '' }}">
                                                     {{ $attr->attributeValue->value ?? 'N/A' }}
                                                 </a>
                                             </li>
@@ -327,9 +329,6 @@
         const attributeOptions = document.querySelectorAll('.attribute-option');
         const selectedAttributesInput = document.getElementById('selectedAttributes');
 
-        // Initialize selected attributes from first options
-        updateSelectedAttributes();
-
         // Handle attribute selection
         attributeOptions.forEach(option => {
             option.addEventListener('click', function(e) {
@@ -380,12 +379,22 @@
         const selectedAttributesInput = document.getElementById('selectedAttributes');
         const selectedAttributes = selectedAttributesInput.value;
 
+        // Count total attribute groups required
+        const totalAttributeGroups = document.querySelectorAll('.variation-box').length;
+        
         // Parse the attributes
         let attributes = {};
         try {
-            attributes = JSON.parse(selectedAttributes);
+            attributes = JSON.parse(selectedAttributes || '{}');
         } catch (e) {
             console.error('Error parsing attributes:', e);
+        }
+
+        // Check if all attributes are selected
+        const selectedCount = Object.keys(attributes).length;
+        if (selectedCount < totalAttributeGroups) {
+            alert('Please select all required options (Size/Color/etc) before adding to cart.');
+            return;
         }
 
         // Display selected attributes for user confirmation

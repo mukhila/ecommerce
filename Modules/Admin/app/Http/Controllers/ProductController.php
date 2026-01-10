@@ -45,6 +45,8 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'attributes.*.*.stock' => 'nullable|integer|min:0',
+            'attributes.*.*.price' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -70,6 +72,8 @@ class ProductController extends Controller
             ]);
 
             // Save Attributes
+            // Save Attributes
+            // 1. Handle legacy/simple single-select attributes
             if ($request->has('attribute_values')) {
                 foreach ($request->attribute_values as $attributeId => $valueId) {
                      if($valueId) {
@@ -78,6 +82,23 @@ class ProductController extends Controller
                             'attribute_id' => $attributeId,
                             'attribute_value_id' => $valueId
                         ]);
+                    }
+                }
+            }
+
+            // 2. Handle multi-select attributes with metadata (e.g. Size with stock/price)
+            if ($request->has('attributes')) {
+                foreach ($request->input('attributes') as $attributeId => $values) {
+                    foreach ($values as $valueId => $data) {
+                         if (isset($data['enabled']) && $data['enabled']) {
+                             ProductAttribute::create([
+                                'product_id' => $product->id,
+                                'attribute_id' => $attributeId,
+                                'attribute_value_id' => $valueId,
+                                'stock' => isset($data['stock']) && $data['stock'] !== '' ? $data['stock'] : null,
+                                'price' => isset($data['price']) && $data['price'] !== '' ? $data['price'] : null,
+                             ]);
+                         }
                     }
                 }
             }
@@ -123,7 +144,10 @@ class ProductController extends Controller
         $categories = Category::all();
         $attributes = Attribute::with('values')->get();
         // Map product attributes for easier access in view
-        $productAttributes = $product->attributes->pluck('attribute_value_id', 'attribute_id')->toArray();
+        // Map product attributes for easier access in view
+        $productAttributes = $product->attributes->groupBy('attribute_id')->map(function ($items) {
+             return $items->keyBy('attribute_value_id')->toArray();
+        })->toArray();
 
         return view('admin::products.edit', compact('product', 'categories', 'attributes', 'productAttributes'));
     }
@@ -140,6 +164,8 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'attributes.*.*.stock' => 'nullable|integer|min:0',
+            'attributes.*.*.price' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -171,6 +197,8 @@ class ProductController extends Controller
 
             // Update Attributes
             $product->attributes()->delete();
+            
+            // 1. Handle legacy/simple single-select attributes
             if ($request->has('attribute_values')) {
                 foreach ($request->attribute_values as $attributeId => $valueId) {
                     if($valueId) {
@@ -179,6 +207,23 @@ class ProductController extends Controller
                             'attribute_id' => $attributeId,
                             'attribute_value_id' => $valueId
                         ]);
+                    }
+                }
+            }
+
+            // 2. Handle multi-select attributes with metadata (e.g. Size with stock/price)
+            if ($request->has('attributes')) {
+                foreach ($request->input('attributes') as $attributeId => $values) {
+                    foreach ($values as $valueId => $data) {
+                         if (isset($data['enabled']) && $data['enabled']) {
+                             ProductAttribute::create([
+                                'product_id' => $product->id,
+                                'attribute_id' => $attributeId,
+                                'attribute_value_id' => $valueId,
+                                'stock' => isset($data['stock']) && $data['stock'] !== '' ? $data['stock'] : null,
+                                'price' => isset($data['price']) && $data['price'] !== '' ? $data['price'] : null,
+                             ]);
+                         }
                     }
                 }
             }

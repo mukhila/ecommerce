@@ -162,13 +162,50 @@
                                     <h5 class="card-title mb-3">Attributes</h5>
                                     @foreach($attributes as $attribute)
                                         <div class="mb-3">
-                                            <label for="attr_{{ $attribute->id }}" class="form-label">{{ $attribute->name }}</label>
-                                            <select class="form-select" id="attr_{{ $attribute->id }}" name="attribute_values[{{ $attribute->id }}]">
-                                                <option value="">Select {{ $attribute->name }}</option>
-                                                @foreach($attribute->values as $value)
-                                                    <option value="{{ $value->id }}" {{ old('attribute_values.'.$attribute->id) == $value->id ? 'selected' : '' }}>{{ $value->value }}</option>
-                                                @endforeach
-                                            </select>
+                                            <label class="form-label">{{ $attribute->name }}</label>
+                                            @if($attribute->name === 'Size')
+                                                <div class="border p-2 rounded" style="max-height: 300px; overflow-y: auto;">
+                                                    @foreach($attribute->values as $value)
+                                                        <div class="d-flex align-items-center mb-2 gap-2">
+                                                            <div class="form-check" style="min-width: 100px;">
+                                                                <input class="form-check-input" type="checkbox" 
+                                                                       name="attributes[{{ $attribute->id }}][{{ $value->id }}][enabled]" 
+                                                                       value="1" 
+                                                                       id="attr_val_{{ $value->id }}"
+                                                                       {{ old('attributes.'.$attribute->id.'.'.$value->id.'.enabled') ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="attr_val_{{ $value->id }}">
+                                                                    {{ $value->value }}
+                                                                </label>
+                                                            </div>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">Qty</span>
+                                                                <input type="number" 
+                                                                       name="attributes[{{ $attribute->id }}][{{ $value->id }}][stock]" 
+                                                                       class="form-control" 
+                                                                       placeholder="Stock"
+                                                                       value="{{ old('attributes.'.$attribute->id.'.'.$value->id.'.stock') }}">
+                                                            </div>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">₹</span>
+                                                                <input type="number" 
+                                                                       step="0.01" 
+                                                                       name="attributes[{{ $attribute->id }}][{{ $value->id }}][price]" 
+                                                                       class="form-control" 
+                                                                       placeholder="Price Override"
+                                                                       value="{{ old('attributes.'.$attribute->id.'.'.$value->id.'.price') }}">
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <small class="text-muted">Select available sizes and optional specific stock/price.</small>
+                                            @else
+                                                <select class="form-select" id="attr_{{ $attribute->id }}" name="attribute_values[{{ $attribute->id }}]">
+                                                    <option value="">Select {{ $attribute->name }}</option>
+                                                    @foreach($attribute->values as $value)
+                                                        <option value="{{ $value->id }}" {{ old('attribute_values.'.$attribute->id) == $value->id ? 'selected' : '' }}>{{ $value->value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>

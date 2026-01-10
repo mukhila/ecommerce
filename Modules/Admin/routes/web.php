@@ -110,14 +110,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('support/bulk-update', [SupportController::class, 'bulkUpdate'])->name('support.bulk-update');
 
         // Review Routes
-        Route::get('reviews', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');
-        Route::get('reviews/{id}', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'show'])->name('reviews.show');
-        Route::post('reviews/{id}/approve', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'approve'])->name('reviews.approve');
-        Route::post('reviews/{id}/reject', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'reject'])->name('reviews.reject');
-        Route::post('reviews/{id}/status', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'updateStatus'])->name('reviews.update-status');
-        Route::post('reviews/{id}/reply', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'reply'])->name('reviews.reply');
-        Route::delete('reviews/{id}', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
-        Route::post('reviews/bulk-action', [\Modules\Admin\app\Http\Controllers\ReviewController::class, 'bulkAction'])->name('reviews.bulk-action');
+        Route::get('reviews', [\Modules\Admin\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('reviews/{id}', [\Modules\Admin\Http\Controllers\ReviewController::class, 'show'])->name('reviews.show');
+        Route::post('reviews/{id}/approve', [\Modules\Admin\Http\Controllers\ReviewController::class, 'approve'])->name('reviews.approve');
+        Route::post('reviews/{id}/reject', [\Modules\Admin\Http\Controllers\ReviewController::class, 'reject'])->name('reviews.reject');
+        Route::post('reviews/{id}/status', [\Modules\Admin\Http\Controllers\ReviewController::class, 'updateStatus'])->name('reviews.update-status');
+        Route::post('reviews/{id}/reply', [\Modules\Admin\Http\Controllers\ReviewController::class, 'reply'])->name('reviews.reply');
+        Route::delete('reviews/{id}', [\Modules\Admin\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
+        Route::post('reviews/bulk-action', [\Modules\Admin\Http\Controllers\ReviewController::class, 'bulkAction'])->name('reviews.bulk-action');
 
         // Company Settings Routes
         Route::get('company-settings', [Modules\Admin\Http\Controllers\CompanySettingController::class, 'edit'])->name('company_settings.edit');
