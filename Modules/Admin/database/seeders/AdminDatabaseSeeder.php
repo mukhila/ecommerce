@@ -14,6 +14,7 @@ class AdminDatabaseSeeder extends Seeder
         $this->call([
             AdminTableSeeder::class,
             MenuSeeder::class,
+            CompanySettingSeeder::class,
         ]);
     }
 }

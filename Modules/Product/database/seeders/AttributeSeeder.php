@@ -23,7 +23,7 @@ class AttributeSeeder extends Seeder
 
         // Insert Attribute Values
         \Illuminate\Support\Facades\DB::table('attribute_values')->insert([
-            // Size values (id 1-15)
+            // Size values (id 1-15) - Adult sizes
             ['id' => 1, 'attribute_id' => 1, 'value' => 'XS', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 2, 'attribute_id' => 1, 'value' => 'S', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 3, 'attribute_id' => 1, 'value' => 'M', 'created_at' => now(), 'updated_at' => now()],
@@ -39,6 +39,18 @@ class AttributeSeeder extends Seeder
             ['id' => 13, 'attribute_id' => 1, 'value' => '7', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 14, 'attribute_id' => 1, 'value' => '8', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 15, 'attribute_id' => 1, 'value' => '9', 'created_at' => now(), 'updated_at' => now()],
+
+            // Kids age-based size values (id 58-67)
+            ['id' => 58, 'attribute_id' => 1, 'value' => '2-3Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 59, 'attribute_id' => 1, 'value' => '3-4Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 60, 'attribute_id' => 1, 'value' => '4-5Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 61, 'attribute_id' => 1, 'value' => '5-6Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 62, 'attribute_id' => 1, 'value' => '6-7Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 63, 'attribute_id' => 1, 'value' => '7-8Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 64, 'attribute_id' => 1, 'value' => '8-9Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 65, 'attribute_id' => 1, 'value' => '9-10Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 66, 'attribute_id' => 1, 'value' => '10-11Y', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 67, 'attribute_id' => 1, 'value' => '11-12Y', 'created_at' => now(), 'updated_at' => now()],
 
             // Color values (id 16-25)
             ['id' => 16, 'attribute_id' => 2, 'value' => 'Black', 'created_at' => now(), 'updated_at' => now()],

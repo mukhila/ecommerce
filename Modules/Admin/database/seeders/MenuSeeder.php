@@ -67,11 +67,11 @@ class MenuSeeder extends Seeder
         $linkSection = Menu::create(['name' => 'Useful Links', 'url' => '#', 'type' => 'footer', 'sort_order' => 2]);
         $usefulLinks = [
             ['name' => 'Home', 'url' => '/'],
-            ['name' => 'Collections', 'url' => '#'],
-            ['name' => 'About Us', 'url' => '#'],
-            ['name' => 'Blogs', 'url' => '#'],
-            ['name' => 'Offers', 'url' => '#'],
-            ['name' => 'Search', 'url' => '#'],
+            ['name' => 'All Products', 'url' => '/products'],
+            ['name' => 'About Us', 'url' => '/page/about-us'],
+            ['name' => 'Privacy Policy', 'url' => '/page/privacy-policy'],
+            ['name' => 'Terms & Conditions', 'url' => '/page/terms-and-conditions'],
+            ['name' => 'Contact Us', 'url' => '/contact'],
         ];
         foreach ($usefulLinks as $key => $link) {
             $link['type'] = 'footer';
@@ -83,12 +83,12 @@ class MenuSeeder extends Seeder
         // 3. Help Center
         $helpSection = Menu::create(['name' => 'Help Center', 'url' => '#', 'type' => 'footer', 'sort_order' => 3]);
         $helpLinks = [
-            ['name' => 'My Account', 'url' => '#'],
-            ['name' => 'My Orders', 'url' => '#'],
-            ['name' => 'Track Order', 'url' => '#'],
-            ['name' => 'Wishlist', 'url' => '#'],
-            ['name' => 'FAQ\'s', 'url' => '#'],
-            ['name' => 'Contact Us', 'url' => '#'],
+            ['name' => 'My Account', 'url' => '/dashboard'],
+            ['name' => 'My Orders', 'url' => '/orders'],
+            ['name' => 'Track Order', 'url' => '/orders'],
+            ['name' => 'Shopping Cart', 'url' => '/cart'],
+            ['name' => 'FAQ\'s', 'url' => '/page/faqs'],
+            ['name' => 'Support', 'url' => '/support'],
         ];
         foreach ($helpLinks as $key => $link) {
             $link['type'] = 'footer';

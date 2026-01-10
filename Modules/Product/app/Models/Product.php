@@ -52,6 +52,33 @@ class Product extends Model
         return $this->hasMany(ProductAttribute::class);
     }
 
+    /**
+     * Get only size attributes for this product (convenience method)
+     * Returns AttributeValue models via belongsToMany through product_attributes
+     */
+    public function sizes()
+    {
+        return $this->belongsToMany(
+            AttributeValue::class,
+            'product_attributes',
+            'product_id',
+            'attribute_value_id'
+        )->whereHas('attribute', function($query) {
+            $query->where('slug', 'size');
+        })->withPivot(['stock', 'price']);
+    }
+
+    /**
+     * Get size attributes with full ProductAttribute data
+     */
+    public function sizeAttributes()
+    {
+        return $this->hasMany(ProductAttribute::class)
+            ->whereHas('attribute', function($query) {
+                $query->where('slug', 'size');
+            });
+    }
+
     public function reviews()
     {
         return $this->hasMany(\App\Models\ProductReview::class);

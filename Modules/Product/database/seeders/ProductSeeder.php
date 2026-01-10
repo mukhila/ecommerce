@@ -513,22 +513,31 @@ class ProductSeeder extends Seeder
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 3, 'attribute_value_id' => 29]; // Material: Leather
                     break;
 
-                // Kids
+                // Kids - Using age-based sizes (2-3Y=58, 3-4Y=59, 4-5Y=60, 5-6Y=61, 6-7Y=62, etc.)
                 case 19: // Kids Superhero T-Shirt
-                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 2]; // Size: S
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 58, 'stock' => 20, 'price' => null]; // Size: 2-3Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 59, 'stock' => 25, 'price' => null]; // Size: 3-4Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 60, 'stock' => 30, 'price' => null]; // Size: 4-5Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 61, 'stock' => 25, 'price' => null]; // Size: 5-6Y
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 2, 'attribute_value_id' => 18]; // Color: Blue
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 3, 'attribute_value_id' => 26]; // Material: Cotton
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 4, 'attribute_value_id' => 42]; // Brand: KidsJoy
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 6, 'attribute_value_id' => 52]; // Pattern: Printed
                     break;
                 case 20: // Boys Casual Shorts
-                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 2]; // Size: S
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 58, 'stock' => 15, 'price' => null]; // Size: 2-3Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 59, 'stock' => 20, 'price' => null]; // Size: 3-4Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 60, 'stock' => 20, 'price' => null]; // Size: 4-5Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 61, 'stock' => 15, 'price' => null]; // Size: 5-6Y
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 2, 'attribute_value_id' => 16]; // Color: Black
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 3, 'attribute_value_id' => 26]; // Material: Cotton
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 4, 'attribute_value_id' => 42]; // Brand: KidsJoy
                     break;
                 case 21: // Girls Princess Dress
-                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 2]; // Size: S
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 58, 'stock' => 10, 'price' => null]; // Size: 2-3Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 59, 'stock' => 15, 'price' => null]; // Size: 3-4Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 60, 'stock' => 15, 'price' => null]; // Size: 4-5Y
+                    $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 1, 'attribute_value_id' => 61, 'stock' => 10, 'price' => null]; // Size: 5-6Y
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 2, 'attribute_value_id' => 23]; // Color: Pink
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 3, 'attribute_value_id' => 30]; // Material: Silk
                     $productAttributes[] = ['product_id' => $productId, 'attribute_id' => 4, 'attribute_value_id' => 42]; // Brand: KidsJoy
@@ -560,6 +569,13 @@ class ProductSeeder extends Seeder
         // Insert all product attributes
         if (!empty($productAttributes)) {
             foreach ($productAttributes as &$attr) {
+                // Ensure stock and price have default values if not set
+                if (!isset($attr['stock'])) {
+                    $attr['stock'] = null;
+                }
+                if (!isset($attr['price'])) {
+                    $attr['price'] = null;
+                }
                 $attr['created_at'] = now();
                 $attr['updated_at'] = now();
             }
