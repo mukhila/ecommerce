@@ -11,7 +11,7 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        \Illuminate\Support\Facades\DB::table('categories')->insert([
+        \Illuminate\Support\Facades\DB::table('categories')->upsert([
             // Men's Fashion
             ['id' => 1, 'name' => 'Men', 'slug' => 'men', 'parent_id' => null, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
             ['id' => 2, 'name' => 'T-Shirts', 'slug' => 'mens-tshirts', 'parent_id' => 1, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
@@ -40,6 +40,6 @@ class CategorySeeder extends Seeder
             ['id' => 17, 'name' => 'Accessories', 'slug' => 'accessories', 'parent_id' => null, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
             ['id' => 18, 'name' => 'Bags', 'slug' => 'bags', 'parent_id' => 17, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
             ['id' => 19, 'name' => 'Watches', 'slug' => 'watches', 'parent_id' => 17, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        ], ['id'], ['name', 'slug', 'parent_id', 'is_active', 'updated_at']);
     }
 }

@@ -13,24 +13,28 @@ class AdminTableSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::create([
-            'name' => 'Admin User',
-            'email' => 'admin@gmail.com',
-            'mobile' => '1234567890',
-            'role' => 'admin',
-            'password' => Hash::make('password'),
-            'status' => 'Active',
-            'employee_code' => 'ADM001',
-        ]);
+        Admin::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'mobile' => '1234567890',
+                'role' => 'admin',
+                'password' => Hash::make('password'),
+                'status' => 'Active',
+                'employee_code' => 'ADM001',
+            ]
+        );
         
-        Admin::create([
-            'name' => 'Staff User',
-            'email' => 'staff@gmail.com',
-            'mobile' => '0987654321',
-            'role' => 'staff',
-            'password' => Hash::make('password'),
-            'status' => 'Active',
-            'employee_code' => 'STF001',
-        ]);
+        Admin::updateOrCreate(
+            ['email' => 'staff@gmail.com'],
+            [
+                'name' => 'Staff User',
+                'mobile' => '0987654321',
+                'role' => 'staff',
+                'password' => Hash::make('password'),
+                'status' => 'Active',
+                'employee_code' => 'STF001',
+            ]
+        );
     }
 }
