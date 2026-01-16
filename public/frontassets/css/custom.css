@@ -1,0 +1,6 @@
+/* Custom CSS Overrides */
+.main-menu .brand-logo img {
+    height: 60px !important;
+    /* Increased height */
+    width: auto !important;
+}

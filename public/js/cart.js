@@ -10,7 +10,8 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribut
 const CONFIG = {
     requestTimeout: 30000, // 30 seconds
     retryAttempts: 2,
-    retryDelay: 1000 // 1 second
+    retryDelay: 1000, // 1 second
+    openOffcanvasAfterAdd: true // Open cart offcanvas after adding item
 };
 
 /**
@@ -137,8 +138,13 @@ async function addToCart(productId, quantity = 1, attributes = {}) {
         if (data.success) {
             showNotification(data.message, 'success');
             updateCartCount(data.cart_count);
-            // Optional: Trigger cart sidebar
-            // showCartSidebar();
+
+            // Refresh and open cart offcanvas
+            if (CONFIG.openOffcanvasAfterAdd) {
+                refreshCartOffcanvas().then(() => {
+                    openCartOffcanvas();
+                });
+            }
         } else {
             showNotification(data.message || 'Failed to add item to cart', 'error');
         }
@@ -518,17 +524,188 @@ async function loadCartCount() {
 }
 
 /**
- * Update cart item from offcanvas (reloads page after update)
+ * Update cart item from offcanvas
  */
-function updateCartItemOffcanvas(itemId, quantity) {
+async function updateCartItemOffcanvas(itemId, quantity) {
     if (quantity < 1) {
         showNotification('Minimum quantity is 1', 'error');
         return;
     }
 
-    // Call the main updateCartItem function and reload on success
-    updateCartItem(itemId, quantity).then(() => {
-        // Reload page to refresh offcanvas cart
-        setTimeout(() => location.reload(), 500);
-    });
+    try {
+        const data = await retryRequest(async () => {
+            const response = await fetchWithTimeout(`/cart/update/${itemId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ quantity: parseInt(quantity) })
+            });
+            return handleResponse(response);
+        });
+
+        if (data.success) {
+            showNotification(data.message, 'success');
+            updateCartCount(data.cart_count);
+            // Refresh offcanvas content
+            await refreshCartOffcanvas();
+        } else {
+            showNotification(data.message || 'Failed to update cart', 'error');
+        }
+    } catch (error) {
+        console.error('Update cart error:', error);
+        showNotification(error.message || 'Failed to update cart', 'error');
+    }
 }
+
+/**
+ * Remove cart item from offcanvas
+ */
+async function removeCartItemOffcanvas(itemId) {
+    if (!confirm('Are you sure you want to remove this item?')) {
+        return;
+    }
+
+    try {
+        const data = await retryRequest(async () => {
+            const response = await fetchWithTimeout(`/cart/remove/${itemId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            });
+            return handleResponse(response);
+        });
+
+        if (data.success) {
+            showNotification(data.message, 'success');
+            updateCartCount(data.cart_count);
+            // Refresh offcanvas content
+            await refreshCartOffcanvas();
+        } else {
+            showNotification(data.message || 'Failed to remove item', 'error');
+        }
+    } catch (error) {
+        console.error('Remove item error:', error);
+        showNotification(error.message || 'Failed to remove item', 'error');
+    }
+}
+
+/**
+ * Refresh cart offcanvas content via AJAX
+ */
+async function refreshCartOffcanvas() {
+    try {
+        const response = await fetchWithTimeout('/cart/offcanvas', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        }, 10000);
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Update offcanvas body content
+            const offcanvasBody = document.getElementById('cart-offcanvas-body');
+            if (offcanvasBody) {
+                offcanvasBody.innerHTML = data.html;
+            }
+
+            // Update cart count in header
+            const offcanvasCount = document.getElementById('offcanvas-cart-count');
+            if (offcanvasCount) {
+                offcanvasCount.textContent = data.count;
+            }
+
+            updateCartCount(data.count);
+        }
+    } catch (error) {
+        console.error('Error refreshing cart offcanvas:', error);
+    }
+}
+
+/**
+ * Open cart offcanvas
+ */
+function openCartOffcanvas() {
+    const offcanvasElement = document.getElementById('cartOffcanvas');
+    if (offcanvasElement && typeof bootstrap !== 'undefined') {
+        const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+        offcanvas.show();
+    }
+}
+
+/**
+ * Close cart offcanvas
+ */
+function closeCartOffcanvas() {
+    const offcanvasElement = document.getElementById('cartOffcanvas');
+    if (offcanvasElement && typeof bootstrap !== 'undefined') {
+        const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+        if (offcanvas) {
+            offcanvas.hide();
+        }
+    }
+}
+
+// ============================================
+// COOKIE CONSENT MANAGEMENT
+// ============================================
+
+/**
+ * Check and show cookie consent bar
+ */
+function checkCookieConsent() {
+    const cookieConsent = localStorage.getItem('cookieConsent');
+    const cookieBar = document.getElementById('cookieBar');
+
+    if (!cookieConsent && cookieBar) {
+        // Show cookie bar after a short delay
+        setTimeout(() => {
+            cookieBar.style.display = 'block';
+        }, 1000);
+    }
+}
+
+/**
+ * Accept cookies
+ */
+function acceptCookies() {
+    localStorage.setItem('cookieConsent', 'accepted');
+    localStorage.setItem('cookieConsentDate', new Date().toISOString());
+    hideCookieBar();
+}
+
+/**
+ * Decline cookies
+ */
+function declineCookies() {
+    localStorage.setItem('cookieConsent', 'declined');
+    localStorage.setItem('cookieConsentDate', new Date().toISOString());
+    hideCookieBar();
+}
+
+/**
+ * Hide cookie bar with animation
+ */
+function hideCookieBar() {
+    const cookieBar = document.getElementById('cookieBar');
+    if (cookieBar) {
+        cookieBar.style.transition = 'opacity 0.3s, transform 0.3s';
+        cookieBar.style.opacity = '0';
+        cookieBar.style.transform = 'translateY(100%)';
+        setTimeout(() => {
+            cookieBar.style.display = 'none';
+        }, 300);
+    }
+}
+
+// Initialize cookie consent check on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkCookieConsent();
+});

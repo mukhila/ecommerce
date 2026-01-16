@@ -175,7 +175,18 @@
                                 </div>
                                 <ul class="qty">
                                     @foreach($cart->items as $item)
-                                        <li>{{ $item->product->name }} × {{ $item->quantity }}
+                                        <li>
+                                            <div>
+                                                {{ $item->product->name }} × {{ $item->quantity }}
+                                                @if($item->attributes)
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        @foreach($item->attributes as $attrName => $attrData)
+                                                            {{ $attrName }}: {{ is_array($attrData) ? $attrData['value'] : $attrData }}{{ !$loop->last ? ', ' : '' }}
+                                                        @endforeach
+                                                    </small>
+                                                @endif
+                                            </div>
                                             <span>₹{{ number_format($item->price * $item->quantity, 2) }}</span>
                                         </li>
                                     @endforeach

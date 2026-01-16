@@ -4,6 +4,81 @@
 
 @section('content')
 
+<style>
+    /* Size Selection Styling */
+    .select-size {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        list-style: none;
+        padding: 0;
+        margin-bottom: 5px;
+    }
+
+    .select-size li {
+        display: inline-block;
+    }
+
+    .select-size li a.attribute-option {
+        display: inline-block;
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-width: 40px;
+        text-align: center;
+        background-color: #fff;
+    }
+
+    .select-size li a.attribute-option:hover {
+        border-color: #ec8951; /* Theme color */
+    }
+
+    .select-size li a.attribute-option.active {
+        background-color: #ec8951 !important; /* Theme color */
+        color: #fff !important;
+        border-color: #ec8951 !important;
+    }
+
+    .error-message {
+        font-size: 13px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        display: none;
+    }
+
+    /* Validation Error State */
+    .variation-box.validation-error {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    .variation-box.validation-error .select-size li a.attribute-option {
+        border-color: #dc3545;
+    }
+
+    .variation-box.validation-error .error-message {
+        display: block !important;
+        color: #dc3545;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    /* Out of stock styling */
+    .select-size li a.attribute-option.out-of-stock {
+        opacity: 0.5;
+        text-decoration: line-through;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+
 <!-- breadcrumb start -->
 <div class="breadcrumb-section">
     <div class="container">
@@ -198,6 +273,7 @@
                                                 <a href="javascript:void(0)"
                                                    class="attribute-option"
                                                    data-attribute-id="{{ $attributeId }}"
+                                                   data-group-id="group-{{ $loop->parent->index }}"
                                                    data-value-id="{{ $attr->attributeValue->id ?? '' }}"
                                                    data-attribute-name="{{ $attributeName }}"
                                                    data-value="{{ $attr->attributeValue->value ?? 'N/A' }}"
@@ -208,6 +284,8 @@
                                             </li>
                                         @endforeach
                                     </ul>
+                                    {{-- Validation Error Message --}}
+                                    <div class="error-message text-danger" id="error-group-{{ $loop->index }}"></div>
                                 </div>
                             @endforeach
 
@@ -329,23 +407,51 @@
         const attributeOptions = document.querySelectorAll('.attribute-option');
         const selectedAttributesInput = document.getElementById('selectedAttributes');
 
+        // Mark out-of-stock options
+        attributeOptions.forEach(option => {
+            const stock = parseInt(option.dataset.stock) || 0;
+            if (stock === 0) {
+                option.classList.add('out-of-stock');
+            }
+        });
+
         // Handle attribute selection
         attributeOptions.forEach(option => {
             option.addEventListener('click', function(e) {
                 e.preventDefault();
 
-                // Get the attribute ID to find siblings
-                const attributeId = this.dataset.attributeId;
+                // Don't allow selection if out of stock
+                if (this.classList.contains('out-of-stock')) {
+                    return;
+                }
 
-                // Remove active class from siblings with same attribute ID
+                // Get the unique group ID to find siblings
+                const groupId = this.dataset.groupId;
+                const attributeName = this.dataset.attributeName;
+
+                // Remove active class from siblings within the same Group (Attribute Type)
                 attributeOptions.forEach(opt => {
-                    if (opt.dataset.attributeId === attributeId) {
+                    if (opt.dataset.groupId === groupId) {
                         opt.classList.remove('active');
                     }
                 });
 
                 // Add active class to clicked option
                 this.classList.add('active');
+
+                // Clear validation error on this group
+                const errorDivId = `error-${groupId}`;
+                const errorDiv = document.getElementById(errorDivId);
+                const variationBox = this.closest('.variation-box');
+
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                    errorDiv.innerText = '';
+                }
+
+                if (variationBox) {
+                    variationBox.classList.remove('validation-error');
+                }
 
                 // Update selected attributes
                 updateSelectedAttributes();
@@ -379,9 +485,6 @@
         const selectedAttributesInput = document.getElementById('selectedAttributes');
         const selectedAttributes = selectedAttributesInput.value;
 
-        // Count total attribute groups required
-        const totalAttributeGroups = document.querySelectorAll('.variation-box').length;
-        
         // Parse the attributes
         let attributes = {};
         try {
@@ -390,27 +493,108 @@
             console.error('Error parsing attributes:', e);
         }
 
-        // Check if all attributes are selected
-        const selectedCount = Object.keys(attributes).length;
-        if (selectedCount < totalAttributeGroups) {
-            alert('Please select all required options (Size/Color/etc) before adding to cart.');
+        let hasError = false;
+        let firstErrorBox = null;
+
+        // Check if all attribute types are selected - ALL are mandatory
+        const allVariationBoxes = document.querySelectorAll('.variation-box');
+
+        allVariationBoxes.forEach(box => {
+            const options = box.querySelectorAll('.attribute-option');
+            if (options.length === 0) return;
+
+            // Get referencing data from the first option in the box
+            const firstOption = options[0];
+            const attributeName = firstOption.dataset.attributeName;
+            const groupId = firstOption.dataset.groupId;
+            const errorDivId = `error-${groupId}`;
+            const errorDiv = document.getElementById(errorDivId);
+
+            // Check if this attribute is selected
+            const isSelected = box.querySelector('.attribute-option.active');
+
+            if (!isSelected) {
+                // Show error message
+                if (errorDiv) {
+                    errorDiv.innerText = `Please select a ${attributeName}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Add visual highlight to the variation box
+                box.classList.add('validation-error');
+
+                // Store first error for scrolling
+                if (!firstErrorBox) {
+                    firstErrorBox = box;
+                }
+
+                hasError = true;
+            } else {
+                // Clear error state
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                }
+                box.classList.remove('validation-error');
+            }
+        });
+
+        if (hasError) {
+            // Scroll to first error
+            if (firstErrorBox) {
+                firstErrorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return;
         }
 
-        // Display selected attributes for user confirmation
-        let attributesText = '';
-        for (const [key, value] of Object.entries(attributes)) {
-            attributesText += `${key}: ${value.value}\n`;
-        }
-
-        console.log('Adding to cart:', {
-            productId: productId,
-            quantity: quantity,
-            attributes: attributes
-        });
+        // Display selected attributes for user confirmation (optional, can be removed)
+        // console.log('Adding to cart:', { productId, quantity, attributes });
 
         // Call the existing addToCart function with attributes
-        addToCart(productId, quantity, attributes);
+        // Assuming addToCart is defined globally or in another script
+        if (typeof addToCart === 'function') {
+            addToCart(productId, quantity, attributes);
+        } else {
+            // Fallback form submission if function doesn't exist
+            // Create a form and submit it
+             const form = document.createElement('form');
+             form.method = 'POST';
+             form.action = '/cart/add'; // Replace with actual route
+             
+             // CSRF Token
+             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+             const inputToken = document.createElement('input');
+             inputToken.type = 'hidden';
+             inputToken.name = '_token';
+             inputToken.value = csrfToken;
+             form.appendChild(inputToken);
+
+             // Product ID
+             const inputId = document.createElement('input');
+             inputId.type = 'hidden';
+             inputId.name = 'product_id';
+             inputId.value = productId;
+             form.appendChild(inputId);
+
+             // Quantity
+             const inputQty = document.createElement('input');
+             inputQty.type = 'hidden';
+             inputQty.name = 'quantity';
+             inputQty.value = quantity;
+             form.appendChild(inputQty);
+             
+             // Attributes
+              for (const [key, value] of Object.entries(attributes)) {
+                 const inputAttr = document.createElement('input');
+                 inputAttr.type = 'hidden';
+                 inputAttr.name = `attributes[${key}]`;
+                 inputAttr.value = value.value;
+                 form.appendChild(inputAttr);
+              }
+
+             document.body.appendChild(form);
+             // form.submit(); // Commented out as we likely rely on AJAX in this theme
+             alert('Cart function missing, but validation passed.'); 
+        }
     }
 </script>
 @endpush

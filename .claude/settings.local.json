@@ -1,7 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir \"C:\\\\xampp\\\\htdocs\\\\ecommerce\\\\database\")",
+      "Bash(dir \"C:\\\\xampp\\\\htdocs\\\\ecommerce\\\\Modules\\\\Admin\\\\app\")",
+      "Bash(dir:*)",
+      "Bash(git -C \"C:\\\\xampp\\\\htdocs\\\\ecommerce\" log --oneline -20)",
+      "Bash(git -C \"C:\\\\xampp\\\\htdocs\\\\ecommerce\" log -1 --stat)",
+      "Bash(php artisan test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(php artisan:*)",
+      "Bash(findstr:*)",
+      "Bash(php -r:*)",
+      "Bash(php:*)",
+      "Bash(del:*)",
+      "Bash(git push)",
+      "Bash(claude --version:*)",
+      "Bash(claude doctor)",
+      "Bash(curl:*)",
+      "Bash(node --check public/js/cart.js)"
     ]
   }
 }

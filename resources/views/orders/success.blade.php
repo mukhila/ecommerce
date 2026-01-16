@@ -40,7 +40,17 @@
                             <tbody>
                                 @foreach($order->items as $item)
                                     <tr>
-                                        <td>{{ $item->product_name }} × {{ $item->quantity }}</td>
+                                        <td>
+                                            {{ $item->product_name }} × {{ $item->quantity }}
+                                            @if($item->attributes && is_array($item->attributes))
+                                                <br>
+                                                <small class="text-muted">
+                                                    @foreach($item->attributes as $attrName => $attrData)
+                                                        {{ $attrName }}: {{ is_array($attrData) ? $attrData['value'] : $attrData }}{{ !$loop->last ? ', ' : '' }}
+                                                    @endforeach
+                                                </small>
+                                            @endif
+                                        </td>
                                         <td class="text-end">₹{{ number_format($item->total, 2) }}</td>
                                     </tr>
                                 @endforeach

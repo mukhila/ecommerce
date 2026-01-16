@@ -12,6 +12,7 @@ Route::patch('/cart/update/{item}', [App\Http\Controllers\CartController::class,
 Route::delete('/cart/remove/{item}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
 Route::delete('/cart/clear', [App\Http\Controllers\CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart/count', [App\Http\Controllers\CartController::class, 'count'])->name('cart.count');
+Route::get('/cart/offcanvas', [App\Http\Controllers\CartController::class, 'offcanvas'])->name('cart.offcanvas');
 
 // Checkout Routes
 Route::middleware(['auth'])->group(function () {

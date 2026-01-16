@@ -367,4 +367,33 @@ class CartController extends Controller
             ]);
         }
     }
+
+    /**
+     * Get cart offcanvas HTML content (for AJAX refresh)
+     */
+    public function offcanvas()
+    {
+        try {
+            $cart = $this->getCart();
+
+            return response()->json([
+                'success' => true,
+                'html' => view('cart.partials.offcanvas-content', [
+                    'cart' => $cart,
+                    'cartItems' => $cart->items,
+                    'cartCount' => $cart->item_count,
+                    'cartTotal' => $cart->total
+                ])->render(),
+                'count' => $cart->item_count,
+                'total' => $cart->total
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error getting cart offcanvas: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to load cart'
+            ], 500);
+        }
+    }
 }

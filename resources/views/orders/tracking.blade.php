@@ -159,7 +159,17 @@
                                                                  style="width: 50px; height: 50px; object-fit: cover;"
                                                                  class="me-2">
                                                         @endif
-                                                        <span>{{ $item->product_name }}</span>
+                                                        <div>
+                                                            <span>{{ $item->product_name }}</span>
+                                                            @if($item->attributes && is_array($item->attributes))
+                                                                <br>
+                                                                <small class="text-muted">
+                                                                    @foreach($item->attributes as $attrName => $attrData)
+                                                                        {{ $attrName }}: {{ is_array($attrData) ? $attrData['value'] : $attrData }}{{ !$loop->last ? ', ' : '' }}
+                                                                    @endforeach
+                                                                </small>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td>{{ $item->quantity }}</td>

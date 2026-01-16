@@ -217,11 +217,11 @@
                                                 @endif
                                                 <div>
                                                     <strong>{{ $item->product_name }}</strong>
-                                                    @if($item->attributes)
+                                                    @if($item->attributes && is_array($item->attributes))
                                                         <br>
                                                         <small class="text-muted">
-                                                            @foreach(json_decode($item->attributes, true) as $key => $value)
-                                                                {{ ucfirst($key) }}: {{ $value }}{{ !$loop->last ? ', ' : '' }}
+                                                            @foreach($item->attributes as $attrName => $attrData)
+                                                                {{ ucfirst($attrName) }}: {{ is_array($attrData) ? $attrData['value'] : $attrData }}{{ !$loop->last ? ', ' : '' }}
                                                             @endforeach
                                                         </small>
                                                     @endif

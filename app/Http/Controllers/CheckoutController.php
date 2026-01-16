@@ -135,7 +135,8 @@ class CheckoutController extends Controller
                     'product_sku' => $item->product->slug,
                     'quantity' => $item->quantity,
                     'price' => $item->price,
-                    'total' => $item->price * $item->quantity
+                    'total' => $item->price * $item->quantity,
+                    'attributes' => $item->attributes
                 ]);
 
                 // Reduce stock
