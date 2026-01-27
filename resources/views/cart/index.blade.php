@@ -55,13 +55,13 @@
                                     </td>
                                     <td>
                                         <a href="{{ route('product.show', $item->product->slug) }}">{{ $item->product->name }}</a>
-                                        @if($item->attributes)
+                                        @if($item->size_label)
                                             <div class="mt-1">
-                                                @foreach($item->attributes as $attrName => $attrData)
-                                                    <small class="text-muted d-block">
-                                                        <strong>{{ $attrName }}:</strong> {{ $attrData['value'] ?? $attrData }}
-                                                    </small>
-                                                @endforeach
+                                                <span class="badge bg-secondary">Size: {{ $item->size_label }}</span>
+                                            </div>
+                                        @elseif($item->attributes && isset($item->attributes['size']))
+                                            <div class="mt-1">
+                                                <span class="badge bg-secondary">Size: {{ $item->attributes['size']['label'] ?? $item->attributes['size'] }}</span>
                                             </div>
                                         @endif
                                         <div class="mobile-cart-content row">
@@ -121,7 +121,7 @@
                                                        value="{{ $item->quantity }}"
                                                        data-item-id="{{ $item->id }}"
                                                        min="1"
-                                                       max="{{ $item->product->stock }}">
+                                                       max="{{ $item->available_stock }}">
                                                 <button class="btn quantity-right-plus" type="button">
                                                     <i class="ri-arrow-right-s-line"></i>
                                                 </button>

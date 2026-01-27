@@ -175,51 +175,167 @@
                                     <h5 class="card-title mb-3">Attributes</h5>
                                     @foreach($attributes as $attribute)
                                         <div class="mb-3">
-                                            <label class="form-label">{{ $attribute->name }}</label>
-                                            @if($attribute->name === 'Size')
-                                                <div class="border p-2 rounded" style="max-height: 300px; overflow-y: auto;">
-                                                    @foreach($attribute->values as $value)
-                                                        @php
-                                                            $isSelected = isset($productAttributes[$attribute->id][$value->id]);
-                                                            $details = $isSelected ? $productAttributes[$attribute->id][$value->id] : [];
-                                                        @endphp
-                                                        <div class="d-flex align-items-center mb-2 gap-2">
-                                                            <div class="form-check" style="min-width: 100px;">
-                                                                <input class="form-check-input" type="checkbox" 
-                                                                       name="attributes[{{ $attribute->id }}][{{ $value->id }}][enabled]" 
-                                                                       value="1" 
-                                                                       id="attr_val_{{ $value->id }}"
-                                                                       {{ $isSelected ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="attr_val_{{ $value->id }}">
-                                                                    {{ $value->value }}
-                                                                </label>
-                                                            </div>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">Qty</span>
-                                                                <input type="number" 
-                                                                       name="attributes[{{ $attribute->id }}][{{ $value->id }}][stock]" 
-                                                                       class="form-control" 
-                                                                       placeholder="Stock"
-                                                                       value="{{ $details['stock'] ?? '' }}">
-                                                            </div>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text">₹</span>
-                                                                <input type="number" 
-                                                                       step="0.01" 
-                                                                       name="attributes[{{ $attribute->id }}][{{ $value->id }}][price]" 
-                                                                       class="form-control" 
-                                                                       placeholder="Price Override"
-                                                                       value="{{ $details['price'] ?? '' }}">
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
+                                            <label class="form-label fw-bold">{{ $attribute->name }}</label>
+                                            @if($attribute->slug === 'size' || $attribute->name === 'Size')
+                                                {{-- Size Management Table --}}
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-sm mb-2" id="size-table">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th style="width: 50px;">Enable</th>
+                                                                <th style="width: 80px;">Size</th>
+                                                                <th style="width: 120px;">Stock</th>
+                                                                <th style="width: 140px;">Price Override</th>
+                                                                <th style="width: 80px;">Status</th>
+                                                                <th style="width: 100px;">In Orders</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($attribute->values as $value)
+                                                                @php
+                                                                    $isSelected = isset($productAttributes[$attribute->id][$value->id]);
+                                                                    $details = $isSelected ? $productAttributes[$attribute->id][$value->id] : [];
+                                                                    $stock = $details['stock'] ?? 0;
+                                                                    $hasOrders = $isSelected && \App\Models\OrderItem::where('variation_id', $details['id'] ?? 0)->exists();
+                                                                @endphp
+                                                                <tr class="{{ $isSelected && $stock == 0 ? 'table-warning' : '' }}">
+                                                                    <td class="text-center align-middle">
+                                                                        <input class="form-check-input size-enable-checkbox"
+                                                                               type="checkbox"
+                                                                               name="attributes[{{ $attribute->id }}][{{ $value->id }}][enabled]"
+                                                                               value="1"
+                                                                               id="attr_val_{{ $value->id }}"
+                                                                               data-size="{{ $value->value }}"
+                                                                               {{ $isSelected ? 'checked' : '' }}
+                                                                               {{ $hasOrders ? 'data-has-orders=1' : '' }}>
+                                                                    </td>
+                                                                    <td class="align-middle">
+                                                                        <strong>{{ $value->value }}</strong>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="number"
+                                                                               name="attributes[{{ $attribute->id }}][{{ $value->id }}][stock]"
+                                                                               class="form-control form-control-sm stock-input"
+                                                                               placeholder="0"
+                                                                               min="0"
+                                                                               value="{{ $details['stock'] ?? '' }}"
+                                                                               {{ !$isSelected ? 'disabled' : '' }}>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="input-group input-group-sm">
+                                                                            <span class="input-group-text">₹</span>
+                                                                            <input type="number"
+                                                                                   step="0.01"
+                                                                                   min="0"
+                                                                                   name="attributes[{{ $attribute->id }}][{{ $value->id }}][price]"
+                                                                                   class="form-control price-input"
+                                                                                   placeholder="Use base"
+                                                                                   value="{{ $details['price'] ?? '' }}"
+                                                                                   {{ !$isSelected ? 'disabled' : '' }}>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="text-center align-middle">
+                                                                        @if($isSelected)
+                                                                            @if($stock > 10)
+                                                                                <span class="badge bg-success">In Stock</span>
+                                                                            @elseif($stock > 0)
+                                                                                <span class="badge bg-warning text-dark">Low ({{ $stock }})</span>
+                                                                            @else
+                                                                                <span class="badge bg-danger">Out</span>
+                                                                            @endif
+                                                                        @else
+                                                                            <span class="badge bg-secondary">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td class="text-center align-middle">
+                                                                        @if($hasOrders)
+                                                                            <span class="badge bg-info" title="This size has been ordered">
+                                                                                <i class="bi bi-lock-fill"></i> Yes
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                                <small class="text-muted">Select available sizes and optional specific stock/price.</small>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-info-circle"></i>
+                                                        Leave price empty to use the base product price. Sizes with orders cannot be fully removed.
+                                                    </small>
+                                                    <div>
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="select-all-sizes">
+                                                            Select All
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="deselect-all-sizes">
+                                                            Deselect All
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        // Toggle input fields based on checkbox
+                                                        document.querySelectorAll('.size-enable-checkbox').forEach(function(checkbox) {
+                                                            checkbox.addEventListener('change', function() {
+                                                                const row = this.closest('tr');
+                                                                const stockInput = row.querySelector('.stock-input');
+                                                                const priceInput = row.querySelector('.price-input');
+
+                                                                // Prevent disabling if has orders
+                                                                if (!this.checked && this.dataset.hasOrders) {
+                                                                    this.checked = true;
+                                                                    alert('This size has been used in orders and cannot be disabled. You can set stock to 0 instead.');
+                                                                    return;
+                                                                }
+
+                                                                stockInput.disabled = !this.checked;
+                                                                priceInput.disabled = !this.checked;
+
+                                                                if (!this.checked) {
+                                                                    stockInput.value = '';
+                                                                    priceInput.value = '';
+                                                                }
+                                                            });
+                                                        });
+
+                                                        // Select/Deselect all
+                                                        document.getElementById('select-all-sizes')?.addEventListener('click', function() {
+                                                            document.querySelectorAll('.size-enable-checkbox').forEach(function(cb) {
+                                                                if (!cb.checked) {
+                                                                    cb.checked = true;
+                                                                    cb.dispatchEvent(new Event('change'));
+                                                                }
+                                                            });
+                                                        });
+
+                                                        document.getElementById('deselect-all-sizes')?.addEventListener('click', function() {
+                                                            document.querySelectorAll('.size-enable-checkbox').forEach(function(cb) {
+                                                                if (cb.checked && !cb.dataset.hasOrders) {
+                                                                    cb.checked = false;
+                                                                    cb.dispatchEvent(new Event('change'));
+                                                                }
+                                                            });
+                                                        });
+
+                                                        // Validate stock >= 0
+                                                        document.querySelectorAll('.stock-input').forEach(function(input) {
+                                                            input.addEventListener('change', function() {
+                                                                if (this.value !== '' && parseInt(this.value) < 0) {
+                                                                    this.value = 0;
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+                                                </script>
                                             @else
                                                 <select class="form-select" id="attr_{{ $attribute->id }}" name="attribute_values[{{ $attribute->id }}]">
                                                     <option value="">Select {{ $attribute->name }}</option>
                                                     @foreach($attribute->values as $value)
-                                                        <option value="{{ $value->id }}" 
+                                                        <option value="{{ $value->id }}"
                                                             {{ isset($productAttributes[$attribute->id][$value->id]) ? 'selected' : '' }}
                                                         >
                                                             {{ $value->value }}

@@ -63,6 +63,7 @@ class CartController extends Controller
         try {
             $request->validate([
                 'product_id' => 'required|exists:products,id',
+                'variation_id' => 'nullable|exists:product_attributes,id',
                 'quantity' => 'integer|min:1|max:999',
                 'attributes' => 'nullable|array'
             ]);
@@ -71,7 +72,8 @@ class CartController extends Controller
 
             $product = Product::findOrFail($request->product_id);
             $quantity = $request->quantity ?? 1;
-            $attributes = $request->attributes ?? null;
+            $variationId = $request->variation_id;
+            $variation = null;
 
             // Check if product is active/available
             if (!$product->is_active) {
@@ -81,59 +83,100 @@ class CartController extends Controller
                 ], 400);
             }
 
-            // Check stock
-            if ($product->stock <= 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'This product is currently out of stock'
-                ], 400);
+            // If product has size variations, variation_id is required
+            if ($product->hasSizeVariations()) {
+                if (!$variationId) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Please select a size'
+                    ], 400);
+                }
+
+                $variation = \Modules\Product\Models\ProductAttribute::with('attributeValue')
+                    ->where('id', $variationId)
+                    ->where('product_id', $product->id)
+                    ->first();
+
+                if (!$variation) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid size selection'
+                    ], 400);
+                }
+
+                if (!$variation->isAvailable()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Selected size is currently unavailable'
+                    ], 400);
+                }
+
+                $availableStock = $variation->stock;
+                $price = $variation->effective_price;
+            } else {
+                // No variations - use product stock
+                $availableStock = $product->stock;
+                $price = $product->sale_price ?? $product->price;
+
+                if ($availableStock <= 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This product is currently out of stock'
+                    ], 400);
+                }
             }
 
-            if ($product->stock < $quantity) {
+            if ($availableStock < $quantity) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Only {$product->stock} items available in stock"
+                    'message' => "Only {$availableStock} items available in stock"
                 ], 400);
             }
 
             $cart = $this->getCart();
 
-            // Check if product with same attributes already in cart
+            // Check if same product + variation already in cart
             $cartItemQuery = $cart->items()->where('product_id', $product->id);
 
-            // If attributes provided, check for exact match
-            if ($attributes) {
-                $cartItem = $cartItemQuery->get()->first(function($item) use ($attributes) {
-                    return $item->attributes == $attributes;
-                });
+            if ($variationId) {
+                $cartItem = $cartItemQuery->where('variation_id', $variationId)->first();
             } else {
-                // Handle both NULL and empty/null JSON values
-                $cartItem = $cartItemQuery->where(function($q) {
-                    $q->whereNull('attributes')
-                      ->orWhere('attributes', 'null')
-                      ->orWhere('attributes', '[]')
-                      ->orWhere('attributes', '');
-                })->first();
+                $cartItem = $cartItemQuery->whereNull('variation_id')->first();
             }
 
             if ($cartItem) {
                 // Update quantity
                 $newQuantity = $cartItem->quantity + $quantity;
 
-                if ($product->stock < $newQuantity) {
+                if ($availableStock < $newQuantity) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Cannot add more items. Only {$product->stock} available, you already have {$cartItem->quantity} in cart"
+                        'message' => "Cannot add more items. Only {$availableStock} available, you already have {$cartItem->quantity} in cart"
                     ], 400);
                 }
 
-                $cartItem->update(['quantity' => $newQuantity]);
+                $cartItem->update([
+                    'quantity' => $newQuantity,
+                    'price' => $price // Update price in case it changed
+                ]);
             } else {
+                // Build attributes JSON for display purposes
+                $attributes = null;
+                if ($variation) {
+                    $attributes = [
+                        'size' => [
+                            'id' => $variation->id,
+                            'label' => $variation->attributeValue->value
+                        ]
+                    ];
+                }
+
                 // Add new item
                 $cartItem = $cart->items()->create([
                     'product_id' => $product->id,
+                    'variation_id' => $variationId,
                     'quantity' => $quantity,
-                    'price' => $product->sale_price ?? $product->price,
+                    'price' => $price,
                     'attributes' => $attributes
                 ]);
             }
@@ -167,6 +210,7 @@ class CartController extends Controller
             DB::rollBack();
             Log::error('Error adding to cart: ' . $e->getMessage(), [
                 'product_id' => $request->product_id,
+                'variation_id' => $request->variation_id ?? null,
                 'user_id' => Auth::id(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -190,7 +234,7 @@ class CartController extends Controller
             DB::beginTransaction();
 
             $cart = $this->getCart();
-            $cartItem = $cart->items()->findOrFail($itemId);
+            $cartItem = $cart->items()->with('variation')->findOrFail($itemId);
 
             // Check if product still exists and is active
             if (!$cartItem->product) {
@@ -207,18 +251,31 @@ class CartController extends Controller
                 ], 400);
             }
 
-            // Check stock
-            if ($cartItem->product->stock <= 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'This product is currently out of stock'
-                ], 400);
+            // Check stock based on variation or product
+            if ($cartItem->variation_id && $cartItem->variation) {
+                $availableStock = $cartItem->variation->stock;
+
+                if (!$cartItem->variation->isAvailable()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Selected size is no longer available'
+                    ], 400);
+                }
+            } else {
+                $availableStock = $cartItem->product->stock;
+
+                if ($availableStock <= 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This product is currently out of stock'
+                    ], 400);
+                }
             }
 
-            if ($cartItem->product->stock < $request->quantity) {
+            if ($availableStock < $request->quantity) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Only {$cartItem->product->stock} items available in stock"
+                    'message' => "Only {$availableStock} items available in stock"
                 ], 400);
             }
 

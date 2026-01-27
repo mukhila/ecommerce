@@ -79,6 +79,64 @@ class Product extends Model
             });
     }
 
+    /**
+     * Get available size variations (active + in stock)
+     */
+    public function availableSizes()
+    {
+        return $this->sizeAttributes()
+            ->with('attributeValue')
+            ->active()
+            ->inStock()
+            ->orderBy('id');
+    }
+
+    /**
+     * Get all size variations for display (including out of stock)
+     */
+    public function allSizeVariations()
+    {
+        return $this->sizeAttributes()
+            ->with('attributeValue')
+            ->active()
+            ->orderBy('id');
+    }
+
+    /**
+     * Check if product has size variations
+     */
+    public function hasSizeVariations(): bool
+    {
+        return $this->sizeAttributes()->exists();
+    }
+
+    /**
+     * Get first available size variation
+     */
+    public function getFirstAvailableSizeAttribute(): ?ProductAttribute
+    {
+        return $this->availableSizes()->first();
+    }
+
+    /**
+     * Get total stock across all variations (or base stock if no variations)
+     */
+    public function getTotalStockAttribute(): int
+    {
+        if ($this->hasSizeVariations()) {
+            return $this->sizeAttributes()->active()->sum('stock') ?? 0;
+        }
+        return $this->stock ?? 0;
+    }
+
+    /**
+     * Check overall availability
+     */
+    public function isInStock(): bool
+    {
+        return $this->total_stock > 0;
+    }
+
     public function reviews()
     {
         return $this->hasMany(\App\Models\ProductReview::class);

@@ -44,13 +44,13 @@
                             <a href="{{ route('product.show', $item->product->slug) }}">
                                 <h4>{{ $item->product->name }}</h4>
                             </a>
-                            @if($item->attributes)
+                            @if($item->size_label)
                                 <div class="mt-1 mb-2">
-                                    @foreach($item->attributes as $attrName => $attrData)
-                                        <small class="text-muted d-block">
-                                            <strong>{{ $attrName }}:</strong> {{ is_array($attrData) ? $attrData['value'] : $attrData }}
-                                        </small>
-                                    @endforeach
+                                    <span class="badge bg-secondary">Size: {{ $item->size_label }}</span>
+                                </div>
+                            @elseif($item->attributes && isset($item->attributes['size']))
+                                <div class="mt-1 mb-2">
+                                    <span class="badge bg-secondary">Size: {{ $item->attributes['size']['label'] ?? $item->attributes['size'] }}</span>
                                 </div>
                             @endif
                             <h4 class="quantity">
@@ -67,7 +67,7 @@
                                            class="form-control input-qty input-number"
                                            value="{{ $item->quantity }}"
                                            data-item-id="{{ $item->id }}"
-                                           max="{{ $item->product->stock }}">
+                                           max="{{ $item->available_stock }}">
                                     <button class="btn quantity-right-plus"
                                             onclick="updateCartItemOffcanvas({{ $item->id }}, {{ $item->quantity + 1 }})">
                                         <i class="ri-add-line"></i>

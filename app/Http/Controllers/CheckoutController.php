@@ -34,7 +34,7 @@ class CheckoutController extends Controller
     {
         try {
             $cart = Cart::where('user_id', Auth::id())
-                       ->with('items.product.images')
+                       ->with(['items.product.images', 'items.variation.attributeValue'])
                        ->first();
 
             if (!$cart || $cart->items->count() === 0) {
@@ -43,9 +43,19 @@ class CheckoutController extends Controller
 
             // Check stock availability before checkout
             foreach ($cart->items as $item) {
-                if ($item->product->stock < $item->quantity) {
-                    return redirect()->route('cart.index')
-                                   ->with('error', "Product '{$item->product->name}' has insufficient stock");
+                if ($item->variation_id && $item->variation) {
+                    // Check variation stock
+                    if ($item->variation->stock < $item->quantity) {
+                        $sizeName = $item->variation->attributeValue->value ?? 'selected size';
+                        return redirect()->route('cart.index')
+                                       ->with('error', "Product '{$item->product->name}' ({$sizeName}) has insufficient stock");
+                    }
+                } else {
+                    // Check product stock
+                    if ($item->product->stock < $item->quantity) {
+                        return redirect()->route('cart.index')
+                                       ->with('error', "Product '{$item->product->name}' has insufficient stock");
+                    }
                 }
             }
 
@@ -119,18 +129,48 @@ class CheckoutController extends Controller
                 'notes' => $validated['notes'] ?? null
             ]);
 
-            // Create order items
+            // Create order items with proper stock handling
             foreach ($cart->items as $item) {
-                // Check stock again
-                if ($item->product->stock < $item->quantity) {
-                    DB::rollBack();
-                    return redirect()->route('cart.index')
-                                   ->with('error', "Product '{$item->product->name}' is out of stock");
+                $sizeLabel = null;
+
+                // Handle variation stock
+                if ($item->variation_id && $item->variation) {
+                    // Use pessimistic locking to prevent overselling
+                    $variation = \Modules\Product\Models\ProductAttribute::where('id', $item->variation_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$variation || $variation->stock < $item->quantity) {
+                        DB::rollBack();
+                        $sizeName = $item->variation->attributeValue->value ?? 'selected size';
+                        return redirect()->route('cart.index')
+                                       ->with('error', "Product '{$item->product->name}' ({$sizeName}) is out of stock");
+                    }
+
+                    // Deduct variation stock
+                    $variation->decrement('stock', $item->quantity);
+                    $sizeLabel = $variation->attributeValue->value ?? null;
+                } else {
+                    // No variation - check product stock
+                    $product = Product::where('id', $item->product_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$product || $product->stock < $item->quantity) {
+                        DB::rollBack();
+                        return redirect()->route('cart.index')
+                                       ->with('error', "Product '{$item->product->name}' is out of stock");
+                    }
+
+                    // Deduct product stock
+                    $product->decrement('stock', $item->quantity);
                 }
 
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
+                    'variation_id' => $item->variation_id,
+                    'size_label' => $sizeLabel,
                     'product_name' => $item->product->name,
                     'product_sku' => $item->product->slug,
                     'quantity' => $item->quantity,
@@ -138,9 +178,6 @@ class CheckoutController extends Controller
                     'total' => $item->price * $item->quantity,
                     'attributes' => $item->attributes
                 ]);
-
-                // Reduce stock
-                $item->product->decrement('stock', $item->quantity);
             }
 
             // Create shipping address

@@ -103,13 +103,24 @@ class Order extends Model
             }
 
             // Restore stock for each order item
-            foreach ($this->items()->with('product')->get() as $item) {
-                if ($item->product) {
+            foreach ($this->items()->with(['product', 'variation'])->get() as $item) {
+                // Restore variation stock if applicable
+                if ($item->variation_id && $item->variation) {
+                    $item->variation->increment('stock', $item->quantity);
+                    Log::info('Variation stock restored', [
+                        'product_id' => $item->product_id,
+                        'variation_id' => $item->variation_id,
+                        'size' => $item->size_label,
+                        'quantity' => $item->quantity,
+                        'new_stock' => $item->variation->fresh()->stock
+                    ]);
+                } elseif ($item->product) {
+                    // Restore product stock
                     $item->product->increment('stock', $item->quantity);
-                    Log::info('Stock restored', [
+                    Log::info('Product stock restored', [
                         'product_id' => $item->product_id,
                         'quantity' => $item->quantity,
-                        'new_stock' => $item->product->stock
+                        'new_stock' => $item->product->fresh()->stock
                     ]);
                 } else {
                     Log::warning('Cannot restore stock - product deleted', [
