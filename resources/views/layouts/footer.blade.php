@@ -6,7 +6,7 @@
                     <div class="col-xl-3 col-lg-5 col-md-6 sub-title">
                         <div>
                             <div class="footer-logo"><a href="{{ route('home') }}"><img alt="logo" class="img-fluid"
-                                        src="{{ asset('frontassets/images/logo-white.png') }}">
+                                        src="{{ asset('frontassets/images/logo.png') }}">
                                 </a></div>
                             <p> Discover the latest trends and enjoy seamless shopping
                                 with our exclusive collections.
@@ -92,8 +92,7 @@
                 <div class="row">
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="footer-end">
-                            <p><i class="ri-copyright-line"></i> 2024-25 themeforest powered by
-                                pixelstrap</p>
+                            <p><i class="ri-copyright-line"></i> 2026 Jango Kids</p>
                         </div>
                     </div>
                     <div class="col-xl-6 col-md-6 col-sm-12">
