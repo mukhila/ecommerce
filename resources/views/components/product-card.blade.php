@@ -9,7 +9,7 @@
 
             <a href="{{ route('product.show', $product->slug) }}">
                 @if($product->images->where('is_primary', true)->first())
-                    <img src="{{ Storage::disk('public_uploads')->url($product->images->where('is_primary', true)->first()->image_path) }}"
+                    <img src="{{ asset('uploads/'.$product->images->where('is_primary', true)->first()->image_path) }}"
                         class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
                 @else
                     <img src="{{ asset('frontassets/images/fashion-1/product/1.jpg') }}"

@@ -27,7 +27,7 @@
                         <div class="form-text">Leave blank to keep current image.</div>
                         @if($slider->image)
                             <div class="mt-2">
-                                <img src="{{ Storage::disk('public_uploads')->url($slider->image) }}" alt="Current Image" width="150" class="img-thumbnail">
+                                <img src="{{ asset('uploads/'.$slider->image) }}" alt="Current Image" width="150" class="img-thumbnail">
                             </div>
                         @endif
                     </div>

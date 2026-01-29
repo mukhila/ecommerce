@@ -17,9 +17,9 @@
                     <div class="col-md-5">
                         <div class="product-img-box">
                             @if($product->images->where('is_primary', true)->first())
-                                <img src="{{ Storage::disk('public_uploads')->url($product->images->where('is_primary', true)->first()->image_path) }}" alt="" class="img-fluid mx-auto d-block rounded">
+                                <img src="{{ asset('uploads/'.$product->images->where('is_primary', true)->first()->image_path) }}" alt="" class="img-fluid mx-auto d-block rounded">
                             @elseif($product->images->isNotEmpty())
-                                <img src="{{ Storage::disk('public_uploads')->url($product->images->first()->image_path) }}" alt="" class="img-fluid mx-auto d-block rounded">
+                                <img src="{{ asset('uploads/'.$product->images->first()->image_path) }}" alt="" class="img-fluid mx-auto d-block rounded">
                             @else
                                 <div class="text-center p-5 bg-light rounded">
                                     <i class="mdi mdi-image-off display-4 text-muted"></i>
@@ -31,7 +31,7 @@
                         @if($product->images->count() > 1)
                         <div class="d-flex gap-2 mt-3 overflow-auto">
                             @foreach($product->images as $image)
-                                <img src="{{ Storage::disk('public_uploads')->url($image->image_path) }}" alt="" class="avatar-md rounded border {{ $image->is_primary ? 'border-primary border-2' : '' }}" style="object-fit: cover;">
+                                <img src="{{ asset('uploads/'.$image->image_path) }}" alt="" class="avatar-md rounded border {{ $image->is_primary ? 'border-primary border-2' : '' }}" style="object-fit: cover;">
                             @endforeach
                         </div>
                         @endif

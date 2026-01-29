@@ -34,7 +34,7 @@
                         <div class="product-slick">
                             @forelse($product->images as $image)
                                 <div>
-                                    <img src="{{ Storage::disk('public_uploads')->url($image->image_path) }}"
+                                    <img src="{{ asset('uploads/'.$image->image_path) }}"
                                          alt="{{ $product->name }}"
                                          class="img-fluid blur-up lazyload">
                                 </div>
@@ -53,7 +53,7 @@
                                     <div class="slider-nav">
                                         @foreach($product->images as $image)
                                             <div>
-                                                <img src="{{ Storage::disk('public_uploads')->url($image->image_path) }}"
+                                                <img src="{{ asset('uploads/'.$image->image_path) }}"
                                                      alt="{{ $product->name }}"
                                                      class="img-fluid blur-up lazyload">
                                             </div>
