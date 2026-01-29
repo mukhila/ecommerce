@@ -169,6 +169,21 @@
                 </li>
 
                 <li>
+                    <a href="#customers" data-bs-toggle="collapse">
+                         <span class="nav-icon">
+                            <iconify-icon icon="solar:users-group-rounded-bold-duotone"></iconify-icon>
+                        </span>
+                        <span class="sidebar-text">Customers</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="customers">
+                        <ul class="nav-second-level">
+                            <li><a href="{{ route('admin.customers.index') }}" data-key="t-cust-list">List</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li>
                     <a href="#discount" data-bs-toggle="collapse">
                          <span class="nav-icon">
                             <iconify-icon icon="solar:sale-bold-duotone"></iconify-icon>

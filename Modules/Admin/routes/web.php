@@ -16,6 +16,7 @@ use Modules\Admin\Http\Controllers\SliderController;
 use Modules\Admin\Http\Controllers\MenuController;
 use Modules\Admin\Http\Controllers\OrderController;
 use Modules\Admin\Http\Controllers\SupportController;
+use Modules\Admin\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -112,6 +113,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('support/{ticket}/assign', [SupportController::class, 'assign'])->name('support.assign');
         Route::post('support/{ticket}/reply', [SupportController::class, 'reply'])->name('support.reply');
         Route::post('support/bulk-update', [SupportController::class, 'bulkUpdate'])->name('support.bulk-update');
+
+        // Customer Routes
+        Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
 
         // Review Routes
         Route::get('reviews', [\Modules\Admin\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');

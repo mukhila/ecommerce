@@ -49,8 +49,8 @@ return [
 
          'public_uploads' => [
             'driver' => 'local',
-            'root' => public_path('storage'), // files saved directly in /public/storage
-            'url' => env('APP_URL') . '/storage', // correct URL
+            'root' => public_path('uploads'),
+            'url' => env('APP_URL') . '/uploads',
             'visibility' => 'public',
             'throw' => false,
         ],
