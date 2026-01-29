@@ -40,7 +40,7 @@
                             <input class="form-control" type="file" id="logo" name="logo">
                             @if($setting->logo)
                                 <div class="mt-2">
-                                    <img src="{{ asset($setting->logo) }}" alt="Current Logo" style="max-height: 100px;">
+                                    <img src="{{ Storage::disk('public_uploads')->url($setting->logo) }}" alt="Current Logo" style="max-height: 100px;">
                                 </div>
                             @endif
                         </div>

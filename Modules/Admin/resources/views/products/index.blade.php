@@ -39,7 +39,7 @@
                                 <td>{{ $product->id }}</td>
                                 <td>
                                     @if($product->images->isNotEmpty())
-                                        <img src="{{ Storage::url($product->images->first()->image_path) }}" alt="{{ $product->name }}" class="rounded avatar-sm">
+                                        <img src="{{ Storage::disk('public_uploads')->url($product->images->first()->image_path) }}" alt="{{ $product->name }}" class="rounded avatar-sm">
                                     @else
                                         <div class="avatar-sm">
                                             <span class="avatar-title rounded bg-light text-secondary">No Img</span>

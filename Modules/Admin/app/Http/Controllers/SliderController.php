@@ -5,7 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Admin\Models\Slider;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class SliderController extends Controller
 {
@@ -40,14 +40,8 @@ class SliderController extends Controller
         $input = $request->all();
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $name = time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('/uploads/sliders');
-            if (!File::exists($destinationPath)) {
-                File::makeDirectory($destinationPath, 0755, true, true);
-            }
-            $image->move($destinationPath, $name);
-            $input['image'] = 'uploads/sliders/' . $name;
+            $path = $request->file('image')->store('sliders', 'public_uploads');
+            $input['image'] = $path;
         }
         
         $input['status'] = $request->has('status') ? 1 : 0;
@@ -94,18 +88,12 @@ class SliderController extends Controller
             ]);
             
             // Delete old image
-            if (File::exists(public_path($slider->image))) {
-                File::delete(public_path($slider->image));
+            if ($slider->image && Storage::disk('public_uploads')->exists($slider->image)) {
+                Storage::disk('public_uploads')->delete($slider->image);
             }
 
-            $image = $request->file('image');
-            $name = time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('/uploads/sliders');
-            if (!File::exists($destinationPath)) {
-                File::makeDirectory($destinationPath, 0755, true, true);
-            }
-            $image->move($destinationPath, $name);
-            $input['image'] = 'uploads/sliders/' . $name;
+            $path = $request->file('image')->store('sliders', 'public_uploads');
+            $input['image'] = $path;
         }
 
         $input['status'] = $request->has('status') ? 1 : 0;
@@ -122,8 +110,8 @@ class SliderController extends Controller
     public function destroy($id)
     {
         $slider = Slider::find($id);
-        if (File::exists(public_path($slider->image))) {
-            File::delete(public_path($slider->image));
+        if ($slider->image && Storage::disk('public_uploads')->exists($slider->image)) {
+            Storage::disk('public_uploads')->delete($slider->image);
         }
         $slider->delete();
 

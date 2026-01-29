@@ -36,7 +36,7 @@
                             <tr>
                                 <td>{{ $slider->sort_order }}</td>
                                 <td>
-                                    <img src="{{ asset($slider->image) }}" alt="Slider Image" width="100" class="img-thumbnail">
+                                    <img src="{{ Storage::disk('public_uploads')->url($slider->image) }}" alt="Slider Image" width="100" class="img-thumbnail">
                                 </td>
                                 <td>{{ $slider->title }}</td>
                                 <td>{{ $slider->subtitle }}</td>

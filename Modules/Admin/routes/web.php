@@ -11,6 +11,7 @@ use Modules\Admin\Http\Controllers\AttributeController;
 use Modules\Admin\Http\Controllers\AttributeValueController;
 use Modules\Admin\Http\Controllers\ProductController;
 use Modules\Admin\Http\Controllers\CouponController;
+use Modules\Admin\Http\Controllers\DiscountController;
 use Modules\Admin\Http\Controllers\SliderController;
 use Modules\Admin\Http\Controllers\MenuController;
 use Modules\Admin\Http\Controllers\OrderController;
@@ -87,6 +88,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Coupon Routes
         Route::resource('coupons', CouponController::class);
+
+        // Discount Routes
+        Route::resource('discounts', DiscountController::class);
 
         // Slider Routes
         Route::resource('sliders', SliderController::class);

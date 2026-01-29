@@ -5,7 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Admin\Models\CompanySetting;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class CompanySettingController extends Controller
 {
@@ -46,14 +46,13 @@ class CompanySettingController extends Controller
         // Handle Logo Upload
         if ($request->hasFile('logo')) {
             // Delete old logo if exists
-            if ($setting->logo && File::exists(public_path($setting->logo))) {
-                File::delete(public_path($setting->logo));
+            if ($setting->logo && Storage::disk('public_uploads')->exists($setting->logo)) {
+                Storage::disk('public_uploads')->delete($setting->logo);
             }
 
-            $image = $request->file('logo');
-            $imageName = time() . '.' . $image->extension();
-            $image->move(public_path('uploads/settings'), $imageName);
-            $input['logo'] = 'uploads/settings/' . $imageName;
+            // Upload new logo
+            $path = $request->file('logo')->store('settings', 'public_uploads');
+            $input['logo'] = $path;
         }
 
         if ($setting->exists) {

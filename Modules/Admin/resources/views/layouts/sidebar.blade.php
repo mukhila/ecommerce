@@ -132,21 +132,6 @@
                     </div>
                 </li>
 
-                <li>
-                    <a href="#prodAttributes" data-bs-toggle="collapse">
-                         <span class="nav-icon">
-                            <iconify-icon icon="solar:slider-minimalistic-horizontal-bold-duotone"></iconify-icon>
-                        </span>
-                        <span class="sidebar-text">Product Attributes</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <div class="collapse" id="prodAttributes">
-                        <ul class="nav-second-level">
-                            <li><a href="#" data-key="t-patt-create">Create</a></li>
-                            <li><a href="#" data-key="t-patt-list">List</a></li>
-                        </ul>
-                    </div>
-                </li>
 
                 <li>
                     <a href="#products" data-bs-toggle="collapse">
@@ -193,8 +178,8 @@
                     </a>
                     <div class="collapse" id="discount">
                         <ul class="nav-second-level">
-                            <li><a href="#" data-key="t-disc-create">Create</a></li>
-                            <li><a href="#" data-key="t-disc-list">List</a></li>
+                            <li><a href="{{ route('admin.discounts.create') }}" data-key="t-disc-create">Create</a></li>
+                            <li><a href="{{ route('admin.discounts.index') }}" data-key="t-disc-list">List</a></li>
                         </ul>
                     </div>
                 </li>

@@ -10,7 +10,7 @@
             @foreach($sliders as $slider)
             <div>
                 <div class="home text-start">
-                    <img src="{{ asset($slider->image) }}" alt="{{ $slider->title }}" class="bg-img blur-up lazyload">
+                    <img src="{{ Storage::disk('public_uploads')->url($slider->image) }}" alt="{{ $slider->title }}" class="bg-img blur-up lazyload">
                     <div class="container">
                         <div class="row">
                             <div class="col">

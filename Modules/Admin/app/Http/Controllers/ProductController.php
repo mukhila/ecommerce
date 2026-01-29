@@ -106,7 +106,7 @@ class ProductController extends Controller
             // Upload Images
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $i => $image) {
-                    $path = $image->store('products', 'public');
+                    $path = $image->store('products', 'public_uploads');
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
@@ -232,7 +232,7 @@ class ProductController extends Controller
              if ($request->hasFile('images')) {
                  $nextSortOrder = $product->images()->max('sort_order') + 1;
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
+                    $path = $image->store('products', 'public_uploads');
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
@@ -259,8 +259,8 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         // Optionally delete actual image files here if needed
         foreach($product->images as $image) {
-            if(Storage::disk('public')->exists($image->image_path)) {
-                Storage::disk('public')->delete($image->image_path);
+            if(Storage::disk('public_uploads')->exists($image->image_path)) {
+                Storage::disk('public_uploads')->delete($image->image_path);
             }
         }
         $product->delete();
@@ -269,8 +269,8 @@ class ProductController extends Controller
     
     public function destroyImage($id) {
         $image = ProductImage::findOrFail($id);
-        if(Storage::disk('public')->exists($image->image_path)) {
-                Storage::disk('public')->delete($image->image_path);
+        if(Storage::disk('public_uploads')->exists($image->image_path)) {
+                Storage::disk('public_uploads')->delete($image->image_path);
         }
         $image->delete();
         return back()->with('success', 'Image deleted successfully');

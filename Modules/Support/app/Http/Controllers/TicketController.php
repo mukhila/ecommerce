@@ -4,8 +4,9 @@ namespace Modules\Support\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Support\Models\Ticket;
-use Modules\Support\Models\TicketMessage;
+use App\Models\SupportTicket;
+use App\Models\SupportTicketReply;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
@@ -14,7 +15,7 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::with('messages')->orderBy('updated_at', 'desc')->paginate(10);
+        $tickets = SupportTicket::orderBy('updated_at', 'desc')->paginate(10);
         return view('support::index', compact('tickets'));
     }
 
@@ -23,7 +24,7 @@ class TicketController extends Controller
      */
     public function show($id)
     {
-        $ticket = Ticket::with('messages')->findOrFail($id);
+        $ticket = SupportTicket::with('replies.user')->findOrFail($id);
         return view('support::show', compact('ticket'));
     }
 
@@ -36,16 +37,23 @@ class TicketController extends Controller
             'message' => 'required|string',
         ]);
 
-        $ticket = Ticket::findOrFail($id);
+        $ticket = SupportTicket::findOrFail($id);
 
-        TicketMessage::create([
+        SupportTicketReply::create([
             'ticket_id' => $ticket->id,
-            'user_id' => auth('admin')->id() ?? 1, // Assume Admin ID 1 if not auth
+            'user_id' => Auth::guard('admin')->id() ?? Auth::id() ?? 1, // Fallback to 1 if no auth logic matches
             'message' => $request->message,
+            'is_admin' => true,
         ]);
 
         // Update ticket timestamp
         $ticket->touch();
+        
+        // If ticket was closed/resolved, maybe re-open it? 
+        // For now, let's keep status as is unless explicitly changed, or set to in_progress
+        if($ticket->status === 'open') {
+             $ticket->update(['status' => 'in_progress']);
+        }
 
         return redirect()->back()->with('success', 'Reply sent successfully.');
     }
@@ -56,10 +64,10 @@ class TicketController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:Open,In Progress,Closed',
+            'status' => 'required|in:open,in_progress,resolved,closed',
         ]);
 
-        $ticket = Ticket::findOrFail($id);
+        $ticket = SupportTicket::findOrFail($id);
         $ticket->update(['status' => $request->status]);
 
         return redirect()->back()->with('success', 'Ticket status updated.');
@@ -70,9 +78,9 @@ class TicketController extends Controller
      */
     public function destroy($id)
     {
-        $ticket = Ticket::findOrFail($id);
+        $ticket = SupportTicket::findOrFail($id);
         $ticket->delete();
 
-        return redirect()->route('support.tickets.index')->with('success', 'Ticket deleted successfully.');
+        return redirect()->route('admin.support.tickets.index')->with('success', 'Ticket deleted successfully.');
     }
 }
