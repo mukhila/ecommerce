@@ -147,10 +147,11 @@
 
                                         document.querySelectorAll('.set-primary-btn').forEach(function(btn) {
                                             btn.addEventListener('click', function() {
+                                                var token = document.querySelector('input[name="_token"]').value;
                                                 fetch(this.dataset.url, {
                                                     method: 'PATCH',
                                                     headers: {
-                                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                                        'X-CSRF-TOKEN': token,
                                                         'Accept': 'application/json'
                                                     }
                                                 }).then(function() {

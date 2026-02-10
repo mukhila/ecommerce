@@ -30,6 +30,10 @@ Route::view('/about-us', 'pages.about')->name('about');
 Route::get('/contact-us', [App\Http\Controllers\ContactController::class, 'index'])->name('contact');
 Route::post('/contact-us', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 
+Route::view('/page/faqs', 'pages.faq')->name('faqs');
+Route::view('/page/privacy-policy', 'pages.privacy-policy')->name('privacy-policy');
+Route::view('/page/terms-and-conditions', 'pages.terms-and-conditions')->name('terms-and-conditions');
+
 // Product Routes
 Route::get('/product/{slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('product.show');
 Route::post('/product/variation', [App\Http\Controllers\ProductController::class, 'getVariation'])->name('product.variation');
