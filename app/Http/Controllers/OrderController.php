@@ -13,6 +13,7 @@ class OrderController extends Controller
      */
     public function success(Order $order)
     {
+        // dd('Reached success view'); // Uncomment to debug
         // Ensure user can only view their own orders
         if ($order->user_id !== Auth::id()) {
             abort(403, 'Unauthorized access');

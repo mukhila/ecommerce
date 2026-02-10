@@ -103,8 +103,19 @@
                                     <div class="row mb-3">
                                         @foreach($product->images as $image)
                                             <div class="col-md-3 mb-3 position-relative">
-                                                <img src="{{ asset('uploads/'.$image->image_path) }}" class="img-fluid rounded" alt="Product Image">
+                                                <img src="{{ asset('uploads/'.$image->image_path) }}" class="img-fluid rounded {{ $image->is_primary ? 'border border-primary border-3' : '' }}" alt="Product Image">
                                                 <a href="{{ route('admin.products.image.destroy', $image->id) }}" onclick="return confirm('Delete this image?')" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="padding: 0px 5px;">&times;</a>
+                                                <div class="text-center mt-1">
+                                                    @if($image->is_primary)
+                                                        <span class="badge bg-primary">Primary</span>
+                                                    @else
+                                                        <form action="{{ route('admin.products.image.setPrimary', $image->id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-sm btn-outline-primary" style="font-size: 11px;">Set as Primary</button>
+                                                        </form>
+                                                    @endif
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>

@@ -275,4 +275,13 @@ class ProductController extends Controller
         $image->delete();
         return back()->with('success', 'Image deleted successfully');
     }
+
+    public function setPrimary($id) {
+        $image = ProductImage::findOrFail($id);
+        // Remove primary from all other images of this product
+        ProductImage::where('product_id', $image->product_id)->update(['is_primary' => false]);
+        // Set this image as primary
+        $image->update(['is_primary' => true]);
+        return back()->with('success', 'Primary image updated successfully');
+    }
 }

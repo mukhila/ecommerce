@@ -86,6 +86,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Product Routes
         Route::resource('products', ProductController::class);
         Route::get('products/image/{id}/delete', [ProductController::class, 'destroyImage'])->name('products.image.destroy');
+        Route::patch('products/image/{id}/set-primary', [ProductController::class, 'setPrimary'])->name('products.image.setPrimary');
 
         // Coupon Routes
         Route::resource('coupons', CouponController::class);

@@ -88,7 +88,7 @@ class CheckoutController extends Controller
                 'state' => 'required|string|max:100',
                 'postal_code' => 'required|string|max:20',
                 'country' => 'required|string|max:100',
-                'payment_method' => 'required|in:cod,razorpay',
+                'payment_method' => 'required|in:cod,razorpay,rayaz',
                 'notes' => 'nullable|string|max:500'
             ]);
 
@@ -259,12 +259,16 @@ class CheckoutController extends Controller
             return redirect()->back()
                            ->withErrors($e->errors())
                            ->withInput();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error processing checkout: ' . $e->getMessage(), [
                 'user_id' => Auth::id(),
                 'trace' => $e->getTraceAsString()
             ]);
+            
+            // Debugging: Show the error on screen
+            dd('Checkout Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+
             return redirect()->route('cart.index')
                            ->with('error', 'Unable to process order. Please try again.');
         }

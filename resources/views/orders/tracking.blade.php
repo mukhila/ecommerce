@@ -165,7 +165,7 @@
                                                                 <br>
                                                                 <small class="text-muted">
                                                                     @foreach($item->attributes as $attrName => $attrData)
-                                                                        {{ $attrName }}: {{ is_array($attrData) ? $attrData['value'] : $attrData }}{{ !$loop->last ? ', ' : '' }}
+                                                                        {{ $attrName }}: {{ is_array($attrData) ? ($attrData['label'] ?? $attrData['value'] ?? '') : $attrData }}{{ !$loop->last ? ', ' : '' }}
                                                                     @endforeach
                                                                 </small>
                                                             @endif

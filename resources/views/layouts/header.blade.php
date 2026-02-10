@@ -15,11 +15,7 @@
                             <div>
                                 <div class="icon-nav">
                                     <ul>
-                                        <li class="onhover-div mobile-search">
-                                            <div data-bs-toggle="modal" data-bs-target="#searchModal">
-                                                <i class="ri-search-line"></i>
-                                            </div>
-                                        </li>
+         
                                    
                                         <li class="onhover-div mobile-account">
                                             <div><i class="ri-user-line"></i></div>

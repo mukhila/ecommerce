@@ -56,23 +56,29 @@
                                                 <div class="mobile-back text-end">Back<i
                                                         class="ri-arrow-left-s-line ps-2"></i></div>
                                             </li>
-                                            <li>
-                                                <a href="{{ route('home') }}">Home</a>
-                                            </li>
-                                            <li>
-                                                <a href="#!">feature<div class="lable-nav">new</div></a>
-                                            </li>
-                                            <li>
-                                                <a href="#!">shop</a>
-                                            </li>
-                                            <li>
-                                                <a href="#!">product</a>
-                                            </li>
-                                            <li>
-                                                <a href="#!">pages</a>
-                                            </li>
-                                            <li><a href="#!">blog</a>
-                                            </li>
+                                               @if(isset($mainMenus))
+                                            @foreach($mainMenus as $menu)
+                                                <li>
+                                                    <a href="{{ $menu->url }}">{{ $menu->name }}</a>
+                                                    @if($menu->children->isNotEmpty())
+                                                        <ul>
+                                                            @foreach($menu->children as $child)
+                                                                <li>
+                                                                    <a href="{{ $child->url }}">{{ $child->name }}</a>
+                                                                    @if($child->children->isNotEmpty())
+                                                                        <ul>
+                                                                            @foreach($child->children as $subChild)
+                                                                                <li><a href="{{ $subChild->url }}">{{ $subChild->name }}</a></li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    @endif
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        @endif
                                         </ul>
                                     </nav>
                                 </div>
