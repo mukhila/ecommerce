@@ -7,6 +7,8 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ShippingAddress;
+use Modules\Product\Models\Product; // Fixed Product Import
+use App\Models\Transaction; // Added Transaction Import
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -201,24 +203,41 @@ class CheckoutController extends Controller
 
             // Handle payment method
             if ($validated['payment_method'] === 'razorpay') {
-                // Create Razorpay order
+                // ... (Existing Razorpay Logic)
                 $razorpayOrder = $this->razorpayService->createOrder($order);
+                // ...
+            } elseif ($validated['payment_method'] === 'rayaz') {
+                // Initialize Rayaz Payment
+                $rayazService = app(\App\Services\RayazPaymentService::class);
+                $paymentData = $rayazService->initiatePayment($order);
 
-                if (!$razorpayOrder['success']) {
-                    // Razorpay order creation failed
-                    return redirect()->route('cart.index')
-                                   ->with('error', 'Unable to initialize payment. Please try again.');
+                if ($paymentData['success']) {
+                    // Log initial pending transaction
+                    \App\Models\Transaction::create([
+                        'order_id' => $order->id,
+                        'gateway_transaction_id' => $paymentData['transaction_id'],
+                        'amount' => $order->total,
+                        'status' => 'pending',
+                        'payment_method' => 'rayaz',
+                        'raw_response' => $paymentData
+                    ]);
+
+                    // Redirect to Gateway
+                    // If it's a GET redirect
+                    // return redirect($paymentData['url'] . '?' . http_build_query($paymentData['params']));
+                    
+                    // If it's a POST redirect (Form Submit), return a view that auto-submits
+                    return view('payment.redirect', [
+                        'url' => $paymentData['url'],
+                        'params' => $paymentData['params']
+                    ]);
+                } else {
+                    return redirect()->route('cart.index')->with('error', 'Payment initialization failed.');
                 }
-
-                // Return to checkout with payment details
-                return view('checkout.payment', [
-                    'order' => $order,
-                    'razorpayOrder' => $razorpayOrder
-                ]);
-
             } else {
                 // COD - Send notifications immediately
                 try {
+                // ... (Existing COD Logic)
                     // Send notification to user
                     $user = Auth::user();
                     $user->notify(new OrderPlaced($order));
