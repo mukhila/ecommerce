@@ -68,18 +68,7 @@
                     </div>
                 </li>
 
-             
-
                 <li>
-                    <a href="javascript: void(0);" class="tp-link">
-                         <span class="nav-icon">
-                            <iconify-icon icon="solar:user-bold-duotone"></iconify-icon>
-                        </span>
-                        <span class="sidebar-text">Customers</span>
-                    </a>                    
-                </li>
-
-                  <li>
 					<a href="#sidebarCategories" data-bs-toggle="collapse">
 						<span class="nav-icon">
 							<iconify-icon icon="solar:smartphone-2-bold-duotone"></iconify-icon>
