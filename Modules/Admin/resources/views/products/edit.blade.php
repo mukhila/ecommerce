@@ -109,11 +109,7 @@
                                                     @if($image->is_primary)
                                                         <span class="badge bg-primary">Primary</span>
                                                     @else
-                                                        <form action="{{ route('admin.products.image.setPrimary', $image->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="btn btn-sm btn-outline-primary" style="font-size: 11px;">Set as Primary</button>
-                                                        </form>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary set-primary-btn" style="font-size: 11px;" data-url="{{ route('admin.products.image.setPrimary', $image->id) }}">Set as Primary</button>
                                                     @endif
                                                 </div>
                                             </div>
@@ -130,11 +126,11 @@
                                         function previewImages(input) {
                                             var preview = document.getElementById('image-preview');
                                             preview.innerHTML = '';
-                                            
+
                                             if (input.files) {
                                                 [].forEach.call(input.files, function(file) {
                                                     var reader = new FileReader();
-                                                    
+
                                                     reader.onload = function(e) {
                                                         var img = document.createElement('img');
                                                         img.src = e.target.result;
@@ -143,11 +139,25 @@
                                                         img.style.maxHeight = '100px';
                                                         preview.appendChild(img);
                                                     }
-                                                    
+
                                                     reader.readAsDataURL(file);
                                                 });
                                             }
                                         }
+
+                                        document.querySelectorAll('.set-primary-btn').forEach(function(btn) {
+                                            btn.addEventListener('click', function() {
+                                                fetch(this.dataset.url, {
+                                                    method: 'PATCH',
+                                                    headers: {
+                                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                                        'Accept': 'application/json'
+                                                    }
+                                                }).then(function() {
+                                                    window.location.reload();
+                                                });
+                                            });
+                                        });
                                     </script>
                                 </div>
                             </div>
