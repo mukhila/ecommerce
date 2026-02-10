@@ -173,9 +173,9 @@
                                     <i class="ri-shopping-cart-line me-1"></i>
                                     Add To Cart
                                 </button>
-                                <a href="{{ route('checkout.index') }}" class="btn btn-solid buy-button">
+                                <button class="btn btn-solid buy-button" id="buy-now-btn">
                                     Buy Now
-                                </a>
+                                </button>
                             </div>
 
                             <!-- Wishlist & Compare -->
@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const priceElement = document.getElementById('product-price');
     const sizeError = document.getElementById('size-error');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
+    const buyNowBtn = document.getElementById('buy-now-btn');
     const quantityInput = document.getElementById('quantity');
     const hasVariations = document.getElementById('has-variations').value === '1';
     const basePrice = parseFloat(document.getElementById('base-price').value);
@@ -294,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Enable/disable add to cart
                 addToCartBtn.disabled = stock <= 0;
+                if(buyNowBtn) buyNowBtn.disabled = stock <= 0;
             });
         });
     }
@@ -332,7 +334,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add to cart button click
     addToCartBtn?.addEventListener('click', function(e) {
         e.preventDefault();
+        handleCartAction(false);
+    });
 
+    // Buy Now button click
+    buyNowBtn?.addEventListener('click', function(e) {
+        e.preventDefault();
+        handleCartAction(true);
+    });
+
+    function handleCartAction(isBuyNow) {
         // Validate size selection
         if (hasVariations && !variationInput.value) {
             if (sizeError) {
@@ -346,26 +357,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const variationId = variationInput.value || null;
 
         // Call addToCartWithVariation function
-        addToCartWithVariation(productId, quantity, variationId);
-    });
+        addToCartWithVariation(productId, quantity, variationId, isBuyNow);
+    }
 });
 
 /**
  * Add to cart with variation support
  */
-async function addToCartWithVariation(productId, quantity, variationId) {
+async function addToCartWithVariation(productId, quantity, variationId, isBuyNow = false) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    const button = document.getElementById('add-to-cart-btn');
+    const button = isBuyNow ? document.getElementById('buy-now-btn') : document.getElementById('add-to-cart-btn');
     const originalContent = button.innerHTML;
 
     // Show loading
     button.disabled = true;
-    button.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Adding...';
+    button.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> ' + (isBuyNow ? 'Processing...' : 'Adding...');
 
     try {
         const requestBody = {
             product_id: parseInt(productId),
-            quantity: parseInt(quantity)
+            quantity: parseInt(quantity),
+            buy_now: isBuyNow
         };
 
         if (variationId) {
@@ -385,6 +397,11 @@ async function addToCartWithVariation(productId, quantity, variationId) {
         const data = await response.json();
 
         if (data.success) {
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+                return;
+            }
+            
             showNotification(data.message || 'Added to cart!', 'success');
             updateCartCount(data.cart_count);
 
@@ -403,8 +420,11 @@ async function addToCartWithVariation(productId, quantity, variationId) {
         console.error('Add to cart error:', error);
         showNotification('Something went wrong. Please try again.', 'error');
     } finally {
-        button.disabled = false;
-        button.innerHTML = originalContent;
+        // Only reset if not redirecting (preserved by return above if redirecting)
+        if (!isBuyNow || (isBuyNow && !csrfToken)) { 
+             button.disabled = false;
+             button.innerHTML = originalContent;
+        }
     }
 }
 </script>

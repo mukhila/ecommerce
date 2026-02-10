@@ -157,7 +157,8 @@ class CartController extends Controller
 
                 $cartItem->update([
                     'quantity' => $newQuantity,
-                    'price' => $price // Update price in case it changed
+                    'price' => $price, // Update price in case it changed
+                    'attributes' => $attributes ?? $cartItem->attributes
                 ]);
             } else {
                 // Build attributes JSON for display purposes
@@ -185,11 +186,17 @@ class CartController extends Controller
 
             DB::commit();
 
+            $redirectUrl = null;
+            if ($request->has('buy_now') && $request->buy_now) {
+                $redirectUrl = route('checkout.index');
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product added to cart successfully',
                 'cart_count' => $cart->item_count,
-                'cart_total' => $cart->total
+                'cart_total' => $cart->total,
+                'redirect_url' => $redirectUrl
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
