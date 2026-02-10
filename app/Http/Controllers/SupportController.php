@@ -67,6 +67,11 @@ class SupportController extends Controller
 
             DB::commit();
 
+            // Store ticket number in session so guest can view the success page
+            if (!Auth::check()) {
+                session(['last_created_ticket' => $ticket->ticket_number]);
+            }
+
             return redirect()->route('support.success', $ticket->ticket_number)
                            ->with('success', 'Support ticket created successfully');
 
@@ -86,9 +91,17 @@ class SupportController extends Controller
     {
         $ticket = SupportTicket::where('ticket_number', $ticketNumber)->firstOrFail();
 
-        // Ensure user can only view their own tickets (or anyone if not logged in)
-        if (Auth::check() && $ticket->user_id && $ticket->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access');
+        // Verify ticket ownership
+        if ($ticket->user_id) {
+            // Ticket belongs to a registered user — require matching auth
+            if (!Auth::check() || (int) $ticket->user_id !== Auth::id()) {
+                abort(403, 'Unauthorized access');
+            }
+        } else {
+            // Guest ticket — only viewable in the same session that created it
+            if (session('last_created_ticket') !== $ticket->ticket_number) {
+                abort(403, 'Unauthorized access');
+            }
         }
 
         return view('support.success', compact('ticket'));
@@ -115,8 +128,14 @@ class SupportController extends Controller
                                ->with(['replies.user'])
                                ->firstOrFail();
 
-        // Ensure user can only view their own tickets
-        if ($ticket->user_id && $ticket->user_id !== Auth::id()) {
+        // Verify ticket ownership — user must own the ticket
+        if ($ticket->user_id && (int) $ticket->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access');
+        }
+
+        // Guest tickets (no user_id) are not viewable via this route
+        // since it requires auth middleware
+        if (!$ticket->user_id) {
             abort(403, 'Unauthorized access');
         }
 

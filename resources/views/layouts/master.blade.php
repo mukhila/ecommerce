@@ -95,7 +95,8 @@
     @yield('content')
     @include('layouts.footer')
 
-
+@stack('styles')
+ @stack('scripts')
     <!-- Search Modal Start -->
     <div class="modal fade search-modal theme-modal-2" id="searchModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-xl">

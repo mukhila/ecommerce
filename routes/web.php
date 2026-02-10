@@ -2,47 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    Artisan::call('optimize:clear');
-    return "Cache cleared!";
-});
-
-Route::get('/db-check', function () {
-    try {
-        DB::connection()->getPdo();
-        return '✅ Database connection is working!';
-    } catch (\Exception $e) {
-        return '❌ DB Error: ' . $e->getMessage();
-    }
-});
-
-Route::get('/run-migrations', function () {
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        return nl2br(Artisan::output());
-    } catch (\Exception $e) {
-        return '❌ Migration Error: ' . $e->getMessage();
-    }
-});
-
-Route::get('/run-seeders', function () {
-    try {
-        Artisan::call('db:seed', ['--force' => true]);
-        return nl2br(Artisan::output());
-    } catch (\Exception $e) {
-        return '❌ Seeder Error: ' . $e->getMessage();
-    }
-});
-
-
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::view('/about-us', 'pages.about')->name('about');
 
@@ -110,13 +69,15 @@ Route::get('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordControlle
 Route::post('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 // Rayaz Payment Routes
-Route::get('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback'])->name('payment.rayaz.callback');
-Route::post('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback']); // Some gateways use POST
-Route::get('/payment/rayaz/cancel', [App\Http\Controllers\RayazPaymentController::class, 'cancel'])->name('payment.rayaz.cancel');
-Route::get('/payment/success/{order}', [App\Http\Controllers\RayazPaymentController::class, 'success'])
-    ->name('payment.success')
-    ->middleware(\App\Http\Middleware\EnsureOrderIsPaid::class);
-Route::get('/payment/failure', [App\Http\Controllers\RayazPaymentController::class, 'failure'])->name('payment.failure');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback'])->name('payment.rayaz.callback');
+    Route::post('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback']); // Some gateways use POST
+    Route::get('/payment/rayaz/cancel', [App\Http\Controllers\RayazPaymentController::class, 'cancel'])->name('payment.rayaz.cancel');
+    Route::get('/payment/success/{order}', [App\Http\Controllers\RayazPaymentController::class, 'success'])
+        ->name('payment.success')
+        ->middleware(\App\Http\Middleware\EnsureOrderIsPaid::class);
+    Route::get('/payment/failure', [App\Http\Controllers\RayazPaymentController::class, 'failure'])->name('payment.failure');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');

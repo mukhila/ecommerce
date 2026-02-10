@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('currency', 3)->default('INR');
             $table->string('status')->default('pending'); // pending, successful, failed, refunded
-            $table->string('payment_method')->default('rayaz');
+            $table->string('payment_method')->default('razorpay');
             $table->json('raw_response')->nullable();
             $table->string('error_message')->nullable();
             $table->timestamps();

@@ -261,42 +261,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const basePrice = parseFloat(document.getElementById('base-price').value);
 
     // Size button click handler
+    // Size button click handler (Delegation)
     if (sizeSelector) {
-        sizeSelector.querySelectorAll('li:not(.disabled)').forEach(function(li) {
-            li.addEventListener('click', function() {
-                // Remove active from all
-                sizeSelector.querySelectorAll('li').forEach(function(item) {
-                    item.classList.remove('active');
-                });
+        sizeSelector.addEventListener('click', function(e) {
+            const li = e.target.closest('li');
+            
+            // Should be an LI, and not disabled
+            if (!li || li.classList.contains('disabled')) return;
 
-                // Add active to clicked
-                this.classList.add('active');
+            // Prevent default behavior (especially for the anchor tag)
+            e.preventDefault();
 
-                // Get data
-                const variationId = this.dataset.variationId;
-                const size = this.dataset.size;
-                const stock = parseInt(this.dataset.stock);
-                const price = parseFloat(this.dataset.price);
-
-                // Update hidden input
-                variationInput.value = variationId;
-
-                // Hide error
-                if (sizeError) sizeError.style.display = 'none';
-
-                // Update price display
-                updatePriceDisplay(price);
-
-                // Update quantity max
-                quantityInput.max = stock;
-                if (parseInt(quantityInput.value) > stock) {
-                    quantityInput.value = stock > 0 ? 1 : 0;
-                }
-
-                // Enable/disable add to cart
-                addToCartBtn.disabled = stock <= 0;
-                if(buyNowBtn) buyNowBtn.disabled = stock <= 0;
+            // Remove active from all
+            sizeSelector.querySelectorAll('li').forEach(function(item) {
+                item.classList.remove('active');
             });
+
+            // Add active to clicked
+            li.classList.add('active');
+
+            // Get data
+            const variationId = li.dataset.variationId;
+            const size = li.dataset.size;
+            const stock = parseInt(li.dataset.stock);
+            const price = parseFloat(li.dataset.price);
+
+            // Update hidden input
+            variationInput.value = variationId;
+
+            // Hide error
+            if (sizeError) sizeError.style.display = 'none';
+
+            // Update price display
+            updatePriceDisplay(price);
+
+            // Update quantity max
+            quantityInput.max = stock;
+            if (parseInt(quantityInput.value) > stock) {
+                quantityInput.value = stock > 0 ? 1 : 0;
+            }
+
+            // Enable/disable add to cart
+            addToCartBtn.disabled = stock <= 0;
+            if(buyNowBtn) buyNowBtn.disabled = stock <= 0;
         });
     }
 
@@ -367,6 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function addToCartWithVariation(productId, quantity, variationId, isBuyNow = false) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     const button = isBuyNow ? document.getElementById('buy-now-btn') : document.getElementById('add-to-cart-btn');
+    if (!button) return; // Guard clause
     const originalContent = button.innerHTML;
 
     // Show loading
@@ -377,7 +385,8 @@ async function addToCartWithVariation(productId, quantity, variationId, isBuyNow
         const requestBody = {
             product_id: parseInt(productId),
             quantity: parseInt(quantity),
-            buy_now: isBuyNow
+            buy_now: isBuyNow,
+            _token: csrfToken // Add token to body as fallback
         };
 
         if (variationId) {
@@ -394,41 +403,65 @@ async function addToCartWithVariation(productId, quantity, variationId, isBuyNow
             body: JSON.stringify(requestBody)
         });
 
+        // Check if response is JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Received non-JSON response from server");
+        }
+
         const data = await response.json();
 
         if (data.success) {
             if (data.redirect_url) {
                 window.location.href = data.redirect_url;
-                return;
+                return; // Don't reset button, navigating away
             }
             
-            showNotification(data.message || 'Added to cart!', 'success');
-            updateCartCount(data.cart_count);
+            // Show Success UI
+            if (typeof showNotification === 'function') {
+                showNotification(data.message || 'Added to cart!', 'success');
+            } else {
+                alert(data.message || 'Added to cart!');
+            }
+            
+            if (typeof updateCartCount === 'function') {
+                updateCartCount(data.cart_count);
+            }
 
             // Refresh and open cart offcanvas
             if (typeof refreshCartOffcanvas === 'function') {
-                refreshCartOffcanvas().then(() => {
-                    if (typeof openCartOffcanvas === 'function') {
-                        openCartOffcanvas();
-                    }
-                });
+                await refreshCartOffcanvas();
+                if (typeof openCartOffcanvas === 'function') {
+                    openCartOffcanvas();
+                }
+            } else {
+                console.warn('Cart offcanvas functions not defined');
             }
+
         } else {
-            showNotification(data.message || 'Failed to add to cart', 'error');
+            if (typeof showNotification === 'function') {
+                showNotification(data.message || 'Failed to add to cart', 'error');
+            } else {
+                alert(data.message || 'Failed to add to cart');
+            }
         }
     } catch (error) {
         console.error('Add to cart error:', error);
-        showNotification('Something went wrong. Please try again.', 'error');
-    } finally {
-        // Only reset if not redirecting (preserved by return above if redirecting)
-        if (!isBuyNow || (isBuyNow && !csrfToken)) { 
-             button.disabled = false;
-             button.innerHTML = originalContent;
+        if (typeof showNotification === 'function') {
+            showNotification('Something went wrong. Please try again.', 'error');
+        } else {
+            alert('Something went wrong. Please try again.');
         }
+    } finally {
+        // Always reset button if we are not redirecting
+        // Or if there was an error preventing redirect
+        button.disabled = false;
+        button.innerHTML = originalContent;
     }
 }
 </script>
-
+@endpush
+@push('style')
 <style>
 /* Size selector styling */
 .size-box .size-list {

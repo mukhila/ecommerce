@@ -33,6 +33,14 @@ class TicketController extends Controller
      */
     public function reply(Request $request, $id)
     {
+        // Require authentication — either admin or regular user
+        $adminId = Auth::guard('admin')->id();
+        $userId = Auth::id();
+
+        if (!$adminId && !$userId) {
+            abort(401, 'Authentication required.');
+        }
+
         $request->validate([
             'message' => 'required|string',
         ]);
@@ -41,9 +49,9 @@ class TicketController extends Controller
 
         SupportTicketReply::create([
             'ticket_id' => $ticket->id,
-            'user_id' => Auth::guard('admin')->id() ?? Auth::id() ?? 1, // Fallback to 1 if no auth logic matches
+            'user_id' => $adminId ?? $userId,
             'message' => $request->message,
-            'is_admin' => true,
+            'is_admin' => (bool) $adminId,
         ]);
 
         // Update ticket timestamp

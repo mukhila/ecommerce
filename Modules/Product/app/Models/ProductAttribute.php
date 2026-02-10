@@ -107,7 +107,7 @@ class ProductAttribute extends Model
         return static::where('id', $this->id)
             ->where('stock', '>=', $quantity)
             ->lockForUpdate()
-            ->update(['stock' => \DB::raw("stock - {$quantity}")]) > 0;
+            ->update(['stock' => \DB::raw('stock - ' . (int) $quantity)]) > 0;
     }
 
     /**

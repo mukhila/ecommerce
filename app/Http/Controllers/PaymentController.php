@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Services\RazorpayService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -33,8 +34,10 @@ class PaymentController extends Controller
                 'razorpay_signature' => 'required|string',
             ]);
 
-            // Find order by Razorpay order ID
-            $order = Order::where('razorpay_order_id', $request->razorpay_order_id)->firstOrFail();
+            // Find order by Razorpay order ID and verify ownership
+            $order = Order::where('razorpay_order_id', $request->razorpay_order_id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
 
             // Verify payment signature
             $isValid = $this->razorpayService->verifyPaymentSignature(
@@ -106,7 +109,9 @@ class PaymentController extends Controller
         $orderId = $request->query('order_id');
 
         if ($orderId) {
-            $order = Order::find($orderId);
+            $order = Order::where('id', $orderId)
+                ->where('user_id', Auth::id())
+                ->first();
 
             if ($order) {
                 $order->update([

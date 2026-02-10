@@ -43,6 +43,7 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'user_id' => 'integer',
         'subtotal' => 'decimal:2',
         'gst_amount' => 'decimal:2',
         'gst_breakdown' => 'array',

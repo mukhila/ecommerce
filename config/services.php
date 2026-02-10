@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'rayaz' => [
+        'merchant_id' => env('RAYAZ_MERCHANT_ID'),
+        'secret_key' => env('RAYAZ_SECRET_KEY'),
+        'base_url' => env('RAYAZ_BASE_URL', 'https://api.rayaz-gateway.com'),
+    ],
+
 ];

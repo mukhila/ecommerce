@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Transaction;
 use App\Services\RayazPaymentService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class RayazPaymentController extends Controller
@@ -39,12 +40,14 @@ class RayazPaymentController extends Controller
                 return redirect()->route('payment.failure')->with('error', 'Security verification failed.');
             }
 
-            // 2. Find Order & Transaction
+            // 2. Find Order & Transaction (verify ownership)
             $orderId = $request->input('order_id');
             $status = $request->input('status'); // success / failed
             $gatewayTxnId = $request->input('transaction_id');
 
-            $order = Order::findOrFail($orderId);
+            $order = Order::where('id', $orderId)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
 
             // 3. Log Transaction
             Transaction::create([
@@ -58,8 +61,10 @@ class RayazPaymentController extends Controller
 
             // 4. Update Order Status
             if ($status === 'success') {
-                if ($order->total != $request->input('amount')) {
-                    Log::error('Payment Amount Mismatch', ['order' => $order->total, 'paid' => $request->input('amount')]);
+                $orderTotal = round((float) $order->total, 2);
+                $paidAmount = round((float) $request->input('amount'), 2);
+                if (abs($orderTotal - $paidAmount) > 0.01) {
+                    Log::error('Payment Amount Mismatch', ['order' => $orderTotal, 'paid' => $paidAmount]);
                     return redirect()->route('payment.failure')->with('error', 'Payment amount mismatch.');
                 }
 
@@ -87,6 +92,11 @@ class RayazPaymentController extends Controller
 
     public function success(Order $order)
     {
+        // Verify ownership
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access.');
+        }
+
         // Covered by middleware, but double check
         if ($order->payment_status !== 'paid') {
             return redirect()->route('home');
@@ -94,10 +104,15 @@ class RayazPaymentController extends Controller
         return view('payment.success', compact('order'));
     }
 
-    public function failure(Request $request) 
+    public function failure(Request $request)
     {
          $orderId = $request->query('order');
-         $order = $orderId ? Order::find($orderId) : null;
+         $order = null;
+         if ($orderId && Auth::check()) {
+             $order = Order::where('id', $orderId)
+                 ->where('user_id', Auth::id())
+                 ->first();
+         }
          return view('payment.failure', compact('order'));
     }
 

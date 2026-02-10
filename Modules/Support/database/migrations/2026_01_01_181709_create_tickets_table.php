@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('status', ['Open', 'In Progress', 'Closed'])->default('Open');
             $table->enum('priority', ['Low', 'Medium', 'High'])->default('Low');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

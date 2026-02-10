@@ -181,8 +181,15 @@
                                                 @if($item->attributes)
                                                     <br>
                                                     <small class="text-muted">
-                                                        @foreach($item->attributes as $attrName => $attrData)
-                                                            {{ $attrName }}: {{ is_array($attrData) ? $attrData['value'] : $attrData }}{{ !$loop->last ? ', ' : '' }}
+                                                        @foreach($item->attributes as $attrData)
+                                                            @if(is_array($attrData) && isset($attrData['value']))
+                                                                {{ $attrData['value'] }}
+                                                            @elseif(is_string($attrData) || is_numeric($attrData))
+                                                                {{ $attrData }}
+                                                            @else
+                                                                {{ json_encode($attrData) }}
+                                                            @endif
+                                                            {{ !$loop->last ? ', ' : '' }}
                                                         @endforeach
                                                     </small>
                                                 @endif
@@ -237,6 +244,12 @@
                                                 <div class="radio-option">
                                                     <input type="radio" name="payment_method" id="payment-razorpay" value="razorpay">
                                                     <label for="payment-razorpay">Razorpay (Card/UPI/Netbanking)</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="radio-option">
+                                                    <input type="radio" name="payment_method" id="payment-rayaz" value="rayaz">
+                                                    <label for="payment-rayaz">Rayaz Pay</label>
                                                 </div>
                                             </li>
                                         </ul>
