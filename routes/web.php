@@ -2,6 +2,29 @@
 
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+    return "Cache cleared!";
+});
+
+
+Route::get('/run-migrations', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return nl2br(Artisan::output());
+    } catch (\Exception $e) {
+        return '❌ Migration Error: ' . $e->getMessage();
+    }
+});
+
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::view('/about-us', 'pages.about')->name('about');
 Route::get('/contact-us', [App\Http\Controllers\ContactController::class, 'index'])->name('contact');
