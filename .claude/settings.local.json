@@ -19,7 +19,8 @@
       "Bash(claude --version:*)",
       "Bash(claude doctor)",
       "Bash(curl:*)",
-      "Bash(node --check public/js/cart.js)"
+      "Bash(node --check public/js/cart.js)",
+      "Bash(powershell:*)"
     ]
   }
 }

@@ -150,9 +150,41 @@
                         </div>
                         <!-- Other tabs placeholders for brevity, can render them fully if needed -->
                         <div class="tab-pane fade" id="notification-tab-pane" role="tabpanel">
-                            <!-- Notification content -->
                              <h3>Notifications</h3>
-                             <p>You have no notifications.</p>
+                             @if($notifications->count() > 0)
+                                <div class="d-flex justify-content-end mb-2">
+                                    <form action="{{ route('notifications.markAllRead') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-solid">Mark All as Read</button>
+                                    </form>
+                                </div>
+                                <div class="list-group">
+                                    @foreach($notifications as $notification)
+                                        <div class="list-group-item list-group-item-action flex-column align-items-start {{ $notification->read_at ? '' : 'active' }}">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-1">{{ $notification->data['title'] ?? 'Notification' }}</h5>
+                                                <small>{{ $notification->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p class="mb-1">{{ $notification->data['message'] ?? 'No detail available.' }}</p>
+                                            <div class="mt-2">
+                                                @if(!$notification->read_at)
+                                                    <a href="{{ route('notifications.markRead', $notification->id) }}" class="btn btn-sm btn-light">Mark as Read</a>
+                                                @endif
+                                                <form action="{{ route('notifications.destroy', $notification->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-3">
+                                    {{ $notifications->links() }}
+                                </div>
+                             @else
+                                <p>You have no notifications.</p>
+                             @endif
                         </div>
                         <div class="tab-pane fade" id="bank-details-tab-pane" role="tabpanel">
                              <h3>Bank Details</h3>

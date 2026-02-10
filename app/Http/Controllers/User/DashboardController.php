@@ -43,6 +43,9 @@ class DashboardController extends Controller
         // Get cart count
         $cartCount = $cart ? $cart->item_count : 0;
 
+        // Get notifications
+        $notifications = $user->notifications()->paginate(10);
+
         return view('user.dashboard', compact(
             'totalOrders',
             'totalSpent',
@@ -50,7 +53,8 @@ class DashboardController extends Controller
             'pendingOrders',
             'deliveredOrders',
             'cartCount',
-            'cart'
+            'cart',
+            'notifications'
         ));
     }
 }

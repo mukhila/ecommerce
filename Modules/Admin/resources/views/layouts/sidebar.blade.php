@@ -232,6 +232,15 @@
                 </li>
 
                 <li>
+                    <a href="{{ route('admin.contact-messages.index') }}" class="tp-link">
+                         <span class="nav-icon">
+                            <iconify-icon icon="solar:inbox-bold-duotone"></iconify-icon>
+                        </span>
+                        <span class="sidebar-text">Contact Messages</span>
+                    </a>
+                </li>
+
+                <li>
                     <a href="#supportTickets" data-bs-toggle="collapse">
                          <span class="nav-icon">
                             <iconify-icon icon="solar:chat-round-dots-bold-duotone"></iconify-icon>

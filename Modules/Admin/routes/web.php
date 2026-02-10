@@ -17,6 +17,7 @@ use Modules\Admin\Http\Controllers\MenuController;
 use Modules\Admin\Http\Controllers\OrderController;
 use Modules\Admin\Http\Controllers\SupportController;
 use Modules\Admin\Http\Controllers\CustomerController;
+use Modules\Admin\Http\Controllers\ContactMessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,6 +129,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('reviews/{id}/reply', [\Modules\Admin\Http\Controllers\ReviewController::class, 'reply'])->name('reviews.reply');
         Route::delete('reviews/{id}', [\Modules\Admin\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
         Route::post('reviews/bulk-action', [\Modules\Admin\Http\Controllers\ReviewController::class, 'bulkAction'])->name('reviews.bulk-action');
+
+        // Contact Messages Routes
+        Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+        Route::get('contact-messages/{id}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+        Route::delete('contact-messages/{id}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
 
         // Company Settings Routes
         Route::get('company-settings', [Modules\Admin\Http\Controllers\CompanySettingController::class, 'edit'])->name('company_settings.edit');

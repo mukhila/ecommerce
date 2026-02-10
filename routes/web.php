@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::view('/about-us', 'pages.about')->name('about');
+Route::get('/contact-us', [App\Http\Controllers\ContactController::class, 'index'])->name('contact');
+Route::post('/contact-us', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 
 // Product Routes
 Route::get('/product/{slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('product.show');
@@ -81,4 +83,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Notification Routes
+    Route::get('/notifications/{id}/read', [App\Http\Controllers\User\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+    Route::post('/notifications/read-all', [App\Http\Controllers\User\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    Route::delete('/notifications/{id}', [App\Http\Controllers\User\NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
