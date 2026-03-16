@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Transaction;
 use App\Services\RazorpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,6 +67,22 @@ class PaymentController extends Controller
                     'razorpay_payment_id' => $request->razorpay_payment_id,
                     'razorpay_signature' => $request->razorpay_signature,
                     'payment_status' => 'paid',
+                    'status' => 'processing',
+                ]);
+
+                Transaction::create([
+                    'order_id' => $order->id,
+                    'gateway_transaction_id' => $request->razorpay_payment_id,
+                    'gateway_reference' => $request->razorpay_order_id,
+                    'amount' => $order->total,
+                    'currency' => 'INR',
+                    'status' => 'successful',
+                    'payment_method' => 'razorpay',
+                    'raw_response' => $request->only([
+                        'razorpay_payment_id',
+                        'razorpay_order_id',
+                        'razorpay_signature',
+                    ]),
                 ]);
 
                 DB::commit();

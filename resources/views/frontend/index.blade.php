@@ -1,6 +1,13 @@
 @extends('layouts.master')
 
 @section('title', 'Home')
+@section('meta_description', 'JangaKids - Shop premium kids clothing online. Trendy, comfortable & affordable fashion for boys, girls & babies. Free shipping above ₹3000. COD available.')
+@section('meta_keywords', 'kids fashion online India, children clothing, boys clothes, girls clothes, baby wear, affordable kids fashion, JangaKids')
+@section('og_title', 'JangaKids | Premium Kids Fashion Online')
+@section('og_description', 'Shop trendy and affordable kids clothing at JangaKids. New arrivals every week. Free shipping above ₹3000.')
+@section('og_type', 'website')
+@section('og_url', url('/'))
+
 
 @section('content')
 
@@ -72,16 +79,16 @@
     <section class="section-b-space pt-0 ratio_asos">
         <div class="container">
             <div class="g-3 g-md-4 row row-cols-2 row-cols-md-3 row-cols-xl-4">
-                @forelse($latestProducts as $product)
-                    <div>
-                        <x-product-card :product="$product" />
-                    </div>
-                @empty
-                    <div class="col-12">
-                        <p class="text-center">No products available at the moment.</p>
-                    </div>
-                @endforelse
-            </div>
+    @forelse($latestProducts as $product)
+        <div class="col">
+            <x-product-card :product="$product" />
+        </div>
+    @empty
+        <div class="col-12">
+            <p class="text-center">No products available at the moment.</p>
+        </div>
+    @endforelse
+</div>
         </div>
     </section>
     <!-- Product slider end -->
@@ -188,3 +195,21 @@
 
 
 @endsection
+@push('json_ld')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "WebSite",
+    "name": "JangaKids",
+    "url": "{{ config('app.url') }}",
+    "potentialAction": {
+        "@@type": "SearchAction",
+        "target": {
+            "@@type": "EntryPoint",
+            "urlTemplate": "{{ url('/products') }}?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+@endpush

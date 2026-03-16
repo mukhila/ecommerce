@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Modules\Admin\Models\Admin;
 
 class AdminAuthorizationServiceProvider extends ServiceProvider
 {
@@ -22,10 +23,10 @@ class AdminAuthorizationServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Admin role bypasses all permission checks
+        // Admin role bypasses all permission checks (only for Admin guard users)
         Gate::before(function ($admin, $ability) {
-            if ($admin->role === 'admin') {
-                return true; // Admins can do everything
+            if ($admin instanceof Admin && $admin->role === 'admin') {
+                return true;
             }
         });
 

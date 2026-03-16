@@ -2,30 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
-
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    Artisan::call('optimize:clear');
-    return "Cache cleared!";
-});
-
-
-Route::get('/run-migrations', function () {
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        return nl2br(Artisan::output());
-    } catch (\Exception $e) {
-        return '❌ Migration Error: ' . $e->getMessage();
-    }
-});
-
-
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+
 Route::view('/about-us', 'pages.about')->name('about');
 Route::get('/contact-us', [App\Http\Controllers\ContactController::class, 'index'])->name('contact');
 Route::post('/contact-us', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
@@ -61,12 +40,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment/failed', [App\Http\Controllers\PaymentController::class, 'failed'])->name('payment.failed');
 });
 
-// Razorpay Webhook (no auth required)
+// Razorpay Webhook (no auth required - verified by signature)
 Route::post('/payment/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
 
 // Support Ticket Routes
 Route::get('/support/create', [App\Http\Controllers\SupportController::class, 'create'])->name('support.create');
-Route::post('/support/store', [App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
+Route::post('/support/store', [App\Http\Controllers\SupportController::class, 'store'])->name('support.store')->middleware('throttle:5,10');
 Route::get('/support/success/{ticketNumber}', [App\Http\Controllers\SupportController::class, 'success'])->name('support.success');
 
 Route::middleware(['auth'])->group(function () {
@@ -84,23 +63,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/review/{id}/helpful', [App\Http\Controllers\ReviewController::class, 'toggleHelpful'])->name('review.helpful');
 });
 
-// Admin routes are now handled by the Admin Module
-
 // Auth Routes
-Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+Route::middleware('throttle:10,1')->group(function () {
+    Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+    Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+    Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 
-Route::get('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+});
 
 // Rayaz Payment Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback'])->name('payment.rayaz.callback');
-    Route::post('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback']); // Some gateways use POST
+    Route::post('/payment/rayaz/callback', [App\Http\Controllers\RayazPaymentController::class, 'callback']);
     Route::get('/payment/rayaz/cancel', [App\Http\Controllers\RayazPaymentController::class, 'cancel'])->name('payment.rayaz.cancel');
     Route::get('/payment/success/{order}', [App\Http\Controllers\RayazPaymentController::class, 'success'])
         ->name('payment.success')
@@ -110,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Notification Routes
     Route::get('/notifications/{id}/read', [App\Http\Controllers\User\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
     Route::post('/notifications/read-all', [App\Http\Controllers\User\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');

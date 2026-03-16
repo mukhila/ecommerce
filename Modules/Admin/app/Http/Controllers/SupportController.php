@@ -5,7 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
-use App\Models\User;
+use Modules\Admin\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -62,15 +62,19 @@ class SupportController extends Controller
         $tickets = $query->paginate(20);
 
         // Get all admins for assignment dropdown
-        $admins = User::where('role', 'admin')->get(['id', 'name']);
+        $admins = Admin::where('status', 1)->get(['id', 'name']);
 
-        // Get statistics for dashboard cards
+        // Get statistics for dashboard cards (single query)
+        $statusCounts = SupportTicket::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
         $stats = [
             'total' => SupportTicket::count(),
-            'open' => SupportTicket::where('status', 'open')->count(),
-            'in_progress' => SupportTicket::where('status', 'in_progress')->count(),
-            'resolved' => SupportTicket::where('status', 'resolved')->count(),
-            'closed' => SupportTicket::where('status', 'closed')->count(),
+            'open' => $statusCounts->get('open', 0),
+            'in_progress' => $statusCounts->get('in_progress', 0),
+            'resolved' => $statusCounts->get('resolved', 0),
+            'closed' => $statusCounts->get('closed', 0),
             'high_priority' => SupportTicket::where('priority', 'high')->whereIn('status', ['open', 'in_progress'])->count(),
         ];
 
@@ -87,7 +91,7 @@ class SupportController extends Controller
                                ->firstOrFail();
 
         // Get all admins for assignment dropdown
-        $admins = User::where('role', 'admin')->get(['id', 'name']);
+        $admins = Admin::where('status', 1)->get(['id', 'name']);
 
         return view('admin::support.show', compact('ticket', 'admins'));
     }
@@ -108,7 +112,7 @@ class SupportController extends Controller
             'ticket_number' => $ticket->ticket_number,
             'old_status' => $oldStatus,
             'new_status' => $request->status,
-            'updated_by' => Auth::user()->name
+            'updated_by' => auth('admin')->user()->name
         ]);
 
         return redirect()->back()->with('success', 'Ticket status updated successfully');
@@ -120,7 +124,7 @@ class SupportController extends Controller
     public function assign(Request $request, SupportTicket $ticket)
     {
         $request->validate([
-            'assigned_to' => 'nullable|exists:users,id'
+            'assigned_to' => 'nullable|exists:admins,id'
         ]);
 
         $oldAssignee = $ticket->assigned_to;
@@ -134,7 +138,7 @@ class SupportController extends Controller
         Log::info('Ticket assigned', [
             'ticket_number' => $ticket->ticket_number,
             'assigned_to' => $request->assigned_to,
-            'assigned_by' => Auth::user()->name
+            'assigned_by' => auth('admin')->user()->name
         ]);
 
         return redirect()->back()->with('success', 'Ticket assigned successfully');
@@ -151,7 +155,7 @@ class SupportController extends Controller
 
         $reply = SupportTicketReply::create([
             'ticket_id' => $ticket->id,
-            'user_id' => Auth::id(),
+            'user_id' => null, // admin replies use is_admin flag; no user FK
             'message' => $request->message,
             'is_admin' => true
         ]);
@@ -161,14 +165,9 @@ class SupportController extends Controller
             $ticket->update(['status' => 'in_progress']);
         }
 
-        // Assign ticket to current admin if not assigned
-        if (!$ticket->assigned_to) {
-            $ticket->update(['assigned_to' => Auth::id()]);
-        }
-
         Log::info('Admin reply added to ticket', [
             'ticket_number' => $ticket->ticket_number,
-            'replied_by' => Auth::user()->name
+            'replied_by' => auth('admin')->user()->name
         ]);
 
         return redirect()->back()->with('success', 'Reply added successfully');
@@ -189,7 +188,7 @@ class SupportController extends Controller
 
         switch ($request->action) {
             case 'assign':
-                $request->validate(['assigned_to' => 'required|exists:users,id']);
+                $request->validate(['assigned_to' => 'required|exists:admins,id']);
                 $tickets->update(['assigned_to' => $request->assigned_to]);
                 $message = 'Tickets assigned successfully';
                 break;
@@ -209,7 +208,7 @@ class SupportController extends Controller
         Log::info('Bulk ticket update', [
             'action' => $request->action,
             'ticket_count' => count($request->ticket_ids),
-            'updated_by' => Auth::user()->name
+            'updated_by' => auth('admin')->user()->name
         ]);
 
         return redirect()->back()->with('success', $message);

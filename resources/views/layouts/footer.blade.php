@@ -14,12 +14,12 @@
 
                             <ul class="contact-list">
                                 <li><i class="ri-map-pin-line"></i>
-                                    Multikart Demo Store, Demo Store India 345-659 </li>
+                                    JangaKids Store, India </li>
 
                                 <li><i class="ri-phone-line"></i>
-                                    Call Us: 123-456-7898 </li>
+                                    Call Us: +91 123-456-7890 </li>
                                 <li><i class="ri-mail-line"></i>
-                                    Email Us: Support@Multikart.com </li>
+                                    Email Us: support@jangakids.com </li>
                             </ul>
                         </div>
                     </div>

@@ -1,2 +1,14 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /payment/
+Disallow: /dashboard/
+Disallow: /notifications/
+Disallow: /support/create
+Disallow: /support/store
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /logout

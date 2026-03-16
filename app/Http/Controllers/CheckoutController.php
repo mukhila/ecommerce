@@ -203,9 +203,16 @@ class CheckoutController extends Controller
 
             // Handle payment method
             if ($validated['payment_method'] === 'razorpay') {
-                // ... (Existing Razorpay Logic)
-                $razorpayOrder = $this->razorpayService->createOrder($order);
-                // ...
+                $razorpayData = $this->razorpayService->createOrder($order);
+
+                if (!$razorpayData['success']) {
+                    return redirect()->route('cart.index')->with('error', 'Unable to initialize payment. Please try again.');
+                }
+
+                return view('payment.razorpay-checkout', [
+                    'order' => $order,
+                    'razorpayData' => $razorpayData,
+                ]);
             } elseif ($validated['payment_method'] === 'rayaz') {
                 // Initialize Rayaz Payment
                 $rayazService = app(\App\Services\RayazPaymentService::class);
@@ -266,9 +273,6 @@ class CheckoutController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            // Debugging: Show the error on screen
-            dd('Checkout Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
-
             return redirect()->route('cart.index')
                            ->with('error', 'Unable to process order. Please try again.');
         }

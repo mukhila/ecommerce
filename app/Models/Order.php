@@ -38,6 +38,7 @@ class Order extends Model
         'razorpay_order_id',
         'razorpay_payment_id',
         'razorpay_signature',
+        'payment_reference',
         'notes',
         'cancellation_reason',
     ];

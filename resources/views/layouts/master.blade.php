@@ -5,13 +5,54 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="Jango Kids">
-    <meta name="keywords" content="Jango Kids">
-    <meta name="author" content="Jango Kids">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Primary SEO -->
+    <title>@yield('title', 'JangaKids') - JangaKids | Premium Kids Fashion Online</title>
+    <meta name="description" content="@yield('meta_description', 'JangaKids - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, JangaKids')">
+    <meta name="author" content="JangaKids">
+    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="JangaKids">
+    <meta property="og:locale" content="en_IN">
+    <meta property="og:title" content="@yield('og_title', 'JangaKids | Premium Kids Fashion Online')">
+    <meta property="og:description" content="@yield('og_description', 'Shop premium kids clothing online at JangaKids. Free shipping above ₹3000.')">
+    <meta property="og:image" content="@yield('og_image', asset('frontassets/images/logo.png'))">
+    <meta property="og:url" content="@yield('og_url', url()->current())">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@@jangakids">
+    <meta name="twitter:title" content="@yield('og_title', 'JangaKids | Premium Kids Fashion Online')">
+    <meta name="twitter:description" content="@yield('og_description', 'Shop premium kids clothing online at JangaKids.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('frontassets/images/logo.png'))">
+
+    <!-- Favicons -->
     <link rel="icon" href="{{ asset('frontassets/images/favicon.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('frontassets/images/favicon.png') }}" type="image/x-icon">
-    <title>@yield('title') - Jango Kids</title>
+
+    <!-- JSON-LD Structured Data (default Organization schema) -->
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Organization",
+        "name": "JangaKids",
+        "url": "{{ config('app.url') }}",
+        "logo": "{{ asset('frontassets/images/logo.png') }}",
+        "sameAs": [],
+        "contactPoint": {
+            "@@type": "ContactPoint",
+            "contactType": "customer service",
+            "availableLanguage": "English"
+        }
+    }
+    </script>
+    <!-- Page-specific JSON-LD (product schema, website schema, etc.) -->
+    @stack('json_ld')
 
     <!--Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">

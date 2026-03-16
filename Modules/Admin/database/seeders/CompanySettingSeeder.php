@@ -16,19 +16,19 @@ class CompanySettingSeeder extends Seeder
         CompanySetting::truncate();
 
         CompanySetting::create([
-            'company_name' => 'Multikart',
+            'company_name' => 'JangaKids',
             'logo' => 'settings/logo.png',
-            'address' => 'Multikart Demo Store, Demo Street, Demo City, India - 345659',
+            'address' => 'JangaKids Store, India',
             'phone' => '+91 123-456-7890',
-            'email' => 'support@multikart.com',
+            'email' => 'support@jangakids.com',
             'whatsapp_no' => '+91 987-654-3210',
             'social_links' => [
-                'facebook' => 'https://www.facebook.com/multikart',
-                'twitter' => 'https://www.twitter.com/multikart',
-                'instagram' => 'https://www.instagram.com/multikart',
-                'pinterest' => 'https://www.pinterest.com/multikart',
-                'youtube' => 'https://www.youtube.com/multikart',
-                'linkedin' => 'https://www.linkedin.com/company/multikart',
+                'facebook' => 'https://www.facebook.com/jangakids',
+                'twitter' => 'https://www.twitter.com/jangakids',
+                'instagram' => 'https://www.instagram.com/jangakids',
+                'pinterest' => 'https://www.pinterest.com/jangakids',
+                'youtube' => 'https://www.youtube.com/jangakids',
+                'linkedin' => 'https://www.linkedin.com/company/jangakids',
             ],
         ]);
 

@@ -10,8 +10,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Public routes
-Route::get('products', [ProductController::class, 'index'])->name('product.index');
-Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('product.show');
+Route::get('products', [ProductController::class, 'index'])->name('products.index');
+Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
 // Category routes
 Route::get('category', [CategoryController::class, 'index'])->name('category.index');

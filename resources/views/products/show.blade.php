@@ -1,6 +1,15 @@
 @extends('layouts.master')
 
 @section('title', $product->name)
+@section('meta_description', Str::limit(strip_tags($product->description ?? $product->name . ' - Shop this product at JangaKids. Premium quality kids fashion at affordable prices.'), 155))
+@section('meta_keywords', $product->name . ', ' . ($product->category->name ?? 'kids fashion') . ', buy online, JangaKids')
+@section('og_type', 'product')
+@section('og_title', $product->name . ' | JangaKids')
+@section('og_description', Str::limit(strip_tags($product->description ?? $product->name . ' - Available at JangaKids.'), 155))
+@section('og_image', $product->images->first() ? asset('uploads/' . $product->images->first()->image_path) : asset('frontassets/images/logo.png'))
+@section('og_url', route('product.show', $product->slug))
+@section('canonical', route('product.show', $product->slug))
+
 
 @section('content')
     <!-- breadcrumb start -->
@@ -527,4 +536,37 @@ async function addToCartWithVariation(productId, quantity, variationId, isBuyNow
     text-align: center;
 }
 </style>
+@endpush
+
+@push('json_ld')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "Product",
+    "name": "{{ $product->name }}",
+    "description": "{{ Str::limit(strip_tags($product->description ?? ''), 300) }}",
+    "image": "{{ $product->images->first() ? asset('uploads/' . $product->images->first()->image_path) : asset('frontassets/images/logo.png') }}",
+    "sku": "{{ $product->slug }}",
+    "brand": {
+        "@@type": "Brand",
+        "name": "JangaKids"
+    },
+    "offers": {
+        "@@type": "Offer",
+        "url": "{{ route('product.show', $product->slug) }}",
+        "priceCurrency": "INR",
+        "price": "{{ $product->sale_price ?? $product->price }}",
+        "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+        "seller": {
+            "@@type": "Organization",
+            "name": "JangaKids"
+        }
+    }@if($product->review_count > 0),
+    "aggregateRating": {
+        "@@type": "AggregateRating",
+        "ratingValue": "{{ number_format($product->average_rating, 1) }}",
+        "reviewCount": "{{ $product->review_count }}"
+    }@endif
+}
+</script>
 @endpush

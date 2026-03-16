@@ -28,7 +28,7 @@
                         <p class="lead">Your order has been placed successfully.</p>
                         <div class="card mt-4 border-0 shadow-sm">
                             <div class="card-body">
-                                <h5 class="mb-0">Order Number: <strong class="text-primary">{{ $order->id }}</strong></h5>
+                                <h5 class="mb-0">Order Number: <strong class="text-primary">{{ $order->order_number }}</strong></h5>
                                 <p class="mb-0 text-muted">A confirmation email has been sent to {{ $order->shippingAddress->email ?? Auth::user()->email }}</p>
                             </div>
                         </div>

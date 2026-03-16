@@ -1,6 +1,11 @@
 @extends('layouts.master')
 
 @section('title', $category->name)
+@section('meta_description', 'Shop ' . $category->name . ' at JangaKids. Browse our latest collection of kids fashion. Premium quality at affordable prices. Free shipping above ₹3000.')
+@section('meta_keywords', $category->name . ', kids ' . $category->name . ', children ' . $category->name . ', buy online India, JangaKids')
+@section('og_title', $category->name . ' | JangaKids')
+@section('og_description', 'Explore our ' . $category->name . ' collection at JangaKids. Trendy and affordable kids fashion.')
+@section('canonical', url()->current())
 
 @section('content')
 
