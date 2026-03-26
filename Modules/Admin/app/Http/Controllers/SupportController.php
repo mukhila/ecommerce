@@ -5,10 +5,12 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
+use App\Notifications\TicketAdminReplied;
 use Modules\Admin\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class SupportController extends Controller
 {
@@ -165,12 +167,20 @@ class SupportController extends Controller
             $ticket->update(['status' => 'in_progress']);
         }
 
+        // Notify the customer via email
+        try {
+            Notification::route('mail', $ticket->email)
+                ->notify(new TicketAdminReplied($ticket->fresh(), $reply));
+        } catch (\Exception $e) {
+            Log::warning('Failed to send admin reply notification: ' . $e->getMessage());
+        }
+
         Log::info('Admin reply added to ticket', [
             'ticket_number' => $ticket->ticket_number,
             'replied_by' => auth('admin')->user()->name
         ]);
 
-        return redirect()->back()->with('success', 'Reply added successfully');
+        return redirect()->back()->with('success', 'Reply sent and customer notified by email.');
     }
 
     /**

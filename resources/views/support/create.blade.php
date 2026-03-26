@@ -65,6 +65,20 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
+                                        <label for="phone" class="form-label">Phone Number <span class="text-muted">(Optional)</span></label>
+                                        <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                               id="phone" name="phone"
+                                               value="{{ old('phone') }}"
+                                               placeholder="+91 98765 43210">
+                                        <small class="text-muted">For faster follow-up if needed</small>
+                                        @error('phone')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
                                         <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
                                         <select class="form-select @error('category') is-invalid @enderror"
                                                 id="category" name="category" required>

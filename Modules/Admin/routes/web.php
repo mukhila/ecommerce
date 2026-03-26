@@ -141,5 +141,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Page Routes
         Route::resource('pages', Modules\Admin\Http\Controllers\PageController::class);
+
+        // SEO Routes
+        Route::resource('seo', \App\Http\Controllers\Admin\SeoController::class);
     });
 });

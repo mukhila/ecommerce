@@ -60,8 +60,10 @@ footer {
     }
 
     .darken-layout {
+        background-color: #f19764;
+
         p {
-            color: rgba($white, 0.9);
+            color: rgb(24 24 24 / 90%);
         }
 
 
@@ -79,22 +81,22 @@ footer {
             }
 
             h4 {
-                color: $white;
+                color: #181818;
             }
 
             li {
                 a {
-                    color: rgba($white, 0.9);
+                    color: #181818;
                 }
             }
 
             .contact-list {
                 i {
-                    color: rgba($white, 0.9);
+                    color: #181818;
                 }
 
                 li {
-                    color: rgba($white, 0.9);
+                    color: #181818;
                 }
             }
         }

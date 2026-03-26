@@ -259,6 +259,22 @@
                     </div>
                 </li>
 
+                <li>
+                    <a href="#seo" data-bs-toggle="collapse">
+                         <span class="nav-icon">
+                            <iconify-icon icon="solar:magnifer-bold-duotone"></iconify-icon>
+                        </span>
+                        <span class="sidebar-text">SEO</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="seo">
+                        <ul class="nav-second-level">
+                            <li><a href="{{ route('admin.seo.create') }}" data-key="t-seo-create">Create</a></li>
+                            <li><a href="{{ route('admin.seo.index') }}" data-key="t-seo-list">List</a></li>
+                        </ul>
+                    </div>
+                </li>
+
             </ul>
         </div>
         <!-- Sidebar -->

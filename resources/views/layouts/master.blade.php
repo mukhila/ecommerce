@@ -7,22 +7,40 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('frontassets/images/apple-icon-57x57.png') }}">
+<link rel="apple-touch-icon" sizes="60x60" href="{{ asset('frontassets/images/apple-icon-60x60.png') }}">
+<link rel="apple-touch-icon" sizes="72x72" href="{{ asset('frontassets/images/apple-icon-72x72.png') }}">
+<link rel="apple-touch-icon" sizes="76x76" href="{{ asset('frontassets/images/apple-icon-76x76.png') }}">
+<link rel="apple-touch-icon" sizes="114x114" href="{{ asset('frontassets/images/apple-icon-114x114.png') }}">
+<link rel="apple-touch-icon" sizes="120x120" href="{{ asset('frontassets/images/apple-icon-120x120.png') }}">
+<link rel="apple-touch-icon" sizes="144x144" href="{{ asset('frontassets/images/apple-icon-144x144.png') }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('frontassets/images/apple-icon-152x152.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontassets/images/apple-icon-180x180.png') }}">
+<link rel="icon" type="image/png" sizes="192x192"  href="{{ asset('frontassets/images/android-icon-192x192.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('frontassets/images/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('frontassets/images/favicon-96x96.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('frontassets/images/favicon-16x16.png') }}">
+<link rel="manifest" href="{{ asset('frontassets/images/manifest.json') }}">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="{{ asset('frontassets/images/ms-icon-144x144.png') }}">
+<meta name="theme-color" content="#ffffff">
+    
     <!-- Primary SEO -->
-    <title>@yield('title', 'JangaKids') - JangaKids | Premium Kids Fashion Online</title>
-    <meta name="description" content="@yield('meta_description', 'JangaKids - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, JangaKids')">
+    <title>{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'JangaKids | Premium Kids Fashion Online' }}</title>
+    <meta name="description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'JangaKids - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.' }}">
+    <meta name="keywords" content="{{ isset($seo_data) && $seo_data->keywords ? $seo_data->keywords : 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, JangaKids' }}">
     <meta name="author" content="JangaKids">
-    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <meta name="robots" content="{{ isset($seo_data) && $seo_data->robots ? $seo_data->robots : 'index, follow' }}">
+    <link rel="canonical" href="{{ isset($seo_data) && $seo_data->canonical_url ? $seo_data->canonical_url : url()->current() }}">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:type" content="{{ isset($seo_data) && $seo_data->type ? $seo_data->type : 'website' }}">
     <meta property="og:site_name" content="JangaKids">
     <meta property="og:locale" content="en_IN">
-    <meta property="og:title" content="@yield('og_title', 'JangaKids | Premium Kids Fashion Online')">
-    <meta property="og:description" content="@yield('og_description', 'Shop premium kids clothing online at JangaKids. Free shipping above ₹3000.')">
-    <meta property="og:image" content="@yield('og_image', asset('frontassets/images/logo.png'))">
-    <meta property="og:url" content="@yield('og_url', url()->current())">
+    <meta property="og:title" content="{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'JangaKids | Premium Kids Fashion Online' }}">
+    <meta property="og:description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'Shop premium kids clothing online at JangaKids. Free shipping above ₹3000.' }}">
+    <meta property="og:image" content="{{ isset($seo_data) && $seo_data->image ? asset($seo_data->image) : asset('frontassets/images/logo.png') }}">
+    <meta property="og:url" content="{{ isset($seo_data) && $seo_data->canonical_url ? $seo_data->canonical_url : url()->current() }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">

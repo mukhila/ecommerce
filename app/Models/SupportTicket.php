@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class SupportTicket extends Model
 {
@@ -15,6 +16,7 @@ class SupportTicket extends Model
         'user_id',
         'name',
         'email',
+        'phone',
         'order_id',
         'category',
         'priority',
@@ -39,7 +41,7 @@ class SupportTicket extends Model
 
         static::creating(function ($ticket) {
             if (!$ticket->ticket_number) {
-                $ticket->ticket_number = 'TKT-' . strtoupper(uniqid());
+                $ticket->ticket_number = 'TKT-' . strtoupper(Str::ulid());
             }
         });
     }

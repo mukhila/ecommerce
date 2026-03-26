@@ -1,4 +1,29 @@
 /* Custom CSS Overrides */
+
+/* ==============================
+   Footer – darken-layout colors
+   ============================== */
+.darken-layout {
+    background-color: #f19764 !important;
+}
+
+footer .darken-layout p {
+    color: rgb(24 24 24 / 90%) !important;
+}
+
+footer .darken-layout ul li,
+footer .darken-layout ul li a,
+footer .darken-layout .sub-title ul li,
+footer .darken-layout .sub-title ul li a,
+footer .darken-layout .contact-list li,
+footer .darken-layout .contact-list li i {
+    color: #181818 !important;
+}
+
+footer .darken-layout .sub-title h4 {
+    color: #181818 !important;
+}
+
 .main-menu .brand-logo img {
     height: 60px !important;
     /* Increased height */

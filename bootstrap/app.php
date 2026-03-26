@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.role' => \App\Http\Middleware\CheckAdminRole::class,
         ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\LoadSeoData::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -20,7 +20,11 @@
       "Bash(claude doctor)",
       "Bash(curl:*)",
       "Bash(node --check public/js/cart.js)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"dd\\\\|dump\" /c/xampp_8_2/htdocs/jangokids/app --include=*.php)",
+      "Bash(ls:*)",
+      "Bash(wc -l /c/xampp_8_2/htdocs/jangokids/app/Models/*.php)"
     ]
   }
 }

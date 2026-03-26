@@ -51,6 +51,7 @@ Route::get('/support/success/{ticketNumber}', [App\Http\Controllers\SupportContr
 Route::middleware(['auth'])->group(function () {
     Route::get('/support', [App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
     Route::get('/support/{ticketNumber}', [App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
+    Route::post('/support/{ticketNumber}/reply', [App\Http\Controllers\SupportController::class, 'reply'])->name('support.reply')->middleware('throttle:10,1');
 });
 
 // Review Routes
