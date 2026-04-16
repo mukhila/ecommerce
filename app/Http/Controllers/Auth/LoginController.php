@@ -42,7 +42,7 @@ class LoginController extends Controller
     /**
      * Migrate guest cart items to user cart
      */
-    protected function migrateGuestCart($guestSessionId, $userId)
+    public function migrateGuestCart($guestSessionId, $userId)
     {
         $guestCart = \App\Models\Cart::where('session_id', $guestSessionId)->first();
         

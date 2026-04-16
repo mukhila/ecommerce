@@ -24,7 +24,7 @@
 <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="msapplication-TileImage" content="{{ asset('frontassets/images/ms-icon-144x144.png') }}">
 <meta name="theme-color" content="#ffffff">
-    
+
     <!-- Primary SEO -->
     <title>{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'JangaKids | Premium Kids Fashion Online' }}</title>
     <meta name="description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'JangaKids - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.' }}">
@@ -50,8 +50,8 @@
     <meta name="twitter:image" content="@yield('og_image', asset('frontassets/images/logo.png'))">
 
     <!-- Favicons -->
-    <link rel="icon" href="{{ asset('frontassets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('frontassets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('frontassets/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('frontassets/images/favicon.ico') }}" type="image/x-icon">
 
     <!-- JSON-LD Structured Data (default Organization schema) -->
     <script type="application/ld+json">
@@ -79,7 +79,10 @@
 
     <!-- Icons -->
     <link rel="stylesheet" type="text/css" href="{{ asset('frontassets/css/vendors/font-awesome.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('frontassets/css/vendors/remixicon.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
+
+    <!-- Page-specific styles -->
+    @stack('styles')
 
     <!-- Slick slider css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('frontassets/css/vendors/slick.css') }}">
@@ -154,10 +157,36 @@
     @yield('content')
     @include('layouts.footer')
 
-@stack('styles')
- @stack('scripts')
+@stack('scripts')
 
 
+
+    <!-- Search Modal Start -->
+    <div class="modal fade search-modal theme-modal-2" id="searchModal" tabindex="-1" aria-label="Search">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ri-close-line"></i>
+                </button>
+                <div class="modal-body p-4">
+                    <form action="{{ route('search.index') }}" method="GET">
+                        <div class="input-group">
+                            <input type="text"
+                                   name="q"
+                                   id="searchModalInput"
+                                   class="form-control form-control-lg"
+                                   placeholder="Search for kids dresses, tops, party wear…"
+                                   autocomplete="off">
+                            <button class="btn btn-solid" type="submit">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Search Modal End -->
 
     <!-- Cart Offcanvas Start -->
     <div class="offcanvas offcanvas-end cart-offcanvas" tabindex="-1" id="cartOffcanvas">
@@ -322,6 +351,14 @@
                 $('#exampleModal').modal('show');
             }, 2500);
         });
+
+        // Auto-focus search input when modal opens
+        const searchModal = document.getElementById('searchModal');
+        if (searchModal) {
+            searchModal.addEventListener('shown.bs.modal', function () {
+                document.getElementById('searchModalInput').focus();
+            });
+        }
 
         // Auto-dismiss flash messages after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {

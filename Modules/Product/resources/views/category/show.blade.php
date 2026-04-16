@@ -81,6 +81,39 @@
                                     </div>
                                 </div>
 
+                                {{-- Price Range Filter --}}
+                                @if($priceRange && $priceRange->max_price > 0)
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#panelsStayOpen-collapsePrice" aria-expanded="true"
+                                            aria-controls="panelsStayOpen-collapsePrice">
+                                            Price Range
+                                        </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapsePrice" class="accordion-collapse collapse show">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 align-items-center mb-2">
+                                                <input type="number" id="price-min" class="form-control form-control-sm"
+                                                    placeholder="Min" min="0"
+                                                    value="{{ $minPrice ?? '' }}"
+                                                    style="width:80px;">
+                                                <span>—</span>
+                                                <input type="number" id="price-max" class="form-control form-control-sm"
+                                                    placeholder="Max" min="0"
+                                                    value="{{ $maxPrice ?? '' }}"
+                                                    style="width:80px;">
+                                                <button id="price-filter-apply" class="btn btn-sm btn-solid">Go</button>
+                                            </div>
+                                            <small class="text-muted">
+                                                ₹{{ number_format($priceRange->min_price, 0) }} –
+                                                ₹{{ number_format($priceRange->max_price, 0) }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+
                                 {{-- Dynamic Attribute Filters --}}
                                 @foreach($attributesWithValues as $index => $attribute)
                                 <div class="accordion-item">
@@ -241,6 +274,28 @@
         });
 
         sortBySelect.addEventListener('change', applyFilters);
+
+        // Price range filter
+        const priceApplyBtn = document.getElementById('price-filter-apply');
+        if (priceApplyBtn) {
+            priceApplyBtn.addEventListener('click', function() {
+                const minVal = document.getElementById('price-min').value;
+                const maxVal = document.getElementById('price-max').value;
+                const currentUrl = new URL(window.location.href);
+                if (minVal !== '') {
+                    currentUrl.searchParams.set('min_price', minVal);
+                } else {
+                    currentUrl.searchParams.delete('min_price');
+                }
+                if (maxVal !== '') {
+                    currentUrl.searchParams.set('max_price', maxVal);
+                } else {
+                    currentUrl.searchParams.delete('max_price');
+                }
+                currentUrl.searchParams.delete('page');
+                window.location.href = currentUrl.toString();
+            });
+        }
     });
 </script>
 @endpush

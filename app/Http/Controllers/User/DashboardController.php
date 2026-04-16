@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Cart;
+use App\Models\Wishlist;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -46,6 +47,12 @@ class DashboardController extends Controller
         // Get notifications
         $notifications = $user->notifications()->paginate(10);
 
+        // Get wishlist items
+        $wishlistItems = Wishlist::where('user_id', $user->id)
+            ->with('product.images')
+            ->latest()
+            ->get();
+
         return view('user.dashboard', compact(
             'totalOrders',
             'totalSpent',
@@ -54,7 +61,8 @@ class DashboardController extends Controller
             'deliveredOrders',
             'cartCount',
             'cart',
-            'notifications'
+            'notifications',
+            'wishlistItems'
         ));
     }
 }

@@ -5,9 +5,95 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
+    /**
+     * Public Track Order lookup page (GET)
+     */
+    public function showTrackLookup()
+    {
+        return view('orders.track-lookup');
+    }
+
+    /**
+     * Public Track Order lookup (POST) — verify by order number + email or phone
+     */
+    public function trackLookup(Request $request)
+    {
+        $request->validate([
+            'order_number' => ['required', 'string'],
+            'identity'     => ['required', 'string'],
+        ]);
+
+        $orderNumber = strtoupper(trim($request->order_number));
+        $identity    = trim($request->identity);
+
+        $order = Order::where('order_number', $orderNumber)
+            ->with(['shippingAddress'])
+            ->first();
+
+        if ($order) {
+            $verified = false;
+
+            // Check against logged-in user
+            if (Auth::check() && $order->user_id === Auth::id()) {
+                $verified = true;
+            }
+
+            // Check against shipping address email / phone
+            if (! $verified && $order->shippingAddress) {
+                $addr = $order->shippingAddress;
+                if (
+                    (filter_var($identity, FILTER_VALIDATE_EMAIL) && strtolower($addr->email ?? '') === strtolower($identity)) ||
+                    (preg_match('/^\d{10}$/', $identity) && ($addr->phone ?? '') === $identity)
+                ) {
+                    $verified = true;
+                }
+            }
+
+            // Check against user email / phone
+            if (! $verified && $order->user) {
+                $user = $order->user;
+                if (
+                    (filter_var($identity, FILTER_VALIDATE_EMAIL) && strtolower($user->email ?? '') === strtolower($identity)) ||
+                    (preg_match('/^\d{10}$/', $identity) && ($user->phone ?? '') === $identity)
+                ) {
+                    $verified = true;
+                }
+            }
+
+            if ($verified) {
+                return view('orders.track-lookup', compact('order'));
+            }
+        }
+
+        return view('orders.track-lookup', ['notFound' => true])
+            ->withInput();
+    }
+
+    /**
+     * Guest order confirmation page (session-token verified, no auth required).
+     */
+    public function guestConfirmation(Request $request)
+    {
+        $orderId = $request->session()->pull('guest_order_id');
+
+        if (!$orderId) {
+            return redirect()->route('home')
+                ->with('info', 'No pending order found. Use Track Order to look up an existing order.');
+        }
+
+        $order = Order::with(['items', 'shippingAddress'])->find($orderId);
+
+        if (!$order) {
+            return redirect()->route('home')->with('error', 'Order not found.');
+        }
+
+        return view('orders.success', compact('order'));
+    }
+
     /**
      * Order success page
      */

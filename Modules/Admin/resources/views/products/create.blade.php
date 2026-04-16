@@ -1,5 +1,13 @@
 @extends('admin::layouts.main')
 
+@push('styles')
+<link href="{{ asset('adminassets/libs/quill/quill.snow.css') }}" rel="stylesheet" type="text/css">
+<style>
+    #quill-editor { min-height: 200px; background: #fff; }
+    .ql-editor { min-height: 180px; font-size: 14px; }
+</style>
+@endpush
+
 @section('content')
 <div class="row">
     <div class="col-xl-12">
@@ -37,8 +45,9 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="description" class="form-label">Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="5">{{ old('description') }}</textarea>
+                                        <label class="form-label">Description</label>
+                                        <textarea id="description" name="description" style="display:none"></textarea>
+                                        <div id="quill-editor"></div>
                                     </div>
                                     
                                      <div class="row">
@@ -223,3 +232,35 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('adminassets/libs/quill/quill.js') }}"></script>
+<script>
+    var quillEditor = new Quill('#quill-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ indent: '-1' }, { indent: '+1' }],
+                [{ color: [] }, { background: [] }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Restore old input on validation error
+    var initialContent = {!! json_encode(old('description', '')) !!};
+    if (initialContent) {
+        quillEditor.clipboard.dangerouslyPasteHTML(initialContent);
+    }
+
+    // Sync Quill HTML to hidden textarea before form submit
+    document.getElementById('description').closest('form').addEventListener('submit', function() {
+        document.getElementById('description').value = quillEditor.root.innerHTML;
+    });
+</script>
+@endpush

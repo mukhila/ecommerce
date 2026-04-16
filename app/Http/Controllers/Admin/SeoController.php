@@ -16,7 +16,7 @@ class SeoController extends Controller
     public function index()
     {
         $seos = Seo::all();
-        return view('admin.seo.index', compact('seos'));
+        return view('admin::seo.index', compact('seos'));
     }
 
     /**
@@ -28,7 +28,7 @@ class SeoController extends Controller
             return $route->getName();
         })->filter()->unique()->values();
 
-        return view('admin.seo.create', compact('routes'));
+        return view('admin::seo.create', compact('routes'));
     }
 
     /**
@@ -76,7 +76,7 @@ class SeoController extends Controller
          $routes = collect(Route::getRoutes())->map(function ($route) {
             return $route->getName();
         })->filter()->unique()->values();
-        return view('admin.seo.edit', compact('seo', 'routes'));
+        return view('admin::seo.edit', compact('seo', 'routes'));
     }
 
     /**

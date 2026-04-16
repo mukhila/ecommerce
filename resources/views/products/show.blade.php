@@ -202,7 +202,7 @@
                             <!-- Product Details Accordion -->
                             <div class="border-product mt-4">
                                 <h6 class="product-title">Product Details</h6>
-                                <p>{{ $product->description }}</p>
+                                <div class="product-description-content">{!! $product->description !!}</div>
                             </div>
 
                             @if($product->fabric_type)
@@ -470,8 +470,70 @@ async function addToCartWithVariation(productId, quantity, variationId, isBuyNow
 }
 </script>
 @endpush
-@push('style')
+@push('styles')
 <style>
+/* Quill HTML description output */
+.product-description-content { font-size: 14px; line-height: 1.8; color: #555; }
+.product-description-content p { margin-bottom: 8px; }
+.product-description-content strong, .product-description-content b { font-weight: 600; }
+.product-description-content em { font-style: italic; }
+.product-description-content h1, .product-description-content h2,
+.product-description-content h3, .product-description-content h4 { font-weight: 600; margin: 8px 0 4px; color: #333; }
+.product-description-content blockquote { border-left: 3px solid #ec8951; padding-left: 12px; color: #777; margin: 8px 0; }
+.product-description-content a { color: #ec8951; text-decoration: underline; }
+
+/* Strip default ol/ul browser/bootstrap styles */
+.product-description-content ol,
+.product-description-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+    /* Each <ol> resets its own counter — fixes continuous numbering */
+    counter-reset: ql-list-counter;
+}
+
+/* Hide Quill's editor-only UI marker span */
+.product-description-content .ql-ui { display: none; }
+
+/* Force block — prevents inline rendering */
+.product-description-content li[data-list] {
+    display: block;
+    list-style: none;
+    padding-left: 1.8em;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+/* Ordered: increment counter, render number before item */
+.product-description-content li[data-list="ordered"] {
+    counter-increment: ql-list-counter;
+}
+.product-description-content li[data-list="ordered"]::before {
+    content: counter(ql-list-counter) ".";
+    position: absolute;
+    left: 0;
+    font-weight: 500;
+    color: #444;
+    min-width: 1.4em;
+    text-align: left;
+}
+
+/* Bullet: render dot before item */
+.product-description-content li[data-list="bullet"]::before {
+    content: "\2022";
+    position: absolute;
+    left: 0.35em;
+    color: #ec8951;
+    font-size: 1.1em;
+    line-height: 1.7;
+}
+
+/* Indent levels */
+.product-description-content .ql-indent-1 { padding-left: 3.6em; }
+.product-description-content .ql-indent-2 { padding-left: 5.4em; }
+.product-description-content .ql-indent-3 { padding-left: 7.2em; }
+.product-description-content .ql-indent-4 { padding-left: 9.0em; }
+
 /* Size selector styling */
 .size-box .size-list {
     display: flex;

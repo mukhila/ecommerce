@@ -106,7 +106,7 @@
                             <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <p>Please refer to our <a href="#">Size Guide</a> available on every product page. If you are unsure, feel free to contact our support team for assistance.</p>
+                                    <p>Please refer to our <a href="{{ route('size-guide') }}">Size Guide</a> for detailed measurements and age charts. If you are still unsure, feel free to <a href="{{ route('contact') }}">contact our support team</a> for assistance.</p>
                                 </div>
                             </div>
                         </div>

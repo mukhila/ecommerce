@@ -44,12 +44,12 @@
             <div class="row partition2">
                 <div class="col-md-6">
                     <a href="#" class="collection-banner">
-                        <img src="{{ asset('frontassets/images/fashion-1/banner/1.jpg') }}" class="img-fluid blur-up lazyload" alt="">
+                        <img src="{{ asset('frontassets/images/fashion-1/banner/1.png') }}" class="img-fluid blur-up lazyload" alt="">
                     </a>
                 </div>
                 <div class="col-md-6">
                     <a href="#" class="collection-banner">
-                        <img src="{{ asset('frontassets/images/fashion-1/banner/2.jpg') }}" class="img-fluid blur-up lazyload" alt="">
+                        <img src="{{ asset('frontassets/images/fashion-1/banner/2.png') }}" class="img-fluid blur-up lazyload" alt="">
                     </a>
                 </div>
             </div>

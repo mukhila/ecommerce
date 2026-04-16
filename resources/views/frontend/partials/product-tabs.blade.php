@@ -1,4 +1,4 @@
-<!-- Tab product -->
+<!-- Tab product 
 <div class="title1 section-t-space">
     <h4>Exclusive products</h4>
     <h2 class="title-inner1">Everyday casual</h2>
@@ -14,7 +14,7 @@
                         <li><a href="tab-6">JEANS</a></li>
                     </ul>
                     <div class="tab-content-cls">
-                        <!-- Dresses Tab -->
+                        <!-- Dresses Tab 
                         <div id="tab-4" class="tab-content active default">
                             <div class="g-3 g-md-4 row row-cols-2 row-cols-md-3 row-cols-xl-4">
                                 @forelse($dresses as $product)
@@ -29,7 +29,7 @@
                             </div>
                         </div>
 
-                        <!-- Tops Tab -->
+                        <!-- Tops Tab 
                         <div id="tab-5" class="tab-content">
                             <div class="g-3 g-md-4 row row-cols-2 row-cols-md-3 row-cols-xl-4">
                                 @forelse($tops as $product)
@@ -44,7 +44,7 @@
                             </div>
                         </div>
 
-                        <!-- Jeans Tab -->
+                        <!-- Jeans Tab 
                         <div id="tab-6" class="tab-content">
                             <div class="g-3 g-md-4 row row-cols-2 row-cols-md-3 row-cols-xl-4">
                                 @forelse($winterWear as $product)
@@ -64,4 +64,5 @@
         </div>
     </div>
 </section>
-<!-- Tab product end -->
+Tab product end -->
+ 

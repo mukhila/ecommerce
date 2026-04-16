@@ -77,6 +77,83 @@
         cursor: not-allowed;
         pointer-events: none;
     }
+
+    /* Quill HTML output styling */
+    .product-desc-content {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #444;
+    }
+    .product-desc-content p { margin-bottom: 8px; }
+    .product-desc-content strong, .product-desc-content b { font-weight: 600; }
+    .product-desc-content em { font-style: italic; }
+    .product-desc-content h1, .product-desc-content h2,
+    .product-desc-content h3, .product-desc-content h4,
+    .product-desc-content h5, .product-desc-content h6 {
+        font-weight: 600;
+        margin: 10px 0 6px;
+        color: #222;
+    }
+    .product-desc-content blockquote {
+        border-left: 3px solid #ec8951;
+        padding-left: 12px;
+        color: #666;
+        margin: 8px 0;
+    }
+    .product-desc-content a { color: #ec8951; text-decoration: underline; }
+    .product-desc-content img { max-width: 100%; height: auto; }
+
+    /* Strip default ol/ul browser/bootstrap styles */
+    .product-desc-content ol,
+    .product-desc-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 8px 0;
+        /* Each <ol> resets its own counter — fixes continuous numbering */
+        counter-reset: ql-list-counter;
+    }
+
+    /* Hide Quill's editor-only UI marker span */
+    .product-desc-content .ql-ui { display: none; }
+
+    /* Force block — prevents inline rendering */
+    .product-desc-content li[data-list] {
+        display: block;
+        list-style: none;
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 4px;
+    }
+
+    /* Ordered: increment counter, render number before item */
+    .product-desc-content li[data-list="ordered"] {
+        counter-increment: ql-list-counter;
+    }
+    .product-desc-content li[data-list="ordered"]::before {
+        content: counter(ql-list-counter) ".";
+        position: absolute;
+        left: 0;
+        font-weight: 500;
+        color: #444;
+        min-width: 1.4em;
+        text-align: left;
+    }
+
+    /* Bullet: render dot before item */
+    .product-desc-content li[data-list="bullet"]::before {
+        content: "\2022";
+        position: absolute;
+        left: 0.35em;
+        color: #ec8951;
+        font-size: 1.1em;
+        line-height: 1.7;
+    }
+
+    /* Indent levels */
+    .product-desc-content .ql-indent-1 { padding-left: 3.6em; }
+    .product-desc-content .ql-indent-2 { padding-left: 5.4em; }
+    .product-desc-content .ql-indent-3 { padding-left: 7.2em; }
+    .product-desc-content .ql-indent-4 { padding-left: 9.0em; }
 </style>
 
 <!-- breadcrumb start -->
@@ -181,7 +258,7 @@
                                     <div id="flush-collapseOne" class="accordion-collapse collapse"
                                         data-bs-parent="#accordionFlushExample">
                                         <div class="accordion-body">
-                                            <p>{{ $product->description }}</p>
+                                            <div class="product-desc-content">{!! $product->description !!}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -370,7 +447,7 @@
                         {{-- Description Tab --}}
                         <div class="tab-pane fade" id="description-tab" role="tabpanel">
                             <div class="description-box p-3">
-                                <p>{{ $product->description }}</p>
+                                <div class="product-desc-content">{!! $product->description !!}</div>
                             </div>
                         </div>
                     </div>

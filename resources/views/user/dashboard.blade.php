@@ -60,6 +60,11 @@
                                     </button>
                                 </li>
                                 <li role="presentation" class="nav-item">
+                                    <button class="nav-link" id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist-tab-pane" type="button" role="tab">
+                                        <i class="ri-heart-line"></i> Wishlist
+                                    </button>
+                                </li>
+                                <li role="presentation" class="nav-item">
                                     <button class="nav-link" id="order-tab" data-bs-toggle="tab" data-bs-target="#order-tab-pane" type="button" role="tab">
                                         <i class="ri-file-text-line"></i>My Orders
                                     </button>
@@ -229,6 +234,32 @@
                                 <p class="text-muted">You have no orders yet.</p>
                              @endif
                         </div>
+                        <div class="tab-pane fade" id="wishlist-tab-pane" role="tabpanel">
+                            <h3>My Wishlist</h3>
+                            @if(isset($wishlistItems) && $wishlistItems->isNotEmpty())
+                                <div class="row g-3">
+                                    @foreach($wishlistItems as $item)
+                                        @if($item->product)
+                                            <div class="col-xl-3 col-md-4 col-6">
+                                                <x-product-card :product="$item->product" />
+                                                <div class="text-center mt-1">
+                                                    <form action="{{ route('wishlist.destroy', $item->product_id) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="ri-heart-fill me-1"></i> Remove
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-muted">Your wishlist is empty. <a href="{{ route('category.index') }}">Browse products</a> to add some.</p>
+                            @endif
+                        </div>
+
                          <div class="tab-pane fade" id="refund-tab-pane" role="tabpanel">
                              <h3>Refund History</h3>
                         </div>

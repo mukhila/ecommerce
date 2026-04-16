@@ -185,11 +185,7 @@
                         <a href="{{ route('home') }}" class="btn btn-solid text-capitalize">continue shopping</a>
                     </div>
                     <div class="col-6">
-                        @auth
-                            <a href="{{ route('checkout.index') }}" class="btn btn-solid text-capitalize">check out</a>
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-solid text-capitalize">Login to Checkout</a>
-                        @endauth
+                        <a href="{{ route('checkout.index') }}" class="btn btn-solid text-capitalize">check out</a>
                     </div>
                 </div>
             @else

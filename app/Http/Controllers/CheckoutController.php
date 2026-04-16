@@ -7,12 +7,11 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ShippingAddress;
-use Modules\Product\Models\Product; // Fixed Product Import
-use App\Models\Transaction; // Added Transaction Import
+use Modules\Product\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrderPlaced;
 use App\Notifications\NewOrderNotification;
@@ -30,14 +29,12 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Display checkout page
+     * Display checkout page (auth optional — guests allowed).
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $cart = Cart::where('user_id', Auth::id())
-                       ->with(['items.product.images', 'items.variation.attributeValue'])
-                       ->first();
+            $cart = $this->resolveCart($request);
 
             if (!$cart || $cart->items->count() === 0) {
                 return redirect()->route('cart.index')->with('error', 'Your cart is empty');
@@ -46,22 +43,20 @@ class CheckoutController extends Controller
             // Check stock availability before checkout
             foreach ($cart->items as $item) {
                 if ($item->variation_id && $item->variation) {
-                    // Check variation stock
                     if ($item->variation->stock < $item->quantity) {
                         $sizeName = $item->variation->attributeValue->value ?? 'selected size';
                         return redirect()->route('cart.index')
-                                       ->with('error', "Product '{$item->product->name}' ({$sizeName}) has insufficient stock");
+                            ->with('error', "Product '{$item->product->name}' ({$sizeName}) has insufficient stock");
                     }
                 } else {
-                    // Check product stock
                     if ($item->product->stock < $item->quantity) {
                         return redirect()->route('cart.index')
-                                       ->with('error', "Product '{$item->product->name}' has insufficient stock");
+                            ->with('error', "Product '{$item->product->name}' has insufficient stock");
                     }
                 }
             }
 
-            $user = Auth::user();
+            $user = Auth::user(); // null for guests
 
             return view('checkout.index', compact('cart', 'user'));
         } catch (Exception $e) {
@@ -71,73 +66,72 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Process checkout and create order
+     * Process checkout and create order (auth optional — guests can use COD).
      */
     public function process(Request $request)
     {
+        $isGuest = !Auth::check();
+
         try {
-            // Validate request
+            // Guests may only use COD — online gateways require a session-bound callback
+            $allowedMethods = $isGuest ? 'cod' : 'cod,razorpay,rayaz';
+
             $validated = $request->validate([
-                'full_name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'phone' => 'required|string|max:20',
+                'full_name'       => 'required|string|max:255',
+                'email'           => 'required|email|max:255',
+                'phone'           => 'required|string|max:20',
                 'alternate_phone' => 'nullable|string|max:20',
-                'address_line1' => 'required|string|max:255',
-                'address_line2' => 'nullable|string|max:255',
-                'city' => 'required|string|max:100',
-                'state' => 'required|string|max:100',
-                'postal_code' => 'required|string|max:20',
-                'country' => 'required|string|max:100',
-                'payment_method' => 'required|in:cod,razorpay,rayaz',
-                'notes' => 'nullable|string|max:500'
+                'address_line1'   => 'required|string|max:255',
+                'address_line2'   => 'nullable|string|max:255',
+                'city'            => 'required|string|max:100',
+                'state'           => 'required|string|max:100',
+                'postal_code'     => ['required', 'string', 'regex:/^\d{6}$/'],
+                'country'         => 'required|string|max:100',
+                'payment_method'  => 'required|in:' . $allowedMethods,
+                'notes'           => 'nullable|string|max:500',
             ]);
 
             DB::beginTransaction();
 
-            // Get cart
-            $cart = Cart::where('user_id', Auth::id())
-                       ->with('items.product')
-                       ->first();
+            $cart = $this->resolveCart($request);
 
             if (!$cart || $cart->items->count() === 0) {
                 return redirect()->route('cart.index')->with('error', 'Your cart is empty');
             }
 
-            // Calculate totals with proper GST
-            $subtotal = $cart->subtotal; // Price excluding GST
-            $gstAmount = $cart->gst_amount; // Total GST
-            $gstBreakdown = $cart->gst_breakdown; // GST breakdown by rate
-            $cartTotal = $cart->total; // Subtotal + GST
-            $shippingCost = $cartTotal >= 3000 ? 0 : 100; // Free shipping above ₹3000
-            $discount = 0;
-            $total = $cartTotal + $shippingCost - $discount;
+            // Calculate totals with GST
+            $subtotal     = $cart->subtotal;
+            $gstAmount    = $cart->gst_amount;
+            $gstBreakdown = $cart->gst_breakdown;
+            $cartTotal    = $cart->total;
+            $shippingCost = $cartTotal >= 3000 ? 0 : 100;
+            $discount     = 0;
+            $total        = $cartTotal + $shippingCost - $discount;
 
-            // Create order
+            // Create order — user_id is null for guests
             $order = Order::create([
-                'user_id' => Auth::id(),
-                'guest_email' => null,
-                'guest_name' => null,
-                'guest_phone' => null,
-                'subtotal' => $subtotal,
-                'gst_amount' => $gstAmount,
-                'gst_breakdown' => $gstBreakdown,
-                'tax' => $gstAmount, // For backward compatibility
-                'shipping_cost' => $shippingCost,
-                'discount' => $discount,
-                'total' => $total,
-                'status' => 'pending',
-                'payment_status' => $validated['payment_method'] === 'cod' ? 'pending' : 'pending',
+                'user_id'        => Auth::id(),
+                'guest_email'    => $isGuest ? $validated['email']       : null,
+                'guest_name'     => $isGuest ? $validated['full_name']   : null,
+                'guest_phone'    => $isGuest ? $validated['phone']        : null,
+                'subtotal'       => $subtotal,
+                'gst_amount'     => $gstAmount,
+                'gst_breakdown'  => $gstBreakdown,
+                'tax'            => $gstAmount,
+                'shipping_cost'  => $shippingCost,
+                'discount'       => $discount,
+                'total'          => $total,
+                'status'         => 'pending',
+                'payment_status' => 'pending',
                 'payment_method' => $validated['payment_method'],
-                'notes' => $validated['notes'] ?? null
+                'notes'          => $validated['notes'] ?? null,
             ]);
 
-            // Create order items with proper stock handling
+            // Create order items (with pessimistic locking)
             foreach ($cart->items as $item) {
                 $sizeLabel = null;
 
-                // Handle variation stock
                 if ($item->variation_id && $item->variation) {
-                    // Use pessimistic locking to prevent overselling
                     $variation = \Modules\Product\Models\ProductAttribute::where('id', $item->variation_id)
                         ->lockForUpdate()
                         ->first();
@@ -146,54 +140,49 @@ class CheckoutController extends Controller
                         DB::rollBack();
                         $sizeName = $item->variation->attributeValue->value ?? 'selected size';
                         return redirect()->route('cart.index')
-                                       ->with('error', "Product '{$item->product->name}' ({$sizeName}) is out of stock");
+                            ->with('error', "Product '{$item->product->name}' ({$sizeName}) is out of stock");
                     }
 
-                    // Deduct variation stock
                     $variation->decrement('stock', $item->quantity);
                     $sizeLabel = $variation->attributeValue->value ?? null;
                 } else {
-                    // No variation - check product stock
-                    $product = Product::where('id', $item->product_id)
-                        ->lockForUpdate()
-                        ->first();
+                    $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
 
                     if (!$product || $product->stock < $item->quantity) {
                         DB::rollBack();
                         return redirect()->route('cart.index')
-                                       ->with('error', "Product '{$item->product->name}' is out of stock");
+                            ->with('error', "Product '{$item->product->name}' is out of stock");
                     }
 
-                    // Deduct product stock
                     $product->decrement('stock', $item->quantity);
                 }
 
                 OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product_id,
-                    'variation_id' => $item->variation_id,
-                    'size_label' => $sizeLabel,
-                    'product_name' => $item->product->name,
+                    'order_id'    => $order->id,
+                    'product_id'  => $item->product_id,
+                    'variation_id'=> $item->variation_id,
+                    'size_label'  => $sizeLabel,
+                    'product_name'=> $item->product->name,
                     'product_sku' => $item->product->slug,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'total' => $item->price * $item->quantity,
-                    'attributes' => $item->attributes
+                    'quantity'    => $item->quantity,
+                    'price'       => $item->price,
+                    'total'       => $item->price * $item->quantity,
+                    'attributes'  => $item->attributes,
                 ]);
             }
 
             // Create shipping address
             ShippingAddress::create([
-                'order_id' => $order->id,
-                'full_name' => $validated['full_name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'address_line1' => $validated['address_line1'],
-                'address_line2' => $validated['address_line2'] ?? null,
-                'city' => $validated['city'],
-                'state' => $validated['state'],
-                'postal_code' => $validated['postal_code'],
-                'country' => $validated['country']
+                'order_id'     => $order->id,
+                'full_name'    => $validated['full_name'],
+                'email'        => $validated['email'],
+                'phone'        => $validated['phone'],
+                'address_line1'=> $validated['address_line1'],
+                'address_line2'=> $validated['address_line2'] ?? null,
+                'city'         => $validated['city'],
+                'state'        => $validated['state'],
+                'postal_code'  => $validated['postal_code'],
+                'country'      => $validated['country'],
             ]);
 
             // Clear cart
@@ -201,80 +190,107 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            // Handle payment method
+            // Handle payment routing
             if ($validated['payment_method'] === 'razorpay') {
+                // Razorpay: auth users only (guard is enforced by validation above)
                 $razorpayData = $this->razorpayService->createOrder($order);
 
                 if (!$razorpayData['success']) {
-                    return redirect()->route('cart.index')->with('error', 'Unable to initialize payment. Please try again.');
+                    return redirect()->route('cart.index')
+                        ->with('error', 'Unable to initialize payment. Please try again.');
                 }
 
-                return view('payment.razorpay-checkout', [
-                    'order' => $order,
-                    'razorpayData' => $razorpayData,
-                ]);
+                return view('payment.razorpay-checkout', compact('order', 'razorpayData'));
+
             } elseif ($validated['payment_method'] === 'rayaz') {
-                // Initialize Rayaz Payment
                 $rayazService = app(\App\Services\RayazPaymentService::class);
-                $paymentData = $rayazService->initiatePayment($order);
+                $paymentData  = $rayazService->initiatePayment($order);
 
                 if ($paymentData['success']) {
-                    // Log initial pending transaction
-                    \App\Models\Transaction::create([
-                        'order_id' => $order->id,
-                        'gateway_transaction_id' => $paymentData['transaction_id'],
-                        'amount' => $order->total,
-                        'status' => 'pending',
-                        'payment_method' => 'rayaz',
-                        'raw_response' => $paymentData
+                    Transaction::create([
+                        'order_id'              => $order->id,
+                        'gateway_transaction_id'=> $paymentData['transaction_id'],
+                        'amount'                => $order->total,
+                        'status'                => 'pending',
+                        'payment_method'        => 'rayaz',
+                        'raw_response'          => $paymentData,
                     ]);
 
-                    // Redirect to Gateway
-                    // If it's a GET redirect
-                    // return redirect($paymentData['url'] . '?' . http_build_query($paymentData['params']));
-                    
-                    // If it's a POST redirect (Form Submit), return a view that auto-submits
                     return view('payment.redirect', [
-                        'url' => $paymentData['url'],
-                        'params' => $paymentData['params']
+                        'url'    => $paymentData['url'],
+                        'params' => $paymentData['params'],
                     ]);
-                } else {
-                    return redirect()->route('cart.index')->with('error', 'Payment initialization failed.');
                 }
-            } else {
-                // COD - Send notifications immediately
-                try {
-                // ... (Existing COD Logic)
-                    // Send notification to user
-                    $user = Auth::user();
-                    $user->notify(new OrderPlaced($order));
 
-                    // Send notification to admin
-                    $admins = User::where('role', 'admin')->get();
-                    Notification::send($admins, new NewOrderNotification($order));
-                } catch (Exception $e) {
-                    Log::error('Error sending notifications: ' . $e->getMessage());
-                    // Don't fail the order if notifications fail
+                return redirect()->route('cart.index')->with('error', 'Payment initialization failed.');
+
+            } else {
+                // COD — send notifications
+                $this->sendOrderNotifications($order, $isGuest, $validated['email']);
+
+                if ($isGuest) {
+                    // Store a one-time session token for the guest confirmation page
+                    session(['guest_order_id' => $order->id]);
+                    return redirect()->route('order.guest-confirmation')
+                        ->with('success', 'Order placed successfully!');
                 }
 
                 return redirect()->route('order.success', $order->id)
-                               ->with('success', 'Order placed successfully!');
+                    ->with('success', 'Order placed successfully!');
             }
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
-            return redirect()->back()
-                           ->withErrors($e->errors())
-                           ->withInput();
+            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error processing checkout: ' . $e->getMessage(), [
                 'user_id' => Auth::id(),
-                'trace' => $e->getTraceAsString()
+                'trace'   => $e->getTraceAsString(),
             ]);
-            
+
             return redirect()->route('cart.index')
-                           ->with('error', 'Unable to process order. Please try again.');
+                ->with('error', 'Unable to process order. Please try again.');
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Resolve the active cart for the current user or guest session.
+     */
+    private function resolveCart(Request $request): ?Cart
+    {
+        if (Auth::check()) {
+            return Cart::where('user_id', Auth::id())
+                ->with(['items.product.images', 'items.variation.attributeValue'])
+                ->first();
+        }
+
+        return Cart::where('session_id', $request->session()->getId())
+            ->with(['items.product.images', 'items.variation.attributeValue'])
+            ->first();
+    }
+
+    /**
+     * Send order-placed notifications to the customer and all admins.
+     */
+    private function sendOrderNotifications(Order $order, bool $isGuest, string $guestEmail): void
+    {
+        try {
+            if (!$isGuest && $order->user) {
+                $order->user->notify(new OrderPlaced($order));
+            } else {
+                // Notify guest via anonymous mail route
+                Notification::route('mail', $guestEmail)
+                    ->notify(new OrderPlaced($order));
+            }
+
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new NewOrderNotification($order));
+        } catch (Exception $e) {
+            Log::error('Error sending order notifications: ' . $e->getMessage());
+            // Do not fail the order if notifications fail
         }
     }
 }

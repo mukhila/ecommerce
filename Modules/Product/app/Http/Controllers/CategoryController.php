@@ -59,6 +59,23 @@ class CategoryController extends Controller
             }
         }
 
+        // Price range filter
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+
+        if (is_numeric($minPrice)) {
+            $productsQuery->where('price', '>=', (float) $minPrice);
+        }
+        if (is_numeric($maxPrice) && $maxPrice > 0) {
+            $productsQuery->where('price', '<=', (float) $maxPrice);
+        }
+
+        // Get the overall price range for the slider bounds
+        $priceRange = Product::whereIn('category_id', $categoryIds)
+            ->where('is_active', true)
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
+
         // Sorting
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
@@ -105,6 +122,6 @@ class CategoryController extends Controller
                 return $attribute->values->count() > 0;
             });
 
-        return view('product::category.show', compact('category', 'allCategories', 'products', 'attributesWithValues'));
+        return view('product::category.show', compact('category', 'allCategories', 'products', 'attributesWithValues', 'priceRange', 'minPrice', 'maxPrice'));
     }
 }

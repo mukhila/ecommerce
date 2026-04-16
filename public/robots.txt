@@ -6,9 +6,12 @@ Disallow: /checkout/
 Disallow: /payment/
 Disallow: /dashboard/
 Disallow: /notifications/
-Disallow: /support/create
 Disallow: /support/store
+Disallow: /support/success/
+Disallow: /support/*/reply
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 Disallow: /logout
+
+Sitemap: https://jangokids.com/sitemap.xml

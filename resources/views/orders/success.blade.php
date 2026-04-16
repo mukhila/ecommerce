@@ -29,7 +29,7 @@
                         <div class="card mt-4 border-0 shadow-sm">
                             <div class="card-body">
                                 <h5 class="mb-0">Order Number: <strong class="text-primary">{{ $order->order_number }}</strong></h5>
-                                <p class="mb-0 text-muted">A confirmation email has been sent to {{ $order->shippingAddress->email ?? Auth::user()->email }}</p>
+                                <p class="mb-0 text-muted">A confirmation email has been sent to {{ $order->shippingAddress->email ?? $order->guest_email ?? (Auth::user()->email ?? '') }}</p>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,11 @@
                     </div>
 
                     <div class="mt-4 text-center">
-                        <a href="{{ route('dashboard') }}" class="btn btn-solid me-2">View My Orders</a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn btn-solid me-2">View My Orders</a>
+                        @else
+                            <a href="{{ route('order.track') }}" class="btn btn-solid me-2">Track This Order</a>
+                        @endauth
                         <a href="{{ route('home') }}" class="btn btn-outline-primary">Continue Shopping</a>
                     </div>
                 </div>

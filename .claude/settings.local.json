@@ -24,7 +24,11 @@
       "Bash(xargs grep:*)",
       "Bash(grep -r \"dd\\\\|dump\" /c/xampp_8_2/htdocs/jangokids/app --include=*.php)",
       "Bash(ls:*)",
-      "Bash(wc -l /c/xampp_8_2/htdocs/jangokids/app/Models/*.php)"
+      "Bash(wc -l /c/xampp_8_2/htdocs/jangokids/app/Models/*.php)",
+      "Bash(composer require:*)",
+      "Bash(npm install:*)",
+      "Bash(npm search:*)",
+      "Bash(grep -n \"HTTPS\\\\|SSL\\\\|https\" C:/xampp_8_2/htdocs/jangokids/bootstrap/app.php grep -n \"forceScheme\\\\|HTTPS\\\\|trustProxy\\\\|url.force\" C:/xampp_8_2/htdocs/jangokids/app/Http/Middleware/*.php)"
     ]
   }
 }

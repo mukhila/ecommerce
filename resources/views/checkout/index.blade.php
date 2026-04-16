@@ -21,6 +21,19 @@
     <!--section start-->
     <section class="section-b-space checkout-section-2">
         <div class="container">
+
+            {{-- Guest login prompt --}}
+            @guest
+            <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                <i class="ri-information-line me-2 fs-5"></i>
+                <span>
+                    Already have an account?
+                    <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout.index')) }}" class="fw-bold">Log in</a>
+                    for faster checkout and to track your orders.
+                </span>
+            </div>
+            @endguest
+
             <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
                 @csrf
                 <div class="row">
@@ -35,7 +48,7 @@
                                        class="form-control @error('full_name') is-invalid @enderror"
                                        id="full_name"
                                        name="full_name"
-                                       value="{{ old('full_name', $user->name) }}"
+                                       value="{{ old('full_name', $user->name ?? '') }}"
                                        required>
                                 @error('full_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -47,7 +60,7 @@
                                        class="form-control @error('email') is-invalid @enderror"
                                        id="email"
                                        name="email"
-                                       value="{{ old('email', $user->email) }}"
+                                       value="{{ old('email', $user->email ?? '') }}"
                                        required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -242,14 +255,34 @@
                                             </li>
                                             <li>
                                                 <div class="radio-option">
-                                                    <input type="radio" name="payment_method" id="payment-razorpay" value="razorpay">
-                                                    <label for="payment-razorpay">Razorpay (Card/UPI/Netbanking)</label>
+                                                    @auth
+                                                        <input type="radio" name="payment_method" id="payment-razorpay" value="razorpay">
+                                                        <label for="payment-razorpay">Razorpay (Card/UPI/Netbanking)</label>
+                                                    @else
+                                                        <input type="radio" id="payment-razorpay-disabled" disabled>
+                                                        <label for="payment-razorpay-disabled" class="text-muted">
+                                                            Razorpay (Card/UPI/Netbanking)
+                                                            <small class="d-block">
+                                                                <a href="{{ route('login') }}">Login</a> required for online payment
+                                                            </small>
+                                                        </label>
+                                                    @endauth
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="radio-option">
-                                                    <input type="radio" name="payment_method" id="payment-rayaz" value="rayaz">
-                                                    <label for="payment-rayaz">Rayaz Pay</label>
+                                                    @auth
+                                                        <input type="radio" name="payment_method" id="payment-rayaz" value="rayaz">
+                                                        <label for="payment-rayaz">Rayaz Pay</label>
+                                                    @else
+                                                        <input type="radio" id="payment-rayaz-disabled" disabled>
+                                                        <label for="payment-rayaz-disabled" class="text-muted">
+                                                            Rayaz Pay
+                                                            <small class="d-block">
+                                                                <a href="{{ route('login') }}">Login</a> required for online payment
+                                                            </small>
+                                                        </label>
+                                                    @endauth
                                                 </div>
                                             </li>
                                         </ul>

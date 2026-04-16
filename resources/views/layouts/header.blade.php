@@ -15,8 +15,13 @@
                             <div>
                                 <div class="icon-nav">
                                     <ul>
-         
-                                   
+
+                                        <li class="onhover-div mobile-search">
+                                            <div data-bs-toggle="modal" data-bs-target="#searchModal">
+                                                <i class="ri-search-line"></i>
+                                            </div>
+                                        </li>
+
                                         <li class="onhover-div mobile-account">
                                             <div><i class="ri-user-line"></i></div>
                                             <div class="show-div setting">
@@ -30,7 +35,7 @@
                                                 <h6>{{ Auth::user()->name }}</h6>
                                                 <ul>
                                                     <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                                                     <li><a href="{{ route('dashboard') }}">Wishlist</a></li>
+                                                     <li><a href="{{ route('wishlist.index') }}">Wishlist</a></li>
                                                     <li>
                                                         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -46,7 +51,7 @@
                                             <div data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
                                                 <i class="ri-shopping-cart-line"></i>
                                             </div>
-                                            <span class="cart_qty_cls">2</span>
+                                            <span class="cart_qty_cls">{{ $sharedCartCount ?? 0 }}</span>
                                         </li>
                                     </ul>
                                 </div>
