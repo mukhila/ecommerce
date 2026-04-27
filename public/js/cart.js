@@ -89,7 +89,7 @@ async function retryRequest(requestFn, attempts = CONFIG.retryAttempts) {
 /**
  * Add product to cart
  */
-async function addToCart(productId, quantity = 1, attributes = {}) {
+async function addToCart(productId, quantity = 1, attributes = {}, variationId = null) {
     if (!validateCsrfToken()) return;
 
     // Validate inputs
@@ -116,6 +116,10 @@ async function addToCart(productId, quantity = 1, attributes = {}) {
             product_id: parseInt(productId),
             quantity: parseInt(quantity)
         };
+
+        if (variationId) {
+            requestBody.variation_id = parseInt(variationId);
+        }
 
         // Add attributes if provided
         if (attributes && Object.keys(attributes).length > 0) {

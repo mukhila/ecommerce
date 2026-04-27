@@ -351,7 +351,9 @@
                                                    class="attribute-option"
                                                    data-attribute-id="{{ $attributeId }}"
                                                    data-group-id="group-{{ $loop->parent->index }}"
+                                                   data-variation-id="{{ $attr->id }}"
                                                    data-value-id="{{ $attr->attributeValue->id ?? '' }}"
+                                                   data-attribute-slug="{{ $attributeSlug }}"
                                                    data-attribute-name="{{ $attributeName }}"
                                                    data-value="{{ $attr->attributeValue->value ?? 'N/A' }}"
                                                    data-stock="{{ $attr->stock ?? '' }}"
@@ -392,7 +394,6 @@
                                 <div class="product-buttons mt-3 w-100">
                                     <button id="cartEffect"
                                             class="btn btn-solid hover-solid btn-animation w-100"
-                                            data-action="add-to-cart"
                                             data-product-id="{{ $product->id }}"
                                             onclick="event.preventDefault(); addToCartWithAttributes({{ $product->id }})">
                                         <i class="ri-shopping-cart-line"></i>
@@ -543,10 +544,12 @@
                 const attrName = activeOption.dataset.attributeName;
                 const attrValue = activeOption.dataset.value;
                 const valueId = activeOption.dataset.valueId;
+                const variationId = activeOption.dataset.variationId;
 
                 selectedAttrs[attrName] = {
                     value: attrValue,
-                    valueId: valueId
+                    valueId: valueId,
+                    variationId: variationId
                 };
             });
 
@@ -561,6 +564,7 @@
         const quantity = parseInt(quantityInput.value) || 1;
         const selectedAttributesInput = document.getElementById('selectedAttributes');
         const selectedAttributes = selectedAttributesInput.value;
+        let variationId = null;
 
         // Parse the attributes
         let attributes = {};
@@ -623,13 +627,21 @@
             return;
         }
 
+        const selectedSizeOption = document.querySelector('.attribute-option.active[data-attribute-slug="size"]');
+        const firstSelectedOption = document.querySelector('.attribute-option.active');
+        const variationOption = selectedSizeOption || firstSelectedOption;
+
+        if (variationOption && variationOption.dataset.variationId) {
+            variationId = parseInt(variationOption.dataset.variationId, 10);
+        }
+
         // Display selected attributes for user confirmation (optional, can be removed)
         // console.log('Adding to cart:', { productId, quantity, attributes });
 
         // Call the existing addToCart function with attributes
         // Assuming addToCart is defined globally or in another script
         if (typeof addToCart === 'function') {
-            addToCart(productId, quantity, attributes);
+            addToCart(productId, quantity, attributes, variationId);
         } else {
             // Fallback form submission if function doesn't exist
             // Create a form and submit it
@@ -658,6 +670,15 @@
              inputQty.name = 'quantity';
              inputQty.value = quantity;
              form.appendChild(inputQty);
+
+             // Variation ID
+             if (variationId) {
+                const inputVariation = document.createElement('input');
+                inputVariation.type = 'hidden';
+                inputVariation.name = 'variation_id';
+                inputVariation.value = variationId;
+                form.appendChild(inputVariation);
+             }
              
              // Attributes
               for (const [key, value] of Object.entries(attributes)) {

@@ -60,6 +60,8 @@ class CartController extends Controller
      */
     public function add(Request $request)
     {
+        $transactionStarted = false;
+
         try {
             $request->validate([
                 'product_id' => 'required|exists:products,id',
@@ -67,8 +69,6 @@ class CartController extends Controller
                 'quantity' => 'integer|min:1|max:999',
                 'attributes' => 'nullable|array'
             ]);
-
-            DB::beginTransaction();
 
             $product = Product::findOrFail($request->product_id);
             $quantity = $request->quantity ?? 1;
@@ -133,6 +133,9 @@ class CartController extends Controller
                 ], 400);
             }
 
+            DB::beginTransaction();
+            $transactionStarted = true;
+
             $cart = $this->getCart();
 
             // Build attributes JSON for display purposes
@@ -160,6 +163,9 @@ class CartController extends Controller
                 $newQuantity = $cartItem->quantity + $quantity;
 
                 if ($availableStock < $newQuantity) {
+                    DB::rollBack();
+                    $transactionStarted = false;
+
                     return response()->json([
                         'success' => false,
                         'message' => "Cannot add more items. Only {$availableStock} available, you already have {$cartItem->quantity} in cart"
@@ -185,6 +191,7 @@ class CartController extends Controller
             $cart->refresh();
 
             DB::commit();
+            $transactionStarted = false;
 
             $redirectUrl = null;
             if ($request->has('buy_now') && $request->buy_now) {
@@ -200,21 +207,27 @@ class CartController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
+            if ($transactionStarted) {
+                DB::rollBack();
+            }
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid input data',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            DB::rollBack();
+            if ($transactionStarted) {
+                DB::rollBack();
+            }
             Log::error('Product not found: ' . $request->product_id);
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found'
             ], 404);
         } catch (Exception $e) {
-            DB::rollBack();
+            if ($transactionStarted) {
+                DB::rollBack();
+            }
             Log::error('Error adding to cart: ' . $e->getMessage(), [
                 'product_id' => $request->product_id,
                 'variation_id' => $request->variation_id ?? null,
