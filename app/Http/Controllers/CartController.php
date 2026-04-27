@@ -135,6 +135,17 @@ class CartController extends Controller
 
             $cart = $this->getCart();
 
+            // Build attributes JSON for display purposes
+            $attributes = null;
+            if ($variation) {
+                $attributes = [
+                    'size' => [
+                        'id' => $variation->id,
+                        'label' => $variation->attributeValue?->value ?? 'Unknown'
+                    ]
+                ];
+            }
+
             // Check if same product + variation already in cart
             $cartItemQuery = $cart->items()->where('product_id', $product->id);
 
@@ -161,17 +172,6 @@ class CartController extends Controller
                     'attributes' => $attributes ?? $cartItem->attributes
                 ]);
             } else {
-                // Build attributes JSON for display purposes
-                $attributes = null;
-                if ($variation) {
-                    $attributes = [
-                        'size' => [
-                            'id' => $variation->id,
-                            'label' => $variation->attributeValue->value
-                        ]
-                    ];
-                }
-
                 // Add new item
                 $cartItem = $cart->items()->create([
                     'product_id' => $product->id,
