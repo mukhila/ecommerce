@@ -58,4 +58,13 @@ return [
         'base_url' => env('RAYAZ_BASE_URL', 'https://api.rayaz-gateway.com'),
     ],
 
+    // SMS — set SMS_PROVIDER=fast2sms or msg91 and the matching key(s) in .env
+    'sms' => [
+        'provider'          => env('SMS_PROVIDER'),                // 'fast2sms' | 'msg91'
+        'fast2sms_api_key'  => env('FAST2SMS_API_KEY'),
+        'msg91_auth_key'    => env('MSG91_AUTH_KEY'),
+        'msg91_template_id' => env('MSG91_TEMPLATE_ID'),
+        'msg91_sender_id'   => env('MSG91_SENDER_ID', 'JNGKDS'),
+    ],
+
 ];

@@ -31,9 +31,25 @@
                                 <div class="profile-image">
                                     <div class="position-relative">
                                         <div class="user-round">
-                                            <h4>{{ substr(Auth::user()->name, 0, 1) }}</h4>
+                                            @if(Auth::user()->avatar)
+                                                <img src="{{ asset('uploads/avatars/' . Auth::user()->avatar) }}"
+                                                     alt="{{ Auth::user()->name }}"
+                                                     class="img-fluid rounded-circle"
+                                                     style="width:100%;height:100%;object-fit:cover;">
+                                            @else
+                                                <h4>{{ substr(Auth::user()->name, 0, 1) }}</h4>
+                                            @endif
                                         </div>
-                                        <div class="user-icon"><input type="file" accept="image/*"><i class="ri-image-edit-line d-lg-block d-none"></i><i class="ri-pencil-fill edit-icon d-lg-none"></i></div>
+                                        <div class="user-icon">
+                                            <form id="avatarForm" action="{{ route('dashboard.avatar.update') }}" method="POST" enctype="multipart/form-data" style="display:none;">
+                                                @csrf
+                                                <input type="file" id="avatarInput" name="avatar" accept="image/*">
+                                            </form>
+                                            <label for="avatarInput" style="cursor:pointer;margin:0;">
+                                                <i class="ri-image-edit-line d-lg-block d-none"></i>
+                                                <i class="ri-pencil-fill edit-icon d-lg-none"></i>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -52,11 +68,6 @@
                                 <li role="presentation" class="nav-item">
                                     <button class="nav-link" id="notification-tab" data-bs-toggle="tab" data-bs-target="#notification-tab-pane" type="button" role="tab">
                                         <i class="ri-notification-line"></i> Notifications
-                                    </button>
-                                </li>
-                                <li role="presentation" class="nav-item">
-                                    <button class="nav-link" id="bank-details-tab" data-bs-toggle="tab" data-bs-target="#bank-details-tab-pane" type="button" role="tab">
-                                        <i class="ri-bank-line"></i> Bank Details
                                     </button>
                                 </li>
                                 <li role="presentation" class="nav-item">
@@ -99,6 +110,24 @@
                     <div class="faq-content tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel">
                             <div class="counter-section">
+                                @if(!Auth::user()->hasVerifiedEmail())
+                                <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                                    <i class="ri-mail-unread-line fs-5"></i>
+                                    <div>
+                                        Your email address is not verified.
+                                        <form method="POST" action="{{ route('verification.send') }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-link p-0 align-baseline fw-semibold">Resend verification email</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                                @if(session('verification_resent'))
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    Verification email sent. Please check your inbox.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                @endif
                                 <div class="welcome-msg">
                                     <h4>Hello, {{ Auth::user()->name }} !</h4>
                                     <p>From your My Account Dashboard you have the ability to view a snapshot of your recent account activity and update your account information. Select a link below to view or edit information.</p>
@@ -190,10 +219,6 @@
                              @else
                                 <p>You have no notifications.</p>
                              @endif
-                        </div>
-                        <div class="tab-pane fade" id="bank-details-tab-pane" role="tabpanel">
-                             <h3>Bank Details</h3>
-                             <!-- Form content -->
                         </div>
                          <div class="tab-pane fade" id="order-tab-pane" role="tabpanel">
                              <h3>My Orders</h3>
@@ -311,41 +336,156 @@
 
                          <div class="tab-pane fade" id="refund-tab-pane" role="tabpanel">
                              <h3>Refund History</h3>
+                             <p class="text-muted mb-3">Orders you cancelled after payment. Refunds are processed within 5–7 business days to your original payment method.</p>
+                             @if($refundOrders->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Order #</th>
+                                                <th>Cancelled On</th>
+                                                <th>Amount</th>
+                                                <th>Payment Method</th>
+                                                <th>Refund Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($refundOrders as $order)
+                                                <tr>
+                                                    <td>{{ $order->order_number }}</td>
+                                                    <td>{{ $order->updated_at->format('d M Y') }}</td>
+                                                    <td>₹{{ number_format($order->total, 2) }}</td>
+                                                    <td>{{ strtoupper($order->payment_method ?? 'N/A') }}</td>
+                                                    <td>
+                                                        @if($order->payment_status === 'refunded')
+                                                            <span class="badge bg-success">Refunded</span>
+                                                        @else
+                                                            <span class="badge bg-warning text-dark">Processing (5–7 days)</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                             @else
+                                <p class="text-muted">No refund history found.</p>
+                             @endif
                         </div>
                          <div class="tab-pane fade" id="address-tab-pane" role="tabpanel">
                              <h3>Saved Address</h3>
+
+                             @if(session('address_success'))
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ session('address_success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                             @endif
+
+                             <form class="theme-form" action="{{ route('dashboard.address.save') }}" method="POST">
+                                @csrf
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-box">
+                                            <label class="form-label">Address Line 1 <span class="text-danger">*</span></label>
+                                            <input type="text" name="address_line1" class="form-control @error('address_line1') is-invalid @enderror"
+                                                value="{{ old('address_line1', $savedAddress->address_line1 ?? '') }}"
+                                                placeholder="House / Flat / Block No., Street name" required>
+                                            @error('address_line1')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-box">
+                                            <label class="form-label">Address Line 2</label>
+                                            <input type="text" name="address_line2" class="form-control @error('address_line2') is-invalid @enderror"
+                                                value="{{ old('address_line2', $savedAddress->address_line2 ?? '') }}"
+                                                placeholder="Area, Colony, Locality (optional)">
+                                            @error('address_line2')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-box">
+                                            <label class="form-label">City <span class="text-danger">*</span></label>
+                                            <input type="text" name="city" class="form-control @error('city') is-invalid @enderror"
+                                                value="{{ old('city', $savedAddress->city ?? '') }}"
+                                                placeholder="City" required>
+                                            @error('city')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-box">
+                                            <label class="form-label">State <span class="text-danger">*</span></label>
+                                            <input type="text" name="state" class="form-control @error('state') is-invalid @enderror"
+                                                value="{{ old('state', $savedAddress->state ?? '') }}"
+                                                placeholder="State" required>
+                                            @error('state')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-box">
+                                            <label class="form-label">Postal Code <span class="text-danger">*</span></label>
+                                            <input type="text" name="postal_code" class="form-control @error('postal_code') is-invalid @enderror"
+                                                value="{{ old('postal_code', $savedAddress->postal_code ?? '') }}"
+                                                placeholder="PIN / ZIP code" required>
+                                            @error('postal_code')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-box">
+                                            <label class="form-label">Country <span class="text-danger">*</span></label>
+                                            <input type="text" name="country" class="form-control @error('country') is-invalid @enderror"
+                                                value="{{ old('country', $savedAddress->country ?? 'India') }}"
+                                                placeholder="Country" required>
+                                            @error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-solid w-auto">Save Address</button>
+                                    </div>
+                                </div>
+                             </form>
                         </div>
                         <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel">
                              <h3>Profile</h3>
                              <div class="box-account box-info">
                                 <div class="box-head">
-                                    <h4>Change Password</h4>
+                                    <h4>Set / Change Password</h4>
                                 </div>
+
+                                @if(session('password_success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ session('password_success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                @endif
+
+                                <p class="text-muted small mb-3">
+                                    Since your account uses phone OTP for sign-in, you can optionally set a password here.
+                                </p>
+
                                 <div class="row">
-                                    <form class="theme-form" action="" method="POST">
-                                        <div class="row mb-2">
+                                    <form class="theme-form" action="{{ route('dashboard.password.update') }}" method="POST">
+                                        @csrf
+                                        <div class="row g-3">
                                             <div class="col-md-6">
                                                 <div class="form-box">
-                                                    <label for="current_password" class="form-label">Current Password</label>
-                                                    <input type="password" class="form-control" id="current_password" name="current_password" placeholder="Current Password" required="">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-2">
-                                            <div class="col-md-6">
-                                                <div class="form-box">
-                                                    <label for="new_password" class="form-label">New Password</label>
-                                                    <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New Password" required="">
+                                                    <label for="new_password" class="form-label">New Password <span class="text-danger">*</span></label>
+                                                    <input type="password" class="form-control @error('new_password') is-invalid @enderror"
+                                                        id="new_password" name="new_password"
+                                                        placeholder="Min 8 chars, upper+lower+number" required>
+                                                    @error('new_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-box">
-                                                    <label for="new_password_confirmation" class="form-label">Confirm Password</label>
-                                                    <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" placeholder="Confirm Password" required="">
+                                                    <label for="new_password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                                    <input type="password" class="form-control"
+                                                        id="new_password_confirmation" name="new_password_confirmation"
+                                                        placeholder="Repeat new password" required>
                                                 </div>
                                             </div>
-                                            <div class="col-12 mt-2">
-                                                <button type="submit" class="btn btn-solid w-auto">Change Password</button>
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-solid w-auto">Save Password</button>
                                             </div>
                                         </div>
                                     </form>
@@ -360,10 +500,27 @@
     <!--  dashboard section end -->
 @push('scripts')
 <script>
-    // Auto-activate the Orders tab when navigating paginated order results
-    if (new URLSearchParams(window.location.search).has('orders_page')) {
-        const tab = document.getElementById('order-tab');
-        if (tab) { tab.click(); }
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('orders_page')) {
+        const t = document.getElementById('order-tab');
+        if (t) t.click();
+    }
+
+    @if(session('address_success'))
+    (function () { const t = document.getElementById('address'); if (t) t.click(); })();
+    @endif
+
+    @if(session('password_success') || $errors->has('new_password'))
+    (function () { const t = document.getElementById('profile'); if (t) t.click(); })();
+    @endif
+
+    // Submit avatar form immediately on file selection
+    const avatarInput = document.getElementById('avatarInput');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function () {
+            if (this.files.length) document.getElementById('avatarForm').submit();
+        });
     }
 </script>
 @endpush

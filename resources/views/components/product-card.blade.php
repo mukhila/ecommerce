@@ -18,7 +18,7 @@
             </a>
 
             <div class="cart-info">
-                <a href="#!" title="Add to Wishlist" class="wishlist-icon">
+                <a href="#!" title="Add to Wishlist" class="wishlist-icon" data-product-id="{{ $product->id }}">
                     <i class="ri-heart-line"></i>
                 </a>
                 <button onclick="addToCart({{ $product->id }}, 1)" title="Add to cart" data-product-id="{{ $product->id }}">

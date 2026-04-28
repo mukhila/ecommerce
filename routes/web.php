@@ -113,6 +113,23 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/track-order', [App\Http\Controllers\OrderController::class, 'showTrackLookup'])->name('order.track');
 Route::post('/track-order', [App\Http\Controllers\OrderController::class, 'trackLookup'])->name('order.track.lookup');
 
+// Email Verification Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('dashboard')->with('verification_verified', 'Email verified successfully!');
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('verification_resent', true);
+    })->middleware('throttle:6,1')->name('verification.send');
+});
+
 // Social Auth Routes
 Route::get('/auth/google', [App\Http\Controllers\Auth\SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
@@ -151,6 +168,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/address', [App\Http\Controllers\User\DashboardController::class, 'saveAddress'])->name('dashboard.address.save');
+    Route::post('/dashboard/password', [App\Http\Controllers\User\DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
+    Route::post('/dashboard/avatar', [App\Http\Controllers\User\DashboardController::class, 'updateAvatar'])->name('dashboard.avatar.update');
 
     // Wishlist Routes
     Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');

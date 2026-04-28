@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -37,9 +37,8 @@ class OtpController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        // TODO: Integrate SMS provider (Twilio / Fast2SMS / MSG91 etc.)
-        // Example: SmsService::send($phone, "Your JangaKids OTP is {$otp}. Valid for 10 minutes.");
-        Log::info("[OTP] Phone: {$phone} | Type: {$type} | OTP: {$otp}");
+        SmsService::send($phone, "Your JangaKids OTP is {$otp}. Valid for 10 minutes. Do not share this code with anyone.");
+        Log::info("[OTP] Phone: {$phone} | Type: {$type} | OTP dispatched");
 
         return $otp;
     }
@@ -260,6 +259,9 @@ class OtpController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        // Send email verification — non-blocking (queued)
+        $user->sendEmailVerificationNotification();
 
         return redirect(route('home'));
     }

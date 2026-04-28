@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-logged-in" content="{{ auth()->check() ? 'true' : 'false' }}">
 
     <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('frontassets/images/apple-icon-57x57.png') }}">
 <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('frontassets/images/apple-icon-60x60.png') }}">
@@ -344,6 +345,9 @@
 
     <!-- Cart js-->
     <script src="{{ asset('js/cart.js') }}"></script>
+
+    <!-- Wishlist js-->
+    <script src="{{ asset('js/wishlist.js') }}"></script>
 
     <script>
         $(window).on('load', function () {
