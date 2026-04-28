@@ -52,9 +52,6 @@ Route::get('/search', [App\Http\Controllers\ProductSearchController::class, 'ind
 Route::post('/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe')->middleware('throttle:5,1');
 Route::post('/newsletter/unsubscribe', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
-// Category Routes
-Route::get('/category/{slug}', [App\Http\Controllers\CategoryController::class, 'show'])->name('category.show');
-
 // Product Routes
 Route::get('/product/{slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('product.show');
 Route::post('/product/variation', [App\Http\Controllers\ProductController::class, 'getVariation'])->name('product.variation');
