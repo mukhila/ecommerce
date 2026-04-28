@@ -2,14 +2,87 @@
 
 @section('title', 'Dashboard')
 
+@push('styles')
+<style>
+    .dashboard-card {
+        border: 1px solid #eef0f4;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+    }
+
+    .metric-card {
+        min-height: 132px;
+    }
+
+    .metric-icon {
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 24px;
+    }
+
+    .metric-value {
+        font-size: 28px;
+        line-height: 1.1;
+        letter-spacing: 0;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        display: inline-block;
+        border-radius: 50%;
+    }
+
+    .table-fixed {
+        table-layout: fixed;
+    }
+
+    .truncate-cell {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .dashboard-chart {
+        min-height: 320px;
+    }
+</style>
+@endpush
+
 @section('content')
+@php
+    $money = fn ($value) => '&#8377;' . number_format((float) $value, 2);
+    $count = fn ($value) => number_format((int) $value);
+    $orderBadge = [
+        'pending' => 'warning',
+        'processing' => 'info',
+        'shipped' => 'primary',
+        'delivered' => 'success',
+        'cancelled' => 'danger',
+    ];
+    $paymentBadge = [
+        'pending' => 'warning',
+        'paid' => 'success',
+        'successful' => 'success',
+        'failed' => 'danger',
+        'refunded' => 'secondary',
+    ];
+@endphp
+
 <div class="row mb-4">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0 font-size-18">Dashboard</h4>
+            <div>
+                <h4 class="mb-sm-0 font-size-18">Ecommerce Dashboard</h4>
+                <p class="text-muted mb-0 mt-1">Live store overview for products, revenue, orders, payments, and stock.</p>
+            </div>
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="javascript: void(0);">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
             </div>
@@ -17,240 +90,467 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row g-3 mb-4">
     @if($data['canViewFinancial'])
-    <div class="col-xl-3 col-md-6">
-        <div class="card card-h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <span class="text-white-50 mb-3 d-block text-truncate">Total Revenue</span>
-                        <h3 class="mb-3 text-white">
-                            ₹{{ number_format($data['revenue']['total_revenue'], 2) }}
-                        </h3>
-                        <div class="text-white-50">
-                            @if($data['revenue']['growth_percentage'] >= 0)
-                                <span class="badge bg-success-subtle text-success ms-1"><i class="mdi mdi-arrow-up-bold"></i> {{ $data['revenue']['growth_percentage'] }}%</span> vs last period
-                            @else
-                                <span class="badge bg-danger-subtle text-danger ms-1"><i class="mdi mdi-arrow-down-bold"></i> {{ abs($data['revenue']['growth_percentage']) }}%</span> vs last period
-                            @endif
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 text-end dash-widget">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-white bg-opacity-25 text-white rounded-3 fs-2">
-                                <iconify-icon icon="solar:wallet-money-bold-duotone"></iconify-icon>
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-card metric-card border-start border-success border-4 mb-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <p class="text-muted mb-2">30 Day Revenue</p>
+                            <h3 class="metric-value mb-2">{!! $money($data['revenue']['total_revenue'] ?? 0) !!}</h3>
+                            <span class="badge bg-{{ ($data['revenue']['growth_percentage'] ?? 0) >= 0 ? 'success' : 'danger' }}-subtle text-{{ ($data['revenue']['growth_percentage'] ?? 0) >= 0 ? 'success' : 'danger' }}">
+                                {{ ($data['revenue']['growth_percentage'] ?? 0) >= 0 ? '+' : '' }}{{ $data['revenue']['growth_percentage'] ?? 0 }}%
                             </span>
+                            <span class="text-muted ms-1">vs previous period</span>
                         </div>
+                        <span class="metric-icon bg-success-subtle text-success">
+                            <iconify-icon icon="solar:wallet-money-bold-duotone"></iconify-icon>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6">
-        <div class="card card-h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #2af598 0%, #009efd 100%); color: white;">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <span class="text-white-50 mb-3 d-block text-truncate">Total Orders</span>
-                        <h3 class="mb-3 text-white">
-                            {{ number_format($data['revenue']['order_count']) }}
-                        </h3>
-                        <div class="text-white-50">
-                            <span class="opacity-75">Lifetime orders</span>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 text-end dash-widget">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-white bg-opacity-25 text-white rounded-3 fs-2">
-                                <iconify-icon icon="solar:cart-large-4-bold-duotone"></iconify-icon>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6">
-        <div class="card card-h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #fab2ff 0%, #1904e5 100%); color: white;">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <span class="text-white-50 mb-3 d-block text-truncate">Avg. Order Value</span>
-                        <h3 class="mb-3 text-white">
-                            ₹{{ number_format($data['revenue']['average_order_value'], 2) }}
-                        </h3>
-                        <div class="text-white-50">
-                            <span class="opacity-75">Per completed order</span>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 text-end dash-widget">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-white bg-opacity-25 text-white rounded-3 fs-2">
-                                <iconify-icon icon="solar:tag-price-bold-duotone"></iconify-icon>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     @endif
 
     <div class="col-xl-3 col-md-6">
-        <div class="card card-h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #5a5a5a;">
+        <div class="card dashboard-card metric-card border-start border-primary border-4 mb-0">
             <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <span class="text-muted mb-3 d-block text-truncate">Low Stock</span>
-                        <h3 class="mb-3">
-                            {{ count($data['lowStock']) }}
-                        </h3>
-                        <div class="text-muted">
-                            <span class="text-danger fw-bold">{{ count($data['outOfStock']) }}</span> out of stock
-                        </div>
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="text-muted mb-2">Total Orders</p>
+                        <h3 class="metric-value mb-2">{{ $count($data['orderStats']['total'] ?? 0) }}</h3>
+                        <span class="text-muted">{{ $count($data['orderStats']['today'] ?? 0) }} placed today</span>
                     </div>
-                    <div class="flex-shrink-0 text-end dash-widget">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-danger bg-opacity-10 text-danger rounded-3 fs-2">
-                                <iconify-icon icon="solar:box-minimalistic-bold-duotone"></iconify-icon>
-                            </span>
-                        </div>
+                    <span class="metric-icon bg-primary-subtle text-primary">
+                        <iconify-icon icon="solar:cart-large-4-bold-duotone"></iconify-icon>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-card metric-card border-start border-warning border-4 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="text-muted mb-2">Pending Orders</p>
+                        <h3 class="metric-value mb-2">{{ $count($data['orderStats']['pending'] ?? 0) }}</h3>
+                        <span class="text-muted">{{ $count($data['orderStats']['payment_pending'] ?? 0) }} awaiting payment</span>
                     </div>
+                    <span class="metric-icon bg-warning-subtle text-warning">
+                        <iconify-icon icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-card metric-card border-start border-info border-4 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="text-muted mb-2">Products</p>
+                        <h3 class="metric-value mb-2">{{ $count($data['productStats']['total'] ?? 0) }}</h3>
+                        <span class="text-muted">{{ $count($data['productStats']['active'] ?? 0) }} active in {{ $count($data['productStats']['categories'] ?? 0) }} categories</span>
+                    </div>
+                    <span class="metric-icon bg-info-subtle text-info">
+                        <iconify-icon icon="solar:box-bold-duotone"></iconify-icon>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if($data['canViewFinancial'])
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-card metric-card border-start border-secondary border-4 mb-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <p class="text-muted mb-2">Average Order Value</p>
+                            <h3 class="metric-value mb-2">{!! $money($data['revenue']['average_order_value'] ?? 0) !!}</h3>
+                            <span class="text-muted">{{ $count($data['revenue']['order_count'] ?? 0) }} paid orders in range</span>
+                        </div>
+                        <span class="metric-icon bg-secondary-subtle text-secondary">
+                            <iconify-icon icon="solar:tag-price-bold-duotone"></iconify-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-card metric-card border-start border-danger border-4 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="text-muted mb-2">Stock Alerts</p>
+                        <h3 class="metric-value mb-2">{{ $count(count($data['lowStock'] ?? []) + count($data['outOfStock'] ?? [])) }}</h3>
+                        <span class="text-muted">{{ $count(count($data['outOfStock'] ?? [])) }} out of stock</span>
+                    </div>
+                    <span class="metric-icon bg-danger-subtle text-danger">
+                        <iconify-icon icon="solar:danger-circle-bold-duotone"></iconify-icon>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-card metric-card border-start border-dark border-4 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="text-muted mb-2">Customers</p>
+                        <h3 class="metric-value mb-2">{{ $count($data['customerStats']['total'] ?? 0) }}</h3>
+                        <span class="text-muted">{{ $count($data['customerStats']['new_30_days'] ?? 0) }} joined in 30 days</span>
+                    </div>
+                    <span class="metric-icon bg-dark-subtle text-dark">
+                        <iconify-icon icon="solar:users-group-rounded-bold-duotone"></iconify-icon>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-card metric-card border-start border-secondary border-4 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="text-muted mb-2">Fulfillment</p>
+                        <h3 class="metric-value mb-2">{{ $count(($data['orderStats']['processing'] ?? 0) + ($data['orderStats']['shipped'] ?? 0)) }}</h3>
+                        <span class="text-muted">{{ $count($data['orderStats']['delivered'] ?? 0) }} delivered total</span>
+                    </div>
+                    <span class="metric-icon bg-secondary-subtle text-secondary">
+                        <iconify-icon icon="solar:delivery-bold-duotone"></iconify-icon>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
+<div class="row g-3 mb-4">
     @if($data['canViewFinancial'])
-    <div class="col-xl-8">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body">
-                <h4 class="card-title mb-4">Revenue Analytics</h4>
-                <div id="revenue-chart" class="apex-charts" dir="ltr"></div>
+        <div class="col-xl-8">
+            <div class="card dashboard-card mb-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">Revenue And Orders</h5>
+                            <p class="text-muted mb-0">{{ $data['dateRange']['start']->format('d M Y') }} to {{ $data['dateRange']['end']->format('d M Y') }}</p>
+                        </div>
+                        <a href="{{ route('admin.analytics.revenue') }}" class="btn btn-sm btn-outline-primary">Revenue Report</a>
+                    </div>
+                    <div id="revenue-chart" class="dashboard-chart"></div>
+                </div>
             </div>
         </div>
-    </div>
     @endif
-    
+
     <div class="col-xl-{{ $data['canViewFinancial'] ? '4' : '12' }}">
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card dashboard-card mb-0">
             <div class="card-body">
-                <h4 class="card-title mb-4">Payment Methods</h4>
-                <div id="payment-chart" class="apex-charts py-2" style="height: 350px"></div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Payment Mix</h5>
+                        <p class="text-muted mb-0">Paid order distribution</p>
+                    </div>
+                    <a href="{{ route('admin.orders.index', ['payment_status' => 'paid']) }}" class="btn btn-sm btn-outline-primary">View Paid</a>
+                </div>
+                <div id="payment-chart" class="dashboard-chart"></div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-xl-6">
-        <div class="card border-0 shadow-sm mb-4">
+<div class="row g-3 mb-4">
+    <div class="col-xl-4">
+        <div class="card dashboard-card h-100 mb-0">
             <div class="card-body">
-                <h4 class="card-title mb-4">Category Performance (Revenue)</h4>
-                <div id="category-chart" class="apex-charts" dir="ltr"></div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="card-title mb-0">Order Status</h5>
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-outline-secondary">All Orders</a>
+                </div>
+                @foreach(['pending', 'processing', 'shipped', 'delivered', 'cancelled'] as $status)
+                    @php
+                        $value = $data['orderStats'][$status] ?? 0;
+                        $totalOrders = max((int) ($data['orderStats']['total'] ?? 0), 1);
+                        $percent = round(($value / $totalOrders) * 100);
+                    @endphp
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="text-capitalize">
+                                <span class="status-dot bg-{{ $orderBadge[$status] }}"></span>
+                                {{ $status }}
+                            </span>
+                            <strong>{{ $count($value) }}</strong>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-{{ $orderBadge[$status] }}" style="width: {{ $percent }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-6">
-        <div class="card border-0 shadow-sm mb-4">
+
+    <div class="col-xl-8">
+        <div class="card dashboard-card h-100 mb-0">
             <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h4 class="card-title">Top Selling Products</h4>
-                    <span class="badge bg-primary-subtle text-primary">Top 5</span>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Pending Orders</h5>
+                        <p class="text-muted mb-0">Orders waiting for action or fulfillment.</p>
+                    </div>
+                    <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="btn btn-sm btn-outline-warning">Pending List</a>
                 </div>
-                
-                @if(count($data['topProducts']['products']) > 0)
                 <div class="table-responsive">
-                    <table class="table table-hover table-nowrap mb-0 align-middle">
+                    <table class="table table-hover table-fixed align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 18%;">Order</th>
+                                <th style="width: 26%;">Customer</th>
+                                <th style="width: 14%;">Items</th>
+                                @if($data['canViewFinancial'])
+                                    <th style="width: 16%;" class="text-end">Total</th>
+                                @endif
+                                <th style="width: 14%;">Payment</th>
+                                <th style="width: 12%;" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($data['pendingOrders'] as $order)
+                                <tr>
+                                    <td class="truncate-cell">
+                                        <strong>{{ $order->order_number }}</strong>
+                                        <div class="text-muted small">{{ $order->created_at->format('d M, h:i A') }}</div>
+                                    </td>
+                                    <td class="truncate-cell">
+                                        {{ $order->user->name ?? $order->guest_name ?? 'Guest Customer' }}
+                                        <div class="text-muted small truncate-cell">{{ $order->user->email ?? $order->guest_email ?? 'No email' }}</div>
+                                    </td>
+                                    <td>{{ $order->items->sum('quantity') }} units</td>
+                                    @if($data['canViewFinancial'])
+                                        <td class="text-end fw-semibold">{!! $money($order->total) !!}</td>
+                                    @endif
+                                    <td>
+                                        <span class="badge bg-{{ $paymentBadge[$order->payment_status] ?? 'secondary' }}-subtle text-{{ $paymentBadge[$order->payment_status] ?? 'secondary' }}">
+                                            {{ ucfirst($order->payment_status) }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary">
+                                            <i class="ri-eye-line"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ $data['canViewFinancial'] ? 6 : 5 }}" class="text-center text-muted py-4">No pending orders right now.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-6">
+        <div class="card dashboard-card h-100 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Latest Payment Details</h5>
+                        <p class="text-muted mb-0">Most recent gateway transactions.</p>
+                    </div>
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-outline-primary">Orders</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transaction</th>
+                                <th>Order</th>
+                                @if($data['canViewFinancial'])
+                                    <th class="text-end">Amount</th>
+                                @endif
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($data['latestPayments'] as $payment)
+                                <tr>
+                                    <td class="truncate-cell" style="max-width: 180px;">
+                                        <strong>{{ $payment->gateway_transaction_id ?? $payment->gateway_reference ?? 'TXN-' . $payment->id }}</strong>
+                                        <div class="text-muted small">{{ ucfirst($payment->payment_method ?? 'gateway') }}</div>
+                                    </td>
+                                    <td>
+                                        @if($payment->order)
+                                            <a href="{{ route('admin.orders.show', $payment->order) }}">{{ $payment->order->order_number }}</a>
+                                            <div class="text-muted small truncate-cell" style="max-width: 160px;">{{ $payment->order->user->name ?? $payment->order->guest_name ?? 'Guest Customer' }}</div>
+                                        @else
+                                            <span class="text-muted">No order</span>
+                                        @endif
+                                    </td>
+                                    @if($data['canViewFinancial'])
+                                        <td class="text-end fw-semibold">{!! $money($payment->amount) !!}</td>
+                                    @endif
+                                    <td>
+                                        <span class="badge bg-{{ $paymentBadge[$payment->status] ?? 'secondary' }}-subtle text-{{ $paymentBadge[$payment->status] ?? 'secondary' }}">
+                                            {{ ucfirst($payment->status) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $payment->created_at->format('d M, h:i A') }}</td>
+                                </tr>
+                            @empty
+                                @forelse($data['latestPaymentOrders'] as $order)
+                                    <tr>
+                                        <td class="truncate-cell" style="max-width: 180px;">
+                                            <strong>{{ $order->razorpay_payment_id ?? $order->payment_reference ?? 'ORDER-' . $order->id }}</strong>
+                                            <div class="text-muted small">{{ ucfirst($order->payment_method ?? 'manual') }}</div>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.orders.show', $order) }}">{{ $order->order_number }}</a>
+                                            <div class="text-muted small truncate-cell" style="max-width: 160px;">{{ $order->user->name ?? $order->guest_name ?? 'Guest Customer' }}</div>
+                                        </td>
+                                        @if($data['canViewFinancial'])
+                                            <td class="text-end fw-semibold">{!! $money($order->total) !!}</td>
+                                        @endif
+                                        <td>
+                                            <span class="badge bg-{{ $paymentBadge[$order->payment_status] ?? 'secondary' }}-subtle text-{{ $paymentBadge[$order->payment_status] ?? 'secondary' }}">
+                                                {{ ucfirst($order->payment_status) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $order->updated_at->format('d M, h:i A') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ $data['canViewFinancial'] ? 5 : 4 }}" class="text-center text-muted py-4">No payment records found.</td>
+                                    </tr>
+                                @endforelse
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card dashboard-card h-100 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Top Selling Products</h5>
+                        <p class="text-muted mb-0">Best performers in the selected 30 day period.</p>
+                    </div>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-outline-primary">Products</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Product</th>
                                 <th class="text-center">Sold</th>
                                 @if($data['canViewFinancial'])
-                                <th class="text-end">Revenue</th>
+                                    <th class="text-end">Revenue</th>
                                 @endif
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(array_slice($data['topProducts']['products'], 0, 5) as $product)
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-xs me-2">
-                                            <span class="avatar-title rounded-circle bg-light text-primary">
-                                                {{ substr($product['name'], 0, 1) }}
-                                            </span>
-                                        </div>
-                                        <h6 class="mb-0 font-size-14 text-truncate" style="max-width: 200px;">{{ $product['name'] }}</h6>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-success-subtle text-success rounded-pill">{{ $product['total_sold'] }}</span>
-                                </td>
-                                @if($data['canViewFinancial'])
-                                <td class="text-end fw-bold">
-                                    ₹{{ number_format($product['total_revenue'], 2) }}
-                                </td>
-                                @endif
-                            </tr>
-                            @endforeach
+                            @forelse(array_slice($data['topProducts']['products'] ?? [], 0, 6) as $product)
+                                <tr>
+                                    <td class="truncate-cell">
+                                        <strong>{{ $product['name'] }}</strong>
+                                        <div class="text-muted small">SKU/Product ID: {{ $product['id'] }}</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success-subtle text-success rounded-pill">{{ $count($product['total_sold']) }}</span>
+                                    </td>
+                                    @if($data['canViewFinancial'])
+                                        <td class="text-end fw-semibold">{!! $money($product['total_revenue']) !!}</td>
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ $data['canViewFinancial'] ? 3 : 2 }}" class="text-center text-muted py-4">No product sales yet.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-                @else
-                <div class="text-center py-4">
-                    <p class="text-muted">No sales data available yet.</p>
-                </div>
-                @endif
             </div>
         </div>
     </div>
 </div>
 
-@if(count($data['lowStock']) > 0 || count($data['outOfStock']) > 0)
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-transparent border-bottom">
-                <div class="d-flex align-items-center">
-                    <h5 class="card-title mb-0 text-danger"><iconify-icon icon="solar:danger-circle-bold-duotone" class="align-middle fs-18 me-1"></iconify-icon> Stock Alerts</h5>
+<div class="row g-3">
+    @if($data['canViewFinancial'])
+        <div class="col-xl-6">
+            <div class="card dashboard-card h-100 mb-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">Category Revenue</h5>
+                            <p class="text-muted mb-0">Revenue grouped by product category.</p>
+                        </div>
+                        <a href="{{ route('admin.analytics.sales') }}" class="btn btn-sm btn-outline-primary">Sales Report</a>
+                    </div>
+                    <div id="category-chart" class="dashboard-chart"></div>
                 </div>
             </div>
-            <div class="card-body p-0">
+        </div>
+    @endif
+
+    <div class="col-xl-{{ $data['canViewFinancial'] ? '6' : '12' }}">
+        <div class="card dashboard-card h-100 mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Stock Alerts</h5>
+                        <p class="text-muted mb-0">Low and out-of-stock products that need attention.</p>
+                    </div>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-outline-danger">Manage Stock</a>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">Product Name</th>
+                                <th>Product</th>
                                 <th>Category</th>
                                 <th>Status</th>
-                                <th class="text-end pe-4">Stock Level</th>
+                                <th class="text-end">Stock</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($data['outOfStock'] as $product)
-                            <tr>
-                                <td class="ps-4 fw-medium">{{ $product['name'] }}</td>
-                                <td><span class="badge bg-light text-dark border">{{ $product['category'] }}</span></td>
-                                <td><span class="badge bg-danger-subtle text-danger">Out of Stock</span></td>
-                                <td class="text-end pe-4"><span class="text-danger fw-bold">0</span></td>
-                            </tr>
-                            @endforeach
-                            
-                            @foreach($data['lowStock'] as $product)
-                            <tr>
-                                <td class="ps-4 fw-medium">{{ $product['name'] }}</td>
-                                <td><span class="badge bg-light text-dark border">{{ $product['category'] }}</span></td>
-                                <td><span class="badge bg-warning-subtle text-warning">Low Stock</span></td>
-                                <td class="text-end pe-4"><span class="text-warning fw-bold">{{ $product['stock'] }}</span></td>
-                            </tr>
-                            @endforeach
+                            @forelse(array_merge($data['outOfStock'] ?? [], $data['lowStock'] ?? []) as $product)
+                                <tr>
+                                    <td class="truncate-cell"><strong>{{ $product['name'] }}</strong></td>
+                                    <td><span class="badge bg-light text-dark border">{{ $product['category'] }}</span></td>
+                                    <td>
+                                        @if(($product['stock'] ?? 0) <= 0)
+                                            <span class="badge bg-danger-subtle text-danger">Out of Stock</span>
+                                        @else
+                                            <span class="badge bg-warning-subtle text-warning">Low Stock</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end fw-semibold">{{ $count($product['stock'] ?? 0) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">All active products have healthy stock.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -258,192 +558,171 @@
         </div>
     </div>
 </div>
-@endif
-
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script src="{{ asset('adminassets/libs/apexcharts/apexcharts.min.js') }}"></script>
 <script>
-    // Common Chart Options
-    const commonOptions = {
-        fontFamily: 'inherit',
-        parentHeightOffset: 0,
-        toolbar: { show: false },
-        animations: { enabled: true }
+    const formatRupee = function (value) {
+        return '\u20B9' + Number(value || 0).toLocaleString('en-IN', {
+            maximumFractionDigits: 0
+        });
     };
 
-    @if($data['canViewFinancial'])
-    // Revenue & Orders Trends Chart
-    var revenueOptions = {
-        ...commonOptions,
-        series: [{
-            name: 'Revenue',
-            type: 'area',
-            data: @json($data['dailyRevenue']['revenue'])
-        }, {
-            name: 'Orders',
-            type: 'line',
-            data: @json($data['dailyRevenue']['orders'])
-        }],
+    const baseChartOptions = {
         chart: {
-            height: 350,
-            type: 'line',
             toolbar: { show: false },
             zoom: { enabled: false }
         },
-        colors: ['#667eea', '#fb2c36'],
         dataLabels: { enabled: false },
-        stroke: {
-            curve: 'smooth',
-            width: [3, 3],
-            dashArray: [0, 5]
-        },
-        fill: {
-            type: ['gradient', 'solid'],
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.6,
-                opacityTo: 0.05,
-                stops: [0, 90, 100]
-            }
-        },
-        xaxis: {
-            categories: @json($data['dailyRevenue']['labels']),
-            axisBorder: { show: false },
-            axisTicks: { show: false },
-            labels: {
-                style: { colors: '#adb5bd' }
-            }
-        },
-        yaxis: [
-            {
-                seriesName: 'Revenue',
-                labels: {
-                    formatter: function(val) {
-                        return '₹' + val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
-                    },
-                    style: { colors: '#667eea' }
-                },
-            },
-            {
-                opposite: true,
-                seriesName: 'Orders',
-                labels: {
-                    formatter: function(val) {
-                        return val.toFixed(0);
-                    },
-                    style: { colors: '#fb2c36' }
-                }
-            }
-        ],
         grid: {
-            borderColor: '#f1f1f1',
-            padding: { top: 10, right: 10, bottom: 10, left: 10 }
+            borderColor: '#edf0f5',
+            strokeDashArray: 4
         },
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (y, { seriesIndex, dataPointIndex, w }) {
-                    if(seriesIndex === 0) {
-                        return '₹' + y.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        noData: {
+            text: 'No data available'
+        }
+    };
+
+    @if($data['canViewFinancial'])
+        new ApexCharts(document.querySelector('#revenue-chart'), {
+            ...baseChartOptions,
+            series: [
+                {
+                    name: 'Revenue',
+                    type: 'area',
+                    data: @json($data['dailyRevenue']['revenue'] ?? [])
+                },
+                {
+                    name: 'Orders',
+                    type: 'line',
+                    data: @json($data['dailyRevenue']['orders'] ?? [])
+                }
+            ],
+            chart: {
+                ...baseChartOptions.chart,
+                height: 320,
+                type: 'line'
+            },
+            colors: ['#16a34a', '#2563eb'],
+            stroke: {
+                curve: 'smooth',
+                width: [3, 3]
+            },
+            fill: {
+                type: ['gradient', 'solid'],
+                gradient: {
+                    opacityFrom: 0.35,
+                    opacityTo: 0.03
+                }
+            },
+            xaxis: {
+                categories: @json($data['dailyRevenue']['labels'] ?? []),
+                labels: { rotate: -35 }
+            },
+            yaxis: [
+                {
+                    labels: {
+                        formatter: formatRupee
                     }
-                    return y + ' orders';
+                },
+                {
+                    opposite: true,
+                    labels: {
+                        formatter: function (value) {
+                            return Number(value || 0).toFixed(0);
+                        }
+                    }
+                }
+            ],
+            tooltip: {
+                shared: true,
+                y: [
+                    {
+                        formatter: function (value) {
+                            return '\u20B9' + Number(value || 0).toLocaleString('en-IN', {
+                                minimumFractionDigits: 2
+                            });
+                        }
+                    },
+                    {
+                        formatter: function (value) {
+                            return Number(value || 0).toFixed(0) + ' orders';
+                        }
+                    }
+                ]
+            }
+        }).render();
+
+        new ApexCharts(document.querySelector('#category-chart'), {
+            ...baseChartOptions,
+            series: [{
+                name: 'Revenue',
+                data: @json($data['categoryPerformance']['revenue'] ?? [])
+            }],
+            chart: {
+                ...baseChartOptions.chart,
+                height: 320,
+                type: 'bar'
+            },
+            colors: ['#2563eb'],
+            plotOptions: {
+                bar: {
+                    borderRadius: 6,
+                    columnWidth: '48%'
+                }
+            },
+            xaxis: {
+                categories: @json($data['categoryPerformance']['labels'] ?? []),
+                labels: { rotate: -25 }
+            },
+            yaxis: {
+                labels: {
+                    formatter: formatRupee
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return '\u20B9' + Number(value || 0).toLocaleString('en-IN', {
+                            minimumFractionDigits: 2
+                        });
+                    }
                 }
             }
-        }
-    };
-    new ApexCharts(document.querySelector("#revenue-chart"), revenueOptions).render();
-    
-    // Category Performance Chart
-    var categoryOptions = {
-        ...commonOptions,
-        series: [{
-            name: 'Revenue',
-            data: @json($data['categoryPerformance']['revenue'])
-        }],
-        chart: {
-            height: 350,
-            type: 'bar',
-            toolbar: { show: false }
-        },
-        plotOptions: {
-            bar: {
-                borderRadius: 4,
-                columnWidth: '45%',
-                distributed: true,
-            }
-        },
-        colors: ['#667eea', '#764ba2', '#009efd', '#2af598', '#fab2ff', '#1904e5', '#ff9a9e', '#fecfef'],
-        dataLabels: { enabled: false },
-        legend: { show: false },
-        xaxis: {
-            categories: @json($data['categoryPerformance']['labels']),
-            labels: {
-                style: { fontSize: '12px' }
-            }
-        },
-        yaxis: {
-            labels: {
-                formatter: function(val) {
-                    return '₹' + val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
-                }
-            }
-        },
-         tooltip: {
-            y: {
-                formatter: function(val) {
-                    return '₹' + val.toLocaleString('en-IN', {minimumFractionDigits: 2});
-                }
-            }
-        }
-    };
-    new ApexCharts(document.querySelector("#category-chart"), categoryOptions).render();
+        }).render();
     @endif
 
-    // Payment Methods Distribution Chart
-    var paymentOptions = {
-        ...commonOptions,
-        series: @json($data['paymentMethods']['orders']),
+    const paymentSeries = @json($data['paymentMethods']['orders'] ?? []);
+    const paymentLabels = @json($data['paymentMethods']['labels'] ?? []);
+
+    new ApexCharts(document.querySelector('#payment-chart'), {
+        ...baseChartOptions,
+        series: paymentSeries.length ? paymentSeries : [0],
+        labels: paymentLabels.length ? paymentLabels : ['No payments'],
         chart: {
+            ...baseChartOptions.chart,
             height: 320,
-            type: 'donut',
+            type: 'donut'
         },
-        labels: @json($data['paymentMethods']['labels']),
-        colors: ['#667eea', '#2af598', '#fb2c36', '#ff9a9e'],
+        colors: ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#64748b'],
         legend: {
-            show: true,
-            position: 'bottom',
-            horizontalAlign: 'center', 
-        },
-        dataLabels: {
-            enabled: true,
-            formatter: function(val) {
-                return val.toFixed(0) + '%';
-            }
+            position: 'bottom'
         },
         plotOptions: {
             pie: {
                 donut: {
-                    size: '75%',
+                    size: '72%',
                     labels: {
                         show: true,
                         total: {
                             show: true,
-                            label: 'Total',
-                            formatter: function (w) {
-                                return w.globals.seriesTotals.reduce((a, b) => {
-                                    return a + b
-                                }, 0)
-                            }
+                            label: 'Paid Orders'
                         }
                     }
                 }
             }
-        },
-        stroke: { show: false }
-    };
-    new ApexCharts(document.querySelector("#payment-chart"), paymentOptions).render();
+        }
+    }).render();
 </script>
-@endsection
+@endpush

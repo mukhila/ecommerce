@@ -41,9 +41,11 @@ class OrderCancelled extends Notification implements ShouldQueue
     {
         $dashboardUrl = route('dashboard');
 
+        $customerName = $notifiable->name ?? $this->order->guest_name ?? 'Customer';
+
         $mail = (new MailMessage)
             ->subject('Order Cancelled - ' . $this->order->order_number)
-            ->greeting('Hello ' . $notifiable->name . ',')
+            ->greeting('Hello ' . $customerName . ',')
             ->line('We regret to inform you that your order has been cancelled.')
             ->line('Order Number: **' . $this->order->order_number . '**')
             ->line('Total Amount: **₹' . number_format($this->order->total, 2) . '**');
@@ -71,11 +73,12 @@ class OrderCancelled extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'order_id' => $this->order->id,
+            'title'        => 'Order Cancelled',
+            'order_id'     => $this->order->id,
             'order_number' => $this->order->order_number,
-            'total' => $this->order->total,
-            'reason' => $this->reason,
-            'message' => 'Your order ' . $this->order->order_number . ' has been cancelled.',
+            'total'        => $this->order->total,
+            'reason'       => $this->reason,
+            'message'      => 'Your order ' . $this->order->order_number . ' has been cancelled.',
         ];
     }
 }

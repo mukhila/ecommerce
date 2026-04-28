@@ -239,7 +239,7 @@
                     </a>
                     <div class="collapse" id="supportTickets">
                         <ul class="nav-second-level">
-                            <li><a href="{{ route('admin.support.tickets.index') }}" data-key="t-ticket-list">List</a></li>
+                            <li><a href="{{ route('admin.support.index') }}" data-key="t-ticket-list">List</a></li>
                         </ul>
                     </div>
                 </li>

@@ -3,10 +3,15 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\Transaction;
+use App\Models\User;
 use App\Repositories\Analytics\RevenueAnalyticsRepository;
 use App\Repositories\Analytics\SalesAnalyticsRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Modules\Product\Models\Category;
+use Modules\Product\Models\Product;
 use Carbon\Carbon;
 
 class AdminController extends Controller
@@ -28,20 +33,71 @@ class AdminController extends Controller
     public function index()
     {
         // Get default date range (last 30 days)
-        $startDate = Carbon::now()->subDays(30)->format('Y-m-d');
-        $endDate = Carbon::now()->format('Y-m-d');
+        $startDate = Carbon::now()->subDays(30)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
 
         // Fetch analytics data
         $data = [
-            'revenue' => $this->revenueRepo->getRevenueStats($startDate, $endDate),
+            'dateRange' => [
+                'start' => $startDate->copy(),
+                'end' => $endDate->copy(),
+            ],
+            'revenue' => $this->revenueRepo->getRevenueStats($startDate->toDateTimeString(), $endDate->toDateTimeString()),
             'dailyRevenue' => $this->revenueRepo->getDailyRevenue(30),
-            'topProducts' => $this->salesRepo->getTopSellingProducts(10, $startDate, $endDate),
-            'categoryPerformance' => $this->salesRepo->getCategoryPerformance($startDate, $endDate),
+            'topProducts' => $this->salesRepo->getTopSellingProducts(10, $startDate->toDateTimeString(), $endDate->toDateTimeString()),
+            'categoryPerformance' => $this->salesRepo->getCategoryPerformance($startDate->toDateTimeString(), $endDate->toDateTimeString()),
             'lowStock' => $this->salesRepo->getLowStockProducts(10),
             'outOfStock' => $this->salesRepo->getOutOfStockProducts(),
             'salesTrends' => $this->salesRepo->getSalesTrends('daily', 30),
-            'paymentMethods' => $this->salesRepo->getSalesByPaymentMethod($startDate, $endDate),
+            'paymentMethods' => $this->salesRepo->getSalesByPaymentMethod($startDate->toDateTimeString(), $endDate->toDateTimeString()),
         ];
+
+        $data['orderStats'] = [
+            'total' => Order::count(),
+            'pending' => Order::where('status', 'pending')->count(),
+            'processing' => Order::where('status', 'processing')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
+            'delivered' => Order::where('status', 'delivered')->count(),
+            'cancelled' => Order::where('status', 'cancelled')->count(),
+            'payment_pending' => Order::where('payment_status', 'pending')->count(),
+            'today' => Order::whereDate('created_at', Carbon::today())->count(),
+        ];
+
+        $data['productStats'] = [
+            'total' => Product::count(),
+            'active' => Product::where('is_active', true)->count(),
+            'inactive' => Product::where('is_active', false)->count(),
+            'featured' => Product::where('is_featured', true)->count(),
+            'categories' => Category::count(),
+        ];
+
+        $data['customerStats'] = [
+            'total' => User::count(),
+            'new_today' => User::whereDate('created_at', Carbon::today())->count(),
+            'new_30_days' => User::where('created_at', '>=', $startDate)->count(),
+        ];
+
+        $data['latestPayments'] = Transaction::with(['order.user'])
+            ->latest()
+            ->limit(8)
+            ->get();
+
+        $data['latestPaymentOrders'] = Order::with('user')
+            ->whereNotNull('payment_status')
+            ->latest('updated_at')
+            ->limit(8)
+            ->get();
+
+        $data['recentOrders'] = Order::with(['user', 'items'])
+            ->latest()
+            ->limit(8)
+            ->get();
+
+        $data['pendingOrders'] = Order::with(['user', 'items'])
+            ->whereIn('status', ['pending', 'processing'])
+            ->latest()
+            ->limit(8)
+            ->get();
 
         // Add permission checks for role-based visibility
         $data['canViewFinancial'] = Gate::allows('view_financial_reports');

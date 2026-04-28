@@ -39,9 +39,11 @@ class OrderShipped extends Notification implements ShouldQueue
     {
         $trackingUrl = route('order.tracking', $this->order->id);
 
+        $customerName = $notifiable->name ?? $this->order->guest_name ?? 'Customer';
+
         return (new MailMessage)
             ->subject('Your Order Has Been Shipped - ' . $this->order->order_number)
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->greeting('Hello ' . $customerName . '!')
             ->line('Good news! Your order has been shipped and is on its way to you.')
             ->line('Order Number: **' . $this->order->order_number . '**')
             ->line('Tracking Number: **' . ($this->order->tracking_number ?? 'Will be updated soon') . '**')
@@ -59,12 +61,13 @@ class OrderShipped extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'order_id' => $this->order->id,
-            'order_number' => $this->order->order_number,
-            'tracking_number' => $this->order->tracking_number,
-            'courier_name' => $this->order->courier_name,
+            'title'                   => 'Order Shipped',
+            'order_id'                => $this->order->id,
+            'order_number'            => $this->order->order_number,
+            'tracking_number'         => $this->order->tracking_number,
+            'courier_name'            => $this->order->courier_name,
             'estimated_delivery_date' => $this->order->estimated_delivery_date,
-            'message' => 'Your order ' . $this->order->order_number . ' has been shipped.',
+            'message'                 => 'Your order ' . $this->order->order_number . ' has been shipped.',
         ];
     }
 }

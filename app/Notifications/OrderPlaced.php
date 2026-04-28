@@ -35,9 +35,11 @@ class OrderPlaced extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $customerName = $notifiable->name ?? $this->order->guest_name ?? 'Customer';
+
         $mail = (new MailMessage)
             ->subject('Order Confirmation - ' . $this->order->order_number)
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->greeting('Hello ' . $customerName . '!')
             ->line('Thank you for your order! Your order has been placed successfully.')
             ->line('**Order Number:** ' . $this->order->order_number)
             ->line('**Payment Method:** ' . strtoupper($this->order->payment_method));
@@ -66,10 +68,11 @@ class OrderPlaced extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'order_id' => $this->order->id,
+            'title'        => 'Order Confirmed',
+            'order_id'     => $this->order->id,
             'order_number' => $this->order->order_number,
-            'total' => $this->order->total,
-            'message' => 'Your order ' . $this->order->order_number . ' has been placed successfully.'
+            'total'        => $this->order->total,
+            'message'      => 'Your order ' . $this->order->order_number . ' has been placed successfully.',
         ];
     }
 }

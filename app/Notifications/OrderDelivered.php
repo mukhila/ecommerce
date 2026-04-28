@@ -39,9 +39,11 @@ class OrderDelivered extends Notification implements ShouldQueue
     {
         $dashboardUrl = route('dashboard');
 
+        $customerName = $notifiable->name ?? $this->order->guest_name ?? 'Customer';
+
         return (new MailMessage)
             ->subject('Your Order Has Been Delivered - ' . $this->order->order_number)
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->greeting('Hello ' . $customerName . '!')
             ->line('Great news! Your order has been successfully delivered.')
             ->line('Order Number: **' . $this->order->order_number . '**')
             ->line('Total Amount: **₹' . number_format($this->order->total, 2) . '**')
@@ -60,10 +62,11 @@ class OrderDelivered extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'order_id' => $this->order->id,
+            'title'        => 'Order Delivered',
+            'order_id'     => $this->order->id,
             'order_number' => $this->order->order_number,
-            'total' => $this->order->total,
-            'message' => 'Your order ' . $this->order->order_number . ' has been delivered successfully.',
+            'total'        => $this->order->total,
+            'message'      => 'Your order ' . $this->order->order_number . ' has been delivered successfully.',
         ];
     }
 }
