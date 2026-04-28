@@ -73,8 +73,7 @@ class CheckoutController extends Controller
         $isGuest = !Auth::check();
 
         try {
-            // Guests may only use COD — online gateways require a session-bound callback
-            $allowedMethods = $isGuest ? 'cod' : 'cod,razorpay,rayaz';
+            $allowedMethods = 'cod,razorpay,rayaz';
 
             $validated = $request->validate([
                 'full_name'       => 'required|string|max:255',

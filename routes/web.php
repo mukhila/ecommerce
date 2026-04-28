@@ -79,11 +79,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/order/{order}/cancel', [App\Http\Controllers\OrderController::class, 'cancel'])->name('order.cancel');
 });
 
-// Payment Routes
-Route::middleware(['auth'])->group(function () {
-    Route::post('/payment/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.callback');
-    Route::get('/payment/failed', [App\Http\Controllers\PaymentController::class, 'failed'])->name('payment.failed');
-});
+// Payment Routes — no auth required; guest Razorpay orders are verified by signature
+Route::post('/payment/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment/failed', [App\Http\Controllers\PaymentController::class, 'failed'])->name('payment.failed');
 
 // Razorpay Webhook (no auth required - verified by signature)
 Route::post('/payment/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');

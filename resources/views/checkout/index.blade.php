@@ -269,22 +269,7 @@
                                                     @endauth
                                                 </div>
                                             </li>
-                                            <li>
-                                                <div class="radio-option">
-                                                    @auth
-                                                        <input type="radio" name="payment_method" id="payment-rayaz" value="rayaz">
-                                                        <label for="payment-rayaz">Rayaz Pay</label>
-                                                    @else
-                                                        <input type="radio" id="payment-rayaz-disabled" disabled>
-                                                        <label for="payment-rayaz-disabled" class="text-muted">
-                                                            Rayaz Pay
-                                                            <small class="d-block">
-                                                                <a href="{{ route('login') }}">Login</a> required for online payment
-                                                            </small>
-                                                        </label>
-                                                    @endauth
-                                                </div>
-                                            </li>
+                                           
                                         </ul>
                                     </div>
                                 </div>
