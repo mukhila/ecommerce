@@ -197,6 +197,20 @@
                         </div>
                          <div class="tab-pane fade" id="order-tab-pane" role="tabpanel">
                              <h3>My Orders</h3>
+
+                             @if(session('success'))
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                             @endif
+                             @if(session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ session('error') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                             @endif
+
                              @if($recentOrders->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-striped">
@@ -220,15 +234,50 @@
                                                         </span>
                                                     </td>
                                                     <td>₹{{ number_format($order->total, 2) }}</td>
-                                                    <td>
+                                                    <td class="d-flex gap-1 flex-wrap">
                                                         <a href="{{ route('order.tracking', $order) }}" class="btn btn-sm btn-primary">
                                                             <i class="ri-map-pin-line"></i> Track
                                                         </a>
+                                                        @if(in_array($order->status, ['pending', 'processing']))
+                                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#cancelModal{{ $order->id }}">
+                                                                <i class="ri-close-circle-line"></i> Cancel
+                                                            </button>
+                                                            <!-- Cancel confirmation modal -->
+                                                            <div class="modal fade" id="cancelModal{{ $order->id }}" tabindex="-1" aria-hidden="true">
+                                                                <div class="modal-dialog modal-dialog-centered">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title">Cancel Order {{ $order->order_number }}</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                        </div>
+                                                                        <form method="POST" action="{{ route('order.cancel', $order) }}">
+                                                                            @csrf
+                                                                            <div class="modal-body">
+                                                                                <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+                                                                                <div class="mb-3">
+                                                                                    <label for="reason{{ $order->id }}" class="form-label">Reason (optional)</label>
+                                                                                    <textarea class="form-control" id="reason{{ $order->id }}" name="reason" rows="2" maxlength="500" placeholder="Let us know why you're cancelling..."></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Order</button>
+                                                                                <button type="submit" class="btn btn-danger">Yes, Cancel Order</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="mt-3">
+                                    {{ $recentOrders->appends(request()->except('orders_page'))->links() }}
                                 </div>
                              @else
                                 <p class="text-muted">You have no orders yet.</p>
@@ -309,4 +358,13 @@
         </div>
     </section>
     <!--  dashboard section end -->
+@push('scripts')
+<script>
+    // Auto-activate the Orders tab when navigating paginated order results
+    if (new URLSearchParams(window.location.search).has('orders_page')) {
+        const tab = document.getElementById('order-tab');
+        if (tab) { tab.click(); }
+    }
+</script>
+@endpush
 @endsection

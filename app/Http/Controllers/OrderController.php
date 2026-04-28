@@ -111,6 +111,27 @@ class OrderController extends Controller
     }
 
     /**
+     * Customer self-cancellation — only pending/processing orders may be cancelled.
+     */
+    public function cancel(Request $request, Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if (!in_array($order->status, ['pending', 'processing'])) {
+            return back()->with('error', 'Order #' . $order->order_number . ' cannot be cancelled at this stage.');
+        }
+
+        $request->validate(['reason' => ['nullable', 'string', 'max:500']]);
+
+        $reason = $request->filled('reason') ? $request->reason : 'Cancelled by customer';
+        $order->cancelOrder($reason);
+
+        return back()->with('success', 'Order #' . $order->order_number . ' has been cancelled.');
+    }
+
+    /**
      * Order tracking page
      */
     public function tracking(Order $order)

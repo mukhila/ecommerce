@@ -24,12 +24,11 @@ class DashboardController extends Controller
                           ->where('payment_status', 'paid')
                           ->sum('total');
 
-        // Get recent orders
+        // Get all orders paginated (custom page name preserves other query params)
         $recentOrders = Order::where('user_id', $user->id)
                             ->with('items.product')
                             ->orderBy('created_at', 'desc')
-                            ->limit(5)
-                            ->get();
+                            ->paginate(10, ['*'], 'orders_page');
 
         // Get pending orders
         $pendingOrders = Order::where('user_id', $user->id)

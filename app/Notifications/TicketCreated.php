@@ -15,7 +15,7 @@ class TicketCreated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -37,5 +37,19 @@ class TicketCreated extends Notification
             ->line('**Expected Response Time:** ' . $responseTime)
             ->line('Please keep your ticket number handy for future reference.')
             ->line('Our support team will follow up with you shortly.');
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        $responseTime = match($this->ticket->priority) {
+            'high'   => '2–4 hours',
+            'medium' => '12–24 hours',
+            default  => '24–48 hours',
+        };
+
+        return [
+            'title'   => 'Support Ticket #' . $this->ticket->ticket_number . ' Received',
+            'message' => 'Your ' . $this->ticket->priority . '-priority ticket has been received. Expected response: ' . $responseTime . '.',
+        ];
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 // ── Dev-only utility routes — only available when APP_ENV=local ──────────────
+// WARNING: Never set APP_ENV=local on production. Run migrations via CLI only.
 if (app()->environment('local')) {
     Route::get('/clear-cache', function () {
         Artisan::call('cache:clear');
@@ -24,15 +25,8 @@ if (app()->environment('local')) {
             return '❌ DB Error: ' . $e->getMessage();
         }
     });
-
-    Route::get('/run-migrations', function () {
-        try {
-            Artisan::call('migrate', ['--force' => true]);
-            return nl2br(Artisan::output());
-        } catch (\Exception $e) {
-            return '❌ Migration Error: ' . $e->getMessage();
-        }
-    });
+    // /run-migrations removed — running migrations via an unauthenticated HTTP
+    // route is unsafe even in local mode. Use: php artisan migrate
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -82,6 +76,7 @@ Route::get('/order/confirmation', [App\Http\Controllers\OrderController::class, 
 Route::middleware(['auth'])->group(function () {
     Route::get('/order/success/{order}', [App\Http\Controllers\OrderController::class, 'success'])->name('order.success');
     Route::get('/order/tracking/{order}', [App\Http\Controllers\OrderController::class, 'tracking'])->name('order.tracking');
+    Route::post('/order/{order}/cancel', [App\Http\Controllers\OrderController::class, 'cancel'])->name('order.cancel');
 });
 
 // Payment Routes
