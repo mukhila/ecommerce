@@ -25,7 +25,7 @@
                                     <div>
                                         <h4 class="animated" data-animation-in="fadeInUp">{{ $slider->subtitle }}</h4>
                                         <h1 class="animated" data-animation-in="fadeInUp">{{ $slider->title }}</h1>
-                                        <a href="{{ $slider->link ?? '#' }}" class="btn btn-solid animated" data-animation-in="fadeInUp">shop now</a>
+                                       
                                     </div>
                                 </div>
                             </div>
