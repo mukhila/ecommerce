@@ -55,7 +55,18 @@ class OtpController extends Controller
             'remoteip' => request()->ip(),
         ]);
 
-        return $response->json('success', false);
+        $data = $response->json();
+
+        if (!($data['success'] ?? false)) {
+            return false;
+        }
+
+        // reCAPTCHA v3 returns a score (0.0–1.0); require at least 0.5
+        if (isset($data['score'])) {
+            return $data['score'] >= 0.5;
+        }
+
+        return true;
     }
 
     public function sendLoginOtp(Request $request)

@@ -255,18 +255,8 @@
                                             </li>
                                             <li>
                                                 <div class="radio-option">
-                                                    @auth
-                                                        <input type="radio" name="payment_method" id="payment-razorpay" value="razorpay">
-                                                        <label for="payment-razorpay">Razorpay (Card/UPI/Netbanking)</label>
-                                                    @else
-                                                        <input type="radio" id="payment-razorpay-disabled" disabled>
-                                                        <label for="payment-razorpay-disabled" class="text-muted">
-                                                            Razorpay (Card/UPI/Netbanking)
-                                                            <small class="d-block">
-                                                                <a href="{{ route('login') }}">Login</a> required for online payment
-                                                            </small>
-                                                        </label>
-                                                    @endauth
+                                                    <input type="radio" name="payment_method" id="payment-razorpay" value="razorpay">
+                                                    <label for="payment-razorpay">Razorpay (Card / UPI / Netbanking)</label>
                                                 </div>
                                             </li>
                                            

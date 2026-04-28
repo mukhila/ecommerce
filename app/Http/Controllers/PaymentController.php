@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Services\RazorpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -35,9 +36,9 @@ class PaymentController extends Controller
                 'razorpay_signature' => 'required|string',
             ]);
 
-            // Find order by Razorpay order ID and verify ownership
+            // Find order by Razorpay order ID — works for both auth and guest users.
+            // Ownership is proven by the signature we verify immediately below.
             $order = Order::where('razorpay_order_id', $request->razorpay_order_id)
-                ->where('user_id', Auth::id())
                 ->firstOrFail();
 
             // Verify payment signature
@@ -90,10 +91,25 @@ class PaymentController extends Controller
                 // Send notifications
                 if ($order->user) {
                     $order->user->notify(new OrderPlaced($order));
+                } else {
+                    // Guest order — notify via the email on the shipping address
+                    $guestEmail = $order->guest_email
+                        ?? optional($order->shippingAddress)->email;
+                    if ($guestEmail) {
+                        Notification::route('mail', $guestEmail)
+                            ->notify(new OrderPlaced($order));
+                    }
                 }
 
                 $admins = User::where('role', 'admin')->get();
                 Notification::send($admins, new NewOrderNotification($order));
+
+                // Guest orders redirect to guest confirmation; auth users to order.success
+                if (!$order->user_id) {
+                    session(['guest_order_id' => $order->id]);
+                    return redirect()->route('order.guest-confirmation')
+                        ->with('success', 'Payment successful! Your order has been confirmed.');
+                }
 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Payment successful! Your order has been confirmed.');
@@ -126,9 +142,7 @@ class PaymentController extends Controller
         $orderId = $request->query('order_id');
 
         if ($orderId) {
-            $order = Order::where('id', $orderId)
-                ->where('user_id', Auth::id())
-                ->first();
+            $order = Order::where('id', $orderId)->first();
 
             if ($order) {
                 $order->update([

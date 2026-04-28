@@ -73,7 +73,7 @@
         },
         modal: {
             ondismiss: function() {
-                window.location.href = '{{ route('payment.failed') }}';
+                window.location.href = '{{ route('payment.failed') }}?order_id={{ $order->id }}';
             }
         },
         theme: { color: "#ff4c3b" }

@@ -101,12 +101,6 @@
                                     </svg>
                                     Continue with Google
                                 </a>
-                                <a href="{{ route('auth.facebook') }}" class="btn-social-auth btn-facebook-auth">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff">
-                                        <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.026 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
-                                    </svg>
-                                    Continue with Facebook
-                                </a>
                             </div>
 
                             <div class="auth-divider">
@@ -133,18 +127,16 @@
                                     <small class="text-muted">We'll send a 6-digit OTP to verify.</small>
                                 </div>
 
-                                {{-- reCAPTCHA --}}
-                                <div class="form-box mb-3">
-                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                                    @error('g-recaptcha-response')
-                                        <span class="text-danger d-block mt-1 small"><strong>{{ $message }}</strong></span>
-                                    @enderror
-                                    @error('recaptcha')
-                                        <span class="text-danger d-block mt-1 small"><strong>{{ $message }}</strong></span>
-                                    @enderror
-                                </div>
+                                {{-- reCAPTCHA v3 — invisible, token injected before submit --}}
+                                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+                                @error('g-recaptcha-response')
+                                    <span class="text-danger d-block mt-1 small"><strong>{{ $message }}</strong></span>
+                                @enderror
+                                @error('recaptcha')
+                                    <span class="text-danger d-block mt-1 small"><strong>{{ $message }}</strong></span>
+                                @enderror
 
-                                <button type="submit" class="btn btn-solid w-100">Send OTP &amp; Sign In</button>
+                                <button type="submit" class="btn btn-solid w-100" id="loginSubmitBtn">Send OTP &amp; Sign In</button>
                             </form>
 
                             <p class="text-center mt-3 mb-0 small text-muted">
@@ -171,12 +163,6 @@
                                         <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                                     </svg>
                                     Sign up with Google
-                                </a>
-                                <a href="{{ route('auth.facebook') }}" class="btn-social-auth btn-facebook-auth">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff">
-                                        <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.026 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
-                                    </svg>
-                                    Sign up with Facebook
                                 </a>
                             </div>
 
@@ -268,7 +254,8 @@
 </section>
 
 @push('scripts')
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{{-- reCAPTCHA v3 — loads invisibly, no checkbox shown to the user --}}
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}" async defer></script>
 <script>
 (function () {
     // Determine which tab to activate on page load
@@ -297,6 +284,22 @@
         document.getElementById('login-tab-btn').click();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    // reCAPTCHA v3 — execute on OTP login form submit, inject token then submit
+    var loginForm = document.querySelector('#login-tab form[action]');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var form = this;
+            var siteKey = '{{ config('services.recaptcha.site_key') }}';
+            grecaptcha.ready(function () {
+                grecaptcha.execute(siteKey, { action: 'login' }).then(function (token) {
+                    document.getElementById('g-recaptcha-response').value = token;
+                    form.submit();
+                });
+            });
+        });
+    }
 })();
 </script>
 @endpush
