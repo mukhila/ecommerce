@@ -9,7 +9,11 @@
 @section('og_image', $product->images->first() ? asset('uploads/' . $product->images->first()->image_path) : asset('frontassets/images/logo.png'))
 @section('og_url', route('product.show', $product->slug))
 @section('canonical', route('product.show', $product->slug))
-
+<style>
+.manufacturer-details-list li{
+	display: block!important;
+}
+</style>
 
 @section('content')
     <!-- breadcrumb start -->

@@ -32,7 +32,17 @@
       "Bash(grep -E \"\\\\.\\(php|json|env|html\\)$\")",
       "Bash(grep -v \":0$\")",
       "Bash(xargs cat)",
-      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"USE jangokids; DROP TABLE IF EXISTS migrations;\" 2>&1)"
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"USE jangokids; DROP TABLE IF EXISTS migrations;\" 2>&1)",
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"SELECT migration, batch FROM jangokids.migrations ORDER BY id;\" 2>&1)",
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"FLUSH TABLES; SET FOREIGN_KEY_CHECKS=0; DROP TABLE IF EXISTS jangokids.migrations; SET FOREIGN_KEY_CHECKS=1;\" 2>&1)",
+      "PowerShell(Get-ChildItem \"D:\\\\xampp\\\\mysql\\\\data\\\\jangokids\\\\\" | Select-Object Name; & \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"SHOW TABLES IN jangokids LIKE 'migrations';\" 2>&1)",
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"SHOW TABLES IN jangokids;\" 2>&1)",
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"SELECT VERSION\\(\\);\" 2>&1)",
+      "PowerShell(net *)",
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysqladmin.exe\" -u root flush-tables 2>&1; & \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"SHOW TABLES IN jangokids;\" 2>&1)",
+      "PowerShell(& \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysqladmin.exe\" -u root shutdown 2>&1; Start-Sleep -Seconds 3; Write-Host \"MySQL stopped\")",
+      "PowerShell(Start-Process \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysqld.exe\" -ArgumentList \"--defaults-file=D:\\\\xampp\\\\mysql\\\\bin\\\\my.ini\" -WindowStyle Hidden; Start-Sleep -Seconds 5; & \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"SELECT 1;\" 2>&1)",
+      "PowerShell(Start-Sleep -Seconds 8; & \"D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -h 127.0.0.1 -e \"SELECT 1;\" 2>&1)"
     ]
   }
 }
