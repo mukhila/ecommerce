@@ -12,6 +12,7 @@ return new class extends Migration
         // Fix #1 — Coral Splash Shorts Set: remove "Product details" from description
         DB::table('products')
             ->where('name', 'like', '%Coral Splash%')
+            ->orderBy('id')
             ->each(function ($product) {
                 $fixed = preg_replace(
                     '/Product details[:\s]*/i',
