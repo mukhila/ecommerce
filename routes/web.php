@@ -42,6 +42,12 @@ Route::view('/page/faqs', 'pages.faq')->name('faqs');
 Route::view('/page/size-guide', 'pages.size-guide')->name('size-guide');
 Route::view('/page/privacy-policy', 'pages.privacy-policy')->name('privacy-policy');
 Route::view('/page/terms-and-conditions', 'pages.terms-and-conditions')->name('terms-and-conditions');
+Route::view('/page/shipping-policy', 'pages.shipping-policy')->name('shipping-policy');
+Route::view('/page/return-policy', 'pages.return-policy')->name('return-policy');
+
+// Password Reset Routes (fixes dead password.email route)
+Route::get('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email')->middleware('throttle:5,1');
 Route::get('/page/data-deletion', [App\Http\Controllers\DataDeletionController::class, 'index'])->name('data-deletion');
 Route::post('/page/data-deletion', [App\Http\Controllers\DataDeletionController::class, 'submit'])->name('data-deletion.submit');
 

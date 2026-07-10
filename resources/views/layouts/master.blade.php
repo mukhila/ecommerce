@@ -27,27 +27,27 @@
 <meta name="theme-color" content="#ffffff">
 
     <!-- Primary SEO -->
-    <title>{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'JangaKids | Premium Kids Fashion Online' }}</title>
-    <meta name="description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'JangaKids - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.' }}">
-    <meta name="keywords" content="{{ isset($seo_data) && $seo_data->keywords ? $seo_data->keywords : 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, JangaKids' }}">
-    <meta name="author" content="JangaKids">
+    <title>{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'Jango Kidswear | Premium Kids Fashion Online' }}</title>
+    <meta name="description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'Jango Kidswear - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.' }}">
+    <meta name="keywords" content="{{ isset($seo_data) && $seo_data->keywords ? $seo_data->keywords : 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, Jango Kidswear' }}">
+    <meta name="author" content="Jango Kidswear">
     <meta name="robots" content="{{ isset($seo_data) && $seo_data->robots ? $seo_data->robots : 'index, follow' }}">
     <link rel="canonical" href="{{ isset($seo_data) && $seo_data->canonical_url ? $seo_data->canonical_url : url()->current() }}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{{ isset($seo_data) && $seo_data->type ? $seo_data->type : 'website' }}">
-    <meta property="og:site_name" content="JangaKids">
+    <meta property="og:site_name" content="Jango Kidswear">
     <meta property="og:locale" content="en_IN">
-    <meta property="og:title" content="{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'JangaKids | Premium Kids Fashion Online' }}">
-    <meta property="og:description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'Shop premium kids clothing online at JangaKids. Free shipping above ₹3000.' }}">
+    <meta property="og:title" content="{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'Jango Kidswear | Premium Kids Fashion Online' }}">
+    <meta property="og:description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'Shop premium kids clothing online at Jango Kidswear. Free shipping above ₹3000.' }}">
     <meta property="og:image" content="{{ isset($seo_data) && $seo_data->image ? asset($seo_data->image) : asset('frontassets/images/logo.png') }}">
     <meta property="og:url" content="{{ isset($seo_data) && $seo_data->canonical_url ? $seo_data->canonical_url : url()->current() }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@@jangakids">
-    <meta name="twitter:title" content="@yield('og_title', 'JangaKids | Premium Kids Fashion Online')">
-    <meta name="twitter:description" content="@yield('og_description', 'Shop premium kids clothing online at JangaKids.')">
+    <meta name="twitter:site" content="@@jangokidswear">
+    <meta name="twitter:title" content="@yield('og_title', 'Jango Kidswear | Premium Kids Fashion Online')">
+    <meta name="twitter:description" content="@yield('og_description', 'Shop premium kids clothing online at Jango Kidswear.')">
     <meta name="twitter:image" content="@yield('og_image', asset('frontassets/images/logo.png'))">
 
     <!-- Favicons -->
@@ -59,7 +59,7 @@
     {
         "@@context": "https://schema.org",
         "@@type": "Organization",
-        "name": "JangaKids",
+        "name": "Jango Kidswear",
         "url": "{{ config('app.url') }}",
         "logo": "{{ asset('frontassets/images/logo.png') }}",
         "sameAs": [],

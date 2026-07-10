@@ -31,6 +31,8 @@
                         ['label' => 'My Account',         'url' => route('login')],
                         ['label' => 'Contact Us',         'url' => route('contact')],
                         ['label' => 'FAQs',               'url' => route('faqs')],
+                        ['label' => 'Shipping Policy',    'url' => route('shipping-policy')],
+                        ['label' => 'Return Policy',      'url' => route('return-policy')],
                         ['label' => 'Privacy Policy',     'url' => route('privacy-policy')],
                         ['label' => 'Terms & Conditions', 'url' => route('terms-and-conditions')],
                     ];
@@ -47,15 +49,15 @@
                     <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 sub-title">
                         <div class="footer-logo mb-3">
                             <a href="{{ route('home') }}">
-                                <img alt="JangaKids" class="img-fluid"
+                                <img alt="Jango Kidswear" class="img-fluid"
                                      src="{{ asset('frontassets/images/logo.png') }}">
                             </a>
                         </div>
                         <p>Discover the latest trends and enjoy seamless shopping with our exclusive kids' collections.</p>
                         <ul class="contact-list">
-                            <li><i class="ri-map-pin-line"></i> JangaKids Store, India</li>
+                            <li><i class="ri-map-pin-line"></i> Jango Kidswear, India</li>
                             <li><i class="ri-phone-line"></i> +91 98765 43210 &nbsp;|&nbsp; +91 98765 43211</li>
-                            <li><i class="ri-mail-line"></i> support@jangakids.com</li>
+                            <li><i class="ri-mail-line"></i> support@jangokids.com</li>
                         </ul>
                     </div>
 
@@ -172,7 +174,7 @@
                 <div class="row align-items-center">
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="footer-end">
-                            <p><i class="ri-copyright-line"></i> {{ date('Y') }} JangaKids. All rights reserved.</p>
+                            <p><i class="ri-copyright-line"></i> {{ date('Y') }} Jango Kidswear. All rights reserved.</p>
                         </div>
                     </div>
                     <div class="col-xl-6 col-md-6 col-sm-12">

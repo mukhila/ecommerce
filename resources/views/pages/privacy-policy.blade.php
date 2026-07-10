@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Privacy Policy | Jango Tailors')
+@section('title', 'Privacy Policy | Jango Kidswear')
 
 @section('content')
 
@@ -32,7 +32,7 @@
                 <div class="col-sm-12">
                     <div class="content-text">
                         <h4 class="mb-3">1. Introduction</h4>
-                        <p class="mb-4">Welcome to Jango Tailors. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.</p>
+                        <p class="mb-4">Welcome to Jango Kidswear. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.</p>
 
                         <h4 class="mb-3">2. Data We Collect</h4>
                         <p class="mb-4">We may collect, use, store and transfer different kinds of personal data about you which we have grouped together follows:

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'My Wishlist | JangaKids')
+@section('title', 'My Wishlist | Jango Kidswear')
 
 @section('content')
 <!-- breadcrumb start -->

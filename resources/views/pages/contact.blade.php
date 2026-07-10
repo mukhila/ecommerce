@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Contact Us | Jango Tailors')
+@section('title', 'Contact Us | Jango Kidswear')
 
 @section('content')
 

@@ -28,7 +28,10 @@
       "Bash(composer require:*)",
       "Bash(npm install:*)",
       "Bash(npm search:*)",
-      "Bash(grep -n \"HTTPS\\\\|SSL\\\\|https\" C:/xampp_8_2/htdocs/jangokids/bootstrap/app.php grep -n \"forceScheme\\\\|HTTPS\\\\|trustProxy\\\\|url.force\" C:/xampp_8_2/htdocs/jangokids/app/Http/Middleware/*.php)"
+      "Bash(grep -n \"HTTPS\\\\|SSL\\\\|https\" C:/xampp_8_2/htdocs/jangokids/bootstrap/app.php grep -n \"forceScheme\\\\|HTTPS\\\\|trustProxy\\\\|url.force\" C:/xampp_8_2/htdocs/jangokids/app/Http/Middleware/*.php)",
+      "Bash(grep -E \"\\\\.\\(php|json|env|html\\)$\")",
+      "Bash(grep -v \":0$\")",
+      "Bash(xargs cat)"
     ]
   }
 }

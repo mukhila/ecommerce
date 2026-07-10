@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', $query ? 'Search results for "' . e($query) . '" | JangaKids' : 'Search | JangaKids')
+@section('title', $query ? 'Search results for "' . e($query) . '" | Jango Kidswear' : 'Search | Jango Kidswear')
 
 @section('content')
 

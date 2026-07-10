@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Track Your Order - JangaKids')
+@section('title', 'Track Your Order - Jango Kidswear')
 
 @push('styles')
 <style>

@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
 @section('title', $product->name)
-@section('meta_description', Str::limit(strip_tags($product->description ?? $product->name . ' - Shop this product at JangaKids. Premium quality kids fashion at affordable prices.'), 155))
-@section('meta_keywords', $product->name . ', ' . ($product->category->name ?? 'kids fashion') . ', buy online, JangaKids')
+@section('meta_description', Str::limit(strip_tags($product->description ?? $product->name . ' - Shop this product at Jango Kidswear. Premium quality kids fashion at affordable prices.'), 155))
+@section('meta_keywords', $product->name . ', ' . ($product->category->name ?? 'kids fashion') . ', buy online, Jango Kidswear')
 @section('og_type', 'product')
-@section('og_title', $product->name . ' | JangaKids')
-@section('og_description', Str::limit(strip_tags($product->description ?? $product->name . ' - Available at JangaKids.'), 155))
+@section('og_title', $product->name . ' | Jango Kidswear')
+@section('og_description', Str::limit(strip_tags($product->description ?? $product->name . ' - Available at Jango Kidswear.'), 155))
 @section('og_image', $product->images->first() ? asset('uploads/' . $product->images->first()->image_path) : asset('frontassets/images/logo.png'))
 @section('og_url', route('product.show', $product->slug))
 @section('canonical', route('product.show', $product->slug))
@@ -187,6 +187,26 @@
                                 </button>
                             </div>
 
+                            <!-- Trust Badges -->
+                            <div class="trust-badges mt-3 d-flex flex-wrap gap-3">
+                                <div class="trust-badge d-flex align-items-center gap-1" title="100% Secure Payments">
+                                    <i class="ri-shield-check-line text-success" style="font-size:18px;"></i>
+                                    <span style="font-size:12px;color:#555;">Secure Payment</span>
+                                </div>
+                                <div class="trust-badge d-flex align-items-center gap-1" title="Free shipping above ₹3000">
+                                    <i class="ri-truck-line text-primary" style="font-size:18px;"></i>
+                                    <span style="font-size:12px;color:#555;">Free Shipping ₹3000+</span>
+                                </div>
+                                <div class="trust-badge d-flex align-items-center gap-1" title="Easy 7-day returns">
+                                    <i class="ri-refresh-line text-warning" style="font-size:18px;"></i>
+                                    <span style="font-size:12px;color:#555;">7-Day Returns</span>
+                                </div>
+                                <div class="trust-badge d-flex align-items-center gap-1" title="Made in India">
+                                    <i class="ri-map-pin-line text-danger" style="font-size:18px;"></i>
+                                    <span style="font-size:12px;color:#555;">Made in India</span>
+                                </div>
+                            </div>
+
                             <!-- Wishlist & Compare -->
                             <div class="buy-box compare-box mt-3">
                                 <a href="#!">
@@ -211,6 +231,16 @@
                                     <p>{{ $product->fabric_type }}</p>
                                 </div>
                             @endif
+
+                            <!-- Manufacturer Details -->
+                            <div class="border-product">
+                                <h6 class="product-title">Manufacturer Details</h6>
+                                <ul class="manufacturer-details-list" style="list-style:none;padding:0;margin:0;font-size:13px;color:#555;line-height:2;">
+                                    <li><strong>Manufactured by:</strong> Jango Clothing</li>
+                                    <li><strong>Marketed by:</strong> Jango Kidswear</li>
+                                    <li><strong>Country of Origin:</strong> India</li>
+                                </ul>
+                            </div>
 
                             <!-- Share -->
                             <div class="border-product">
@@ -611,7 +641,7 @@ async function addToCartWithVariation(productId, quantity, variationId, isBuyNow
     "sku": "{{ $product->slug }}",
     "brand": {
         "@@type": "Brand",
-        "name": "JangaKids"
+        "name": "Jango Kidswear"
     },
     "offers": {
         "@@type": "Offer",
@@ -621,7 +651,7 @@ async function addToCartWithVariation(productId, quantity, variationId, isBuyNow
         "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
         "seller": {
             "@@type": "Organization",
-            "name": "JangaKids"
+            "name": "Jango Kidswear"
         }
     }@if($product->review_count > 0),
     "aggregateRating": {

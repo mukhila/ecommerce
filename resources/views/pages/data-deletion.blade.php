@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Data Deletion Request | Jango Kids')
+@section('title', 'Data Deletion Request | Jango Kidswear')
 
 @section('content')
 
@@ -35,7 +35,7 @@
                         <h3>Your Right to Data Deletion</h3>
                         <p class="text-muted">
                             Under applicable data protection laws, you have the right to request the deletion of your
-                            personal data held by Jango Kids. Once your request is verified and processed, we will
+                            personal data held by Jango Kidswear. Once your request is verified and processed, we will
                             permanently delete your account and all associated personal information from our systems.
                         </p>
                     </div>

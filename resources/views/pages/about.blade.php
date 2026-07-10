@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'About Us | Jango Tailors')
+@section('title', 'About Us | Jango Kidswear')
 
 @section('content')
 
@@ -243,14 +243,14 @@
                 <div class="col-md-6 mb-4 mb-md-0">
                     <div class="about-kids-visual text-center p-5 rounded-3">
                         <i class="ri-heart-3-line display-1 mb-3"></i>
-                        <h3 class="fw-bold text-white">Jango Kids</h3>
+                        <h3 class="fw-bold text-white">Jango Kidswear</h3>
                         <p class="text-white-50 mb-0">Style for the next generation</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.85rem; letter-spacing: 2px;">New Chapter</span>
-                    <h3 class="fw-bold mt-2 mb-3">Celebrating 40 Years with Jango Kids</h3>
-                    <p class="lead text-muted">As we celebrate 40 years, we are excited to introduce our newest chapter: <strong>Jango Kids</strong>.</p>
+                    <h3 class="fw-bold mt-2 mb-3">Celebrating 40 Years with Jango Kidswear</h3>
+                    <p class="lead text-muted">As we celebrate 40 years, we are excited to introduce our newest chapter: <strong>Jango Kidswear</strong>.</p>
                     <p class="text-muted">A space created to bring style, comfort, and craftsmanship to the next generation.</p>
                     <blockquote class="about-blockquote mt-4 ps-4">
                         <p class="fst-italic text-muted mb-0">"From 1986 to 2026 and beyond — our journey continues with trust, tradition, and timeless design."</p>

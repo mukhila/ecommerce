@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Size Guide | JangaKids')
+@section('title', 'Size Guide | Jango Kidswear')
 
 @push('styles')
 <style>
@@ -145,7 +145,7 @@
                                 <thead>
                                     <tr>
                                         <th>Age</th>
-                                        <th>JangaKids Size</th>
+                                        <th>Jango Kidswear Size</th>
                                         <th>Height (cm)</th>
                                         <th>Weight (kg)</th>
                                         <th>Chest (cm)</th>
@@ -192,7 +192,7 @@
                                 <thead>
                                     <tr>
                                         <th>Age</th>
-                                        <th>JangaKids Size</th>
+                                        <th>Jango Kidswear Size</th>
                                         <th>Height (cm)</th>
                                         <th>Weight (kg)</th>
                                         <th>Chest (cm)</th>
@@ -255,7 +255,7 @@
                                 <thead>
                                     <tr>
                                         <th>Age</th>
-                                        <th>JangaKids Size</th>
+                                        <th>Jango Kidswear Size</th>
                                         <th>India Label</th>
                                         <th>Height (cm)</th>
                                         <th>Weight (kg)</th>

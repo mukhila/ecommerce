@@ -1,10 +1,10 @@
 @extends('layouts.master')
 
 @section('title', 'Home')
-@section('meta_description', 'JangaKids - Shop premium kids clothing online. Trendy, comfortable & affordable fashion for boys, girls & babies. Free shipping above ₹3000. COD available.')
-@section('meta_keywords', 'kids fashion online India, children clothing, boys clothes, girls clothes, baby wear, affordable kids fashion, JangaKids')
-@section('og_title', 'JangaKids | Premium Kids Fashion Online')
-@section('og_description', 'Shop trendy and affordable kids clothing at JangaKids. New arrivals every week. Free shipping above ₹3000.')
+@section('meta_description', 'Jango Kidswear - Shop premium kids clothing online. Trendy, comfortable & affordable fashion for boys, girls & babies. Free shipping above ₹3000. COD available.')
+@section('meta_keywords', 'kids fashion online India, children clothing, boys clothes, girls clothes, baby wear, affordable kids fashion, Jango Kidswear')
+@section('og_title', 'Jango Kidswear | Premium Kids Fashion Online')
+@section('og_description', 'Shop trendy and affordable kids clothing at Jango Kidswear. New arrivals every week. Free shipping above ₹3000.')
 @section('og_type', 'website')
 @section('og_url', url('/'))
 
@@ -200,7 +200,7 @@
 {
     "@@context": "https://schema.org",
     "@@type": "WebSite",
-    "name": "JangaKids",
+    "name": "Jango Kidswear",
     "url": "{{ config('app.url') }}",
     "potentialAction": {
         "@@type": "SearchAction",

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Verify Email | JangaKids')
+@section('title', 'Verify Email | Jango Kidswear')
 
 @section('content')
 <div class="breadcrumb-section">
