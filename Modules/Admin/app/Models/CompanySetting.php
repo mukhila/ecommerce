@@ -21,6 +21,9 @@ class CompanySetting extends Model
         'email',
         'whatsapp_no',
         'social_links',
+        'topbar_message',
+        'topbar_link',
+        'topbar_enabled',
     ];
 
     protected $casts = [

@@ -34,6 +34,8 @@ class CompanySettingController extends Controller
             'email' => 'nullable|email|max:255',
             'whatsapp_no' => 'nullable|string|max:255',
             'social_links' => 'nullable|array',
+            'topbar_message' => 'nullable|string|max:500',
+            'topbar_link' => 'nullable|string|max:500',
         ]);
 
         $setting = CompanySetting::first();
@@ -42,6 +44,7 @@ class CompanySettingController extends Controller
         }
 
         $input = $request->except(['logo', '_token', '_method']);
+        $input['topbar_enabled'] = $request->has('topbar_enabled') ? 1 : 0;
 
         // Handle Logo Upload
         if ($request->hasFile('logo')) {

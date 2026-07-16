@@ -103,6 +103,33 @@
                     </div>
 
 
+                    <h5 class="mt-4 mb-3">Announcement Topbar</h5>
+
+                    <div class="row mb-3">
+                        <label for="topbar_message" class="col-sm-2 col-form-label">Topbar Message</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="text" id="topbar_message" name="topbar_message" value="{{ old('topbar_message', $setting->topbar_message) }}" placeholder="e.g. 🚀 FREE SHIPPING on orders above ₹999 | Use JANGO10 for 10% off">
+                            <div class="form-text">Displayed in the top announcement bar on the frontend.</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="topbar_link" class="col-sm-2 col-form-label">Topbar Link</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="text" id="topbar_link" name="topbar_link" value="{{ old('topbar_link', $setting->topbar_link) }}" placeholder="e.g. /products or https://...">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">Enable Topbar</label>
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="topbar_enabled" name="topbar_enabled" value="1" {{ old('topbar_enabled', $setting->topbar_enabled ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="topbar_enabled">Show announcement bar on frontend</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row justify-content-end">
                         <div class="col-sm-10">
                             <button type="submit" class="btn btn-primary waves-effect waves-light">Save Settings</button>

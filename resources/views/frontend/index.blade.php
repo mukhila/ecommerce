@@ -171,7 +171,7 @@
         </div>
         <div class="slide-visual">
           <div class="showcase-card">
-            @if(isset($slide['image']) && $slide['image'] && !Str::contains($slide['image'], 'uploads/'))
+            @if(isset($slide['image']) && $slide['image'])
               <div class="showcase-card-inner" style="background-image: url('{{ $slide['image'] }}'); background-size: cover; background-position: center;"></div>
             @else
               <div class="showcase-card-inner">{{ $slide['emoji'] }}</div>
