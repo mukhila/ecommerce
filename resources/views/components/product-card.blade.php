@@ -1,75 +1,73 @@
 @props(['product'])
 
-<div class="basic-product theme-product-1">
-    <div class="overflow-hidden">
-        <div class="img-wrapper">
-            @if($product->is_featured)
-                <div class="ribbon"><span>Featured</span></div>
-            @endif
+@php
+    $primaryImage = $product->images->where('is_primary', true)->first() 
+        ?? $product->images->first();
+    $imagePath = $primaryImage 
+        ? asset('uploads/' . $primaryImage->image_path) 
+        : asset('frontassets/images/fashion-1/product/1.jpg');
 
-            <a href="{{ route('product.show', $product->slug) }}">
-                @if($product->images->where('is_primary', true)->first())
-                    <img src="{{ asset('uploads/'.$product->images->where('is_primary', true)->first()->image_path) }}"
-                        class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
-                @else
-                    <img src="{{ asset('frontassets/images/fashion-1/product/1.jpg') }}"
-                        class="img-fluid blur-up lazyload" alt="{{ $product->name }}">
-                @endif
-            </a>
+    // Assign a pastel gradient class based on ID for visual variety in case image is missing or as a fallback
+    $gradients = ['pb1', 'pb2', 'pb3', 'pb4', 'pb5', 'pb6', 'pb7', 'pb8'];
+    $gradientClass = $gradients[$product->id % count($gradients)];
+@endphp
 
-            <div class="cart-info">
-                <a href="#!" title="Add to Wishlist" class="wishlist-icon" data-product-id="{{ $product->id }}">
-                    <i class="ri-heart-line"></i>
-                </a>
-                <button onclick="addToCart({{ $product->id }}, 1)" title="Add to cart" data-product-id="{{ $product->id }}">
-                    <i class="ri-shopping-cart-line"></i>
-                </button>
-                <a href="{{ route('product.show', $product->slug) }}" title="Quick View">
-                    <i class="ri-eye-line"></i>
-                </a>
-                <a href="#!" title="Compare">
-                    <i class="ri-loop-left-line"></i>
-                </a>
-            </div>
+<div class="pcard" onclick="window.location='{{ route('product.show', $product->slug) }}'">
+    <div class="pcard-img {{ $gradientClass }}">
+        <img src="{{ $imagePath }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+        
+        @if($product->sale_price)
+            @php
+                $discount = round((($product->price - $product->sale_price) / $product->price) * 100);
+            @endphp
+            <span class="pcard-badge badge-sale">-{{ $discount }}%</span>
+        @elseif($product->is_featured)
+            <span class="pcard-badge badge-hot">Hot</span>
+        @else
+            <span class="pcard-badge badge-new">New</span>
+        @endif
+
+        <div class="pcard-actions" onclick="event.stopPropagation();">
+            <button class="act-btn wishlist-icon" data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                @php
+                    $isInWishlist = false;
+                    if(auth()->check()) {
+                        $isInWishlist = \App\Models\Wishlist::where('user_id', auth()->id())->where('product_id', $product->id)->exists();
+                    }
+                @endphp
+                <i class="{{ $isInWishlist ? 'ri-heart-fill' : 'ri-heart-line' }}"></i>
+            </button>
+            <button class="act-btn" onclick="addToCart({{ $product->id }}, 1)" title="Add to Cart" data-product-id="{{ $product->id }}">
+                <i class="ri-shopping-cart-line"></i>
+            </button>
         </div>
-
-        <div class="product-detail">
-            <div>
-                <div class="brand-w-color">
-                    <a class="product-title" href="{{ route('product.show', $product->slug) }}">
-                        {{ $product->name }}
-                    </a>
-                </div>
-                <h6>{{ $product->category->name ?? '' }}</h6>
-
-                {{-- Rating Display --}}
-                @if($product->review_count > 0)
-                    <div class="rating-label mb-2">
-                        <div class="d-flex align-items-center">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <i class="ri-star-{{ $i <= round($product->average_rating) ? 'fill' : 'line' }}"
-                                   style="color: #ffc107; font-size: 14px;"></i>
-                            @endfor
-                            <span class="ms-2 text-muted" style="font-size: 13px;">
-                                {{ number_format($product->average_rating, 1) }} ({{ $product->review_count }})
-                            </span>
-                        </div>
-                    </div>
+    </div>
+    <div class="pcard-info">
+        <div class="pcard-cat">{{ $product->category->name ?? 'Kids Wear' }}</div>
+        <div class="pcard-name">{{ $product->name }}</div>
+        <div class="pcard-foot">
+            <div class="pcard-price">
+                @if($product->sale_price)
+                    ₹{{ number_format($product->sale_price, 0) }}
+                    <del>₹{{ number_format($product->price, 0) }}</del>
+                @else
+                    ₹{{ number_format($product->price, 0) }}
                 @endif
-
-                <h4 class="price">
-                    @if($product->sale_price)
-                        ₹{{ number_format($product->sale_price, 2) }}
-                        <del>₹{{ number_format($product->price, 2) }}</del>
-                        @php
-                            $discount = round((($product->price - $product->sale_price) / $product->price) * 100);
-                        @endphp
-                        <span class="discounted-price">{{ $discount }}% Off</span>
-                    @else
-                        ₹{{ number_format($product->price, 2) }}
-                    @endif
-                </h4>
             </div>
+            @if($product->review_count > 0)
+                <div class="pcard-stars">
+                    @for ($i = 1; $i <= 5; $i++)
+                        @if($i <= round($product->average_rating))
+                            ★
+                        @else
+                            ☆
+                        @endif
+                    @endfor
+                    {{ number_format($product->average_rating, 1) }}
+                </div>
+            @else
+                <div class="pcard-stars">★★★★★ 5.0</div>
+            @endif
         </div>
     </div>
 </div>

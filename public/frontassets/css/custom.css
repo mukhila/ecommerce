@@ -274,3 +274,14 @@ footer .darken-layout .sub-title h4 {
         left: 12px;
     }
 }
+
+/* Ensure skeleton loader overlays sticky header properly */
+.loader_skeleton {
+    z-index: 99999 !important;
+}
+
+/* Match skeleton loader slide height with new hero slider to prevent layout shift */
+.loader_skeleton .home-slider .home {
+    height: calc(100vh - 105px) !important;
+    min-height: 820px !important;
+}

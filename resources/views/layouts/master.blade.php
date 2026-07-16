@@ -100,6 +100,7 @@
     <!-- Theme css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('frontassets/css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('frontassets/css/custom.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('frontassets/css/newui.css') }}">
 </head>
 
 <body class="theme-color-1">
@@ -107,6 +108,7 @@
 
     @include('layouts.loader')
 
+    @include('layouts.top_bar')
 
     @include('layouts.header')
 

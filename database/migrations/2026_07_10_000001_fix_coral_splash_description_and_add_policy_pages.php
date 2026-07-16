@@ -48,7 +48,7 @@ return new class extends Migration
   <li>We ship to all major cities and pin codes across India.</li>
 </ul>
 <p>For any shipping queries, contact us at <a href="mailto:support@jangokids.com">support@jangokids.com</a> or call +91 98765 43210.</p>',
-                    'is_active'  => 1,
+                    'status'     => 1,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
@@ -78,7 +78,7 @@ return new class extends Migration
   <li>COD orders will receive a refund via bank transfer.</li>
 </ul>
 <p>For any queries, call us at +91 98765 43210.</p>',
-                    'is_active'  => 1,
+                    'status'     => 1,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);

@@ -8,208 +8,403 @@
 @section('og_type', 'website')
 @section('og_url', url('/'))
 
-
 @section('content')
 
-    <!-- Home slider -->
-    <section class="p-0">
-        <div class="slide-1 home-slider">
-            @foreach($sliders as $slider)
+@php
+    $slidesData = [];
+    if (isset($sliders) && $sliders->isNotEmpty()) {
+        foreach ($sliders as $index => $slider) {
+            $slideIndex = $index % 4;
+            $emojis = ['👗', '👕', '🌸', '🍼'];
+            $pillIcons = ['🏷️', '⚡', '🎁', '🌿'];
+            $bgClasses = ['sl-1', 'sl-2', 'sl-3', 'sl-4'];
+            $btnLabels = ['Shop Now', 'See All', 'Trending', 'Shop Baby'];
+            $badges = ['FLAT 30% OFF', 'NEW IN 2025', 'BUY 2 GET 1 FREE', '100% ORGANIC'];
+            
+            $slidesData[] = [
+                'bg_class' => $bgClasses[$slideIndex],
+                'eyebrow' => $slider->subtitle ?: 'New Collection',
+                'headline' => $slider->title,
+                'desc' => 'Premium fashion collection crafted with love and comfort for your little ones.',
+                'pill_icon' => $pillIcons[$slideIndex],
+                'pill_label' => 'Starting from',
+                'pill_value' => '₹299 onwards',
+                'cta_url' => $slider->link ?: route('products.index'),
+                'cta_text' => $btnLabels[$slideIndex],
+                'emoji' => $emojis[$slideIndex],
+                'badge' => $badges[$slideIndex],
+                'card_title' => $slider->title,
+                'image' => asset('uploads/'.$slider->image),
+                'chips' => $slideIndex === 0 ? [
+                    ['icon' => '⭐', 'label' => 'Rating', 'val' => '4.9 / 5.0', 'cls' => 'ci-yellow'],
+                    ['icon' => '❤️', 'label' => 'Wishlist', 'val' => '1.2k Saves', 'cls' => 'ci-coral']
+                ] : ($slideIndex === 1 ? [
+                    ['icon' => '🚚', 'label' => 'Delivery', 'val' => '2-3 Days', 'cls' => 'ci-teal'],
+                    ['icon' => '🏅', 'label' => 'Quality', 'val' => 'Premium+', 'cls' => 'ci-yellow']
+                ] : ($slideIndex === 2 ? [
+                    ['icon' => '✨', 'label' => 'Top Pick', 'val' => '#1 This Week', 'cls' => 'ci-purple'],
+                    ['icon' => '🎟️', 'label' => 'Offer Ends', 'val' => '48 hrs left', 'cls' => 'ci-coral']
+                ] : [
+                    ['icon' => '🌿', 'label' => 'Material', 'val' => '100% Organic', 'cls' => 'ci-teal'],
+                    ['icon' => '🏆', 'label' => 'Certified', 'val' => 'GOTS Organic', 'cls' => 'ci-yellow']
+                ]))
+            ];
+        }
+    } else {
+        // Fallback to static slides from newui.html
+        $slidesData = [
+            [
+                'bg_class' => 'sl-1',
+                'eyebrow' => '☀️ Summer 2025 Collection',
+                'headline' => 'Dress Them In <br><span class="line-accent">Sunshine & Joy</span>',
+                'desc' => 'Vibrant, breathable summer styles crafted for kids who love to run, jump, and explore every single sunny day.',
+                'pill_icon' => '🏷️',
+                'pill_label' => 'Starting from',
+                'pill_value' => '₹299 onwards',
+                'cta_url' => route('products.index'),
+                'cta_text' => '🛍️ Shop Summer',
+                'emoji' => '👗',
+                'badge' => 'FLAT<br>30%<br>OFF',
+                'card_title' => 'Floral Summer Dress',
+                'chips' => [
+                    ['icon' => '⭐', 'label' => 'Rating', 'val' => '4.9 / 5.0', 'cls' => 'ci-yellow'],
+                    ['icon' => '❤️', 'label' => 'Wishlist', 'val' => '1.2k Saves', 'cls' => 'ci-coral']
+                ]
+            ],
+            [
+                'bg_class' => 'sl-2',
+                'eyebrow' => '🚀 Boys Collection 2025',
+                'headline' => 'Adventure<br>Starts With<br><span class="line-accent">Bold Style</span>',
+                'desc' => 'From sporty casuals to school-ready looks — everything your little explorer needs to conquer the day in style.',
+                'pill_icon' => '⚡',
+                'pill_label' => 'Flash Sale — Ends Soon!',
+                'pill_value' => 'Up to 50% OFF',
+                'cta_url' => route('products.index'),
+                'cta_text' => '👦 Shop Boys',
+                'emoji' => '👕',
+                'badge' => 'NEW<br>IN<br>2025',
+                'card_title' => 'Adventure Tee Set',
+                'chips' => [
+                    ['icon' => '🚚', 'label' => 'Delivery', 'val' => '2–3 Days', 'cls' => 'ci-teal'],
+                    ['icon' => '🏅', 'label' => 'Quality', 'val' => 'Premium+', 'cls' => 'ci-yellow']
+                ]
+            ],
+            [
+                'bg_class' => 'sl-3',
+                'eyebrow' => '✨ Girls Collection',
+                'headline' => 'Pretty, Playful<br><span class="line-accent">& Perfectly You</span>',
+                'desc' => 'Twirl-worthy dresses, trendy co-ords, and accessories made with love for your little fashionista.',
+                'pill_icon' => '🎁',
+                'pill_label' => 'Bundle Offer',
+                'pill_value' => 'Buy 2 Get 1 FREE',
+                'cta_url' => route('products.index'),
+                'cta_text' => '👧 Shop Girls',
+                'emoji' => '🌸',
+                'badge' => 'BUY 2<br>GET 1<br>FREE',
+                'card_title' => 'Princess Party Dress',
+                'chips' => [
+                    ['icon' => '✨', 'label' => 'Top Pick', 'val' => '#1 This Week', 'cls' => 'ci-purple'],
+                    ['icon' => '🎟️', 'label' => 'Offer Ends', 'val' => '48 hrs left', 'cls' => 'ci-coral']
+                ]
+            ],
+            [
+                'bg_class' => 'sl-4',
+                'eyebrow' => '💛 Baby & Infant',
+                'headline' => 'Soft as a Hug<br><span class="line-accent">Safe as Love</span>',
+                'desc' => 'Hypoallergenic, ultra-soft baby clothes tested for sensitive skin — because their comfort is our greatest priority.',
+                'pill_icon' => '🌿',
+                'pill_label' => '100% Organic Cotton',
+                'pill_value' => 'Baby Sets ₹499+',
+                'cta_url' => route('products.index'),
+                'cta_text' => '🍼 Shop Baby',
+                'emoji' => '🍼',
+                'badge' => '100%<br>SAFE<br>ORGANIC',
+                'card_title' => 'Organic Onesie Set',
+                'chips' => [
+                    ['icon' => '🌿', 'label' => 'Material', 'val' => '100% Organic', 'cls' => 'ci-teal'],
+                    ['icon' => '🏆', 'label' => 'Certified', 'val' => 'GOTS Organic', 'cls' => 'ci-yellow']
+                ]
+            ]
+        ];
+    }
+@endphp
+
+<!-- HERO SLIDER -->
+<section class="hero-wrap" id="heroWrap">
+  @foreach($slidesData as $i => $slide)
+    <div class="slide {{ $slide['bg_class'] }} {{ $i === 0 ? 'active' : '' }}">
+      <div class="bubbles">
+        <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+        <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+        <div class="bub"></div><div class="bub"></div>
+      </div>
+      <div class="hero-circle circle-main"></div>
+      <div class="hero-circle circle-inner"></div>
+      <div class="hero-circle circle-sm"></div>
+      <div class="wave-bottom">
+        <svg viewBox="0 0 1440 100" width="100%" height="100" preserveAspectRatio="none">
+          <path fill="#FFF8F0" d="M0,60 C360,110 720,10 1080,55 C1260,78 1380,30 1440,40 L1440,100 L0,100Z"/>
+        </svg>
+      </div>
+      <div class="slide-inner">
+        <div class="slide-text">
+          <div class="slide-eyebrow"><div class="eyebrow-dot"></div> {!! $slide['eyebrow'] !!}</div>
+          <h1 class="slide-headline">
+            {!! $slide['headline'] !!}
+          </h1>
+          <p class="slide-desc">{{ $slide['desc'] }}</p>
+          <div class="price-pill">
+            <div class="pill-icon">{{ $slide['pill_icon'] }}</div>
             <div>
-                <div class="home text-start">
-                    <img src="{{ asset('uploads/'.$slider->image) }}" alt="{{ $slider->title }}" class="bg-img blur-up lazyload">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <div class="slider-contain">
-                                    <div>
-                                        <h4 class="animated" data-animation-in="fadeInUp">{{ $slider->subtitle }}</h4>
-                                        <h1 class="animated" data-animation-in="fadeInUp">{{ $slider->title }}</h1>
-                                       
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <div class="pill-label">{{ $slide['pill_label'] }}</div>
+              <div class="pill-value">{{ $slide['pill_value'] }}</div>
             </div>
-            @endforeach
+          </div>
+          <div class="slide-cta">
+            <a href="{{ $slide['cta_url'] }}" class="btn-hero btn-hero-solid">{{ $slide['cta_text'] }}</a>
+          </div>
+          <div class="trust-row">
+            <div class="trust-badge"><span>🌿</span> 100% Cotton</div>
+            <div class="trust-badge"><span>🚚</span> Free Shipping</div>
+            <div class="trust-badge"><span>↩️</span> Easy Returns</div>
+          </div>
         </div>
-    </section>
-    <!-- Home slider end -->
-
-    <!-- collection banner -->
-    <section class="pb-0 banner-section">
-        <div class="container">
-            <div class="row partition2">
-                <div class="col-md-6">
-                    <a href="#" class="collection-banner">
-                        <img src="{{ asset('frontassets/images/fashion-1/banner/1.png') }}" class="img-fluid blur-up lazyload" alt="">
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a href="#" class="collection-banner">
-                        <img src="{{ asset('frontassets/images/fashion-1/banner/2.png') }}" class="img-fluid blur-up lazyload" alt="">
-                    </a>
-                </div>
+        <div class="slide-visual">
+          <div class="showcase-card">
+            @if(isset($slide['image']) && $slide['image'] && !Str::contains($slide['image'], 'uploads/'))
+              <div class="showcase-card-inner" style="background-image: url('{{ $slide['image'] }}'); background-size: cover; background-position: center;"></div>
+            @else
+              <div class="showcase-card-inner">{{ $slide['emoji'] }}</div>
+            @endif
+            <div class="burst">{!! $slide['badge'] !!}</div>
+            <div class="card-bottom-label">
+              <small>New Arrival</small>
+              <strong>{{ $slide['card_title'] }}</strong>
             </div>
+          </div>
+          @if(isset($slide['chips'][0]))
+            <div class="chip chip-tl">
+              <div class="chip-icon {{ $slide['chips'][0]['cls'] }}">{{ $slide['chips'][0]['icon'] }}</div>
+              <div class="chip-label"><p>{{ $slide['chips'][0]['label'] }}</p><strong>{{ $slide['chips'][0]['val'] }}</strong></div>
+            </div>
+          @endif
+          @if(isset($slide['chips'][1]))
+            <div class="chip chip-br">
+              <div class="chip-icon {{ $slide['chips'][1]['cls'] }}">{{ $slide['chips'][1]['icon'] }}</div>
+              <div class="chip-label"><p>{{ $slide['chips'][1]['label'] }}</p><strong>{{ $slide['chips'][1]['val'] }}</strong></div>
+            </div>
+          @endif
         </div>
-    </section>
-    <!-- collection banner end -->
-
-
-    <!-- Paragraph-->
-    <div class="title1 section-t-space">
-        <h4>special offer</h4>
-        <h2 class="title-inner1">Latest Drops</h2>
+      </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 offset-lg-3">
-                <div class="product-para">
-                    <p class="text-center">Looking for the latest trends in clothing, shoes and accessories? Welcome to
-                        our 'Latest Drops' edit, bringing you all the latest styles from all your fave brands.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Paragraph end -->
+  @endforeach
 
-    <!-- Product slider -->
-    <section class="section-b-space pt-0 ratio_asos">
-        <div class="container">
-            <div class="g-3 g-md-4 row row-cols-2 row-cols-md-3 row-cols-xl-4">
+  <!-- Controls -->
+  <div class="slider-controls">
+    <button class="ctrl-btn" id="prevBtn">&#8592;</button>
+    <button class="ctrl-btn" id="nextBtn">&#8594;</button>
+  </div>
+  <div class="dots-wrap" id="dotsWrap">
+    @foreach($slidesData as $i => $slide)
+      <button class="dot {{ $i === 0 ? 'active' : '' }}" data-i="{{ $i }}"></button>
+    @endforeach
+  </div>
+  <div class="slide-counter">
+    <span class="cur" id="curNum">01</span> / <span id="totNum">{{ sprintf('%02d', count($slidesData)) }}</span>
+  </div>
+  <div class="progress-line" id="progressLine"></div>
+</section>
+
+<!-- FEATURE STRIP -->
+<div class="feature-strip">
+  <div class="feature-item">
+    <div class="fi-icon">🚚</div>
+    <div class="fi-text"><small>Free Shipping</small><strong>Orders ₹999+</strong></div>
+  </div>
+  <div class="feature-item">
+    <div class="fi-icon">↩️</div>
+    <div class="fi-text"><small>Easy Returns</small><strong>7-Day Policy</strong></div>
+  </div>
+  <div class="feature-item">
+    <div class="fi-icon">🔒</div>
+    <div class="fi-text"><small>Secure Payment</small><strong>100% Encrypted</strong></div>
+  </div>
+  <div class="feature-item">
+    <div class="fi-icon">🎧</div>
+    <div class="fi-text"><small>24×7 Support</small><strong>Always Here</strong></div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories">
+  <div class="sec-head">
+    <div class="sec-pill">Browse by Category</div>
+    <h2 class="sec-title">Shop by <span class="hi">Age & Style</span></h2>
+    <p class="sec-sub">Find the perfect outfit for every kid, every occasion</p>
+  </div>
+  <div class="cat-grid">
+    <a href="{{ route('category.show', 'girls-clothing') }}" class="cat-card c1">
+      <div class="cat-emoji">👧</div>
+      <div class="cat-label"><small>3–12 Years</small><strong>Girls Fashion</strong></div>
+    </a>
+    <a href="{{ route('category.show', 'boys-clothing') }}" class="cat-card c2">
+      <div class="cat-emoji">👦</div>
+      <div class="cat-label"><small>3–12 Years</small><strong>Boys Fashion</strong></div>
+    </a>
+    <a href="{{ route('products.index', ['search' => 'baby']) }}" class="cat-card c3">
+      <div class="cat-emoji">🍼</div>
+      <div class="cat-label"><small>0–3 Years</small><strong>Baby Wear</strong></div>
+    </a>
+    <a href="{{ route('products.index', ['search' => 'school']) }}" class="cat-card c4">
+      <div class="cat-emoji">🎒</div>
+      <div class="cat-label"><small>All Ages</small><strong>School Wear</strong></div>
+    </a>
+    <a href="{{ route('products.index', ['search' => 'party']) }}" class="cat-card c5">
+      <div class="cat-emoji">🎉</div>
+      <div class="cat-label"><small>All Ages</small><strong>Party Wear</strong></div>
+    </a>
+  </div>
+</section>
+
+<!-- PROMO BANNERS -->
+<section class="promos">
+  <div class="promo-grid">
+    <div class="promo p1">
+      <div class="promo-bg-text">☀️</div>
+      <small>Limited Time Offer</small>
+      <h2>Mega Summer<br>Clearance Sale</h2>
+      <p>Grab top styles at up to 60% off before they're gone. Limited stock — don't miss it!</p>
+      <a href="{{ route('products.index', ['filter' => 'sale']) }}" class="promo-btn">⚡ Shop Sale Now</a>
+    </div>
+    <div class="promo p2">
+      <div class="promo-bg-text">🎒</div>
+      <small>Exclusive Collection</small>
+      <h2>Back-to-School<br>Essentials</h2>
+      <p>Uniforms, bags, and everyday wear — everything your child needs for a great school year.</p>
+      <a href="{{ route('products.index', ['search' => 'school']) }}" class="promo-btn">📚 Explore Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products">
+  <div class="sec-head">
+    <div class="sec-pill">Fresh Drops</div>
+    <h2 class="sec-title">Latest <span class="hi">Arrivals</span></h2>
+    <p class="sec-sub">Hand-picked styles added this week</p>
+  </div>
+  <div class="product-grid">
     @forelse($latestProducts as $product)
-        <div class="col">
-            <x-product-card :product="$product" />
-        </div>
+        <x-product-card :product="$product" />
     @empty
-        <div class="col-12">
-            <p class="text-center">No products available at the moment.</p>
+        <div style="grid-column: span 4; text-align: center; padding: 40px 0;">
+            <p>No products available at the moment.</p>
         </div>
     @endforelse
-</div>
-        </div>
-    </section>
-    <!-- Product slider end -->
+  </div>
+</section>
 
-
-    <!-- full banner -->
-    <!--section class="pt-0">
-        <a href="category-page.html">
-            <img src="{{ asset('frontassets/images/fashion-1/full-banner/3.jpg') }}" alt="" class="img-fluid blur-up lazyload">
-        </a>
-    </section-->
-    <!-- full banner end -->
-
-
-    @include('frontend.partials.product-tabs')
-
-
-    <!-- service layout -->
-    <div class="container">
-        <section class="service border-section small-section">
-            <div class="row">
-                <div class="col-md-4 service-block">
-                    <div class="media">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -117 679.99892 679">
-                            <path
-                                d="m12.347656 378.382812h37.390625c4.371094 37.714844 36.316407 66.164063 74.277344 66.164063 37.96875 0 69.90625-28.449219 74.28125-66.164063h241.789063c4.382812 37.714844 36.316406 66.164063 74.277343 66.164063 37.96875 0 69.902344-28.449219 74.285157-66.164063h78.890624c6.882813 0 12.460938-5.578124 12.460938-12.460937v-352.957031c0-6.882813-5.578125-12.464844-12.460938-12.464844h-432.476562c-6.875 0-12.457031 5.582031-12.457031 12.464844v69.914062h-105.570313c-4.074218.011719-7.890625 2.007813-10.21875 5.363282l-68.171875 97.582031-26.667969 37.390625-9.722656 13.835937c-1.457031 2.082031-2.2421872 4.558594-2.24999975 7.101563v121.398437c-.09765625 3.34375 1.15624975 6.589844 3.47656275 9.003907 2.320312 2.417968 5.519531 3.796874 8.867187 3.828124zm111.417969 37.386719c-27.527344 0-49.851563-22.320312-49.851563-49.847656 0-27.535156 22.324219-49.855469 49.851563-49.855469 27.535156 0 49.855469 22.320313 49.855469 49.855469 0 27.632813-22.21875 50.132813-49.855469 50.472656zm390.347656 0c-27.53125 0-49.855469-22.320312-49.855469-49.847656 0-27.535156 22.324219-49.855469 49.855469-49.855469 27.539063 0 49.855469 22.320313 49.855469 49.855469.003906 27.632813-22.21875 50.132813-49.855469 50.472656zm140.710938-390.34375v223.34375h-338.375c-6.882813 0-12.464844 5.578125-12.464844 12.460938 0 6.882812 5.582031 12.464843 12.464844 12.464843h338.375v79.761719h-66.421875c-4.382813-37.710937-36.320313-66.15625-74.289063-66.15625-37.960937 0-69.898437 28.445313-74.277343 66.15625h-192.308594v-271.324219h89.980468c6.882813 0 12.464844-5.582031 12.464844-12.464843 0-6.882813-5.582031-12.464844-12.464844-12.464844h-89.980468v-31.777344zm-531.304688 82.382813h99.703125v245.648437h-24.925781c-4.375-37.710937-36.3125-66.15625-74.28125-66.15625-37.960937 0-69.90625 28.445313-74.277344 66.15625h-24.929687v-105.316406l3.738281-5.359375h152.054687c6.882813 0 12.460938-5.574219 12.460938-12.457031v-92.226563c0-6.882812-5.578125-12.464844-12.460938-12.464844h-69.796874zm-30.160156 43h74.777344v67.296875h-122.265625zm0 0"
-                                fill="#ec8951" />
-                        </svg>
-                        <div class="media-body">
-                            <h4>free shipping</h4>
-                            <p>free shipping world wide</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 service-block">
-                    <div class="media">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-                            id="Capa_1" x="0px" y="0px" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480;"
-                            xml:space="preserve" width="512px" height="512px">
-                            <g>
-                                <g>
-                                    <g>
-                                        <path
-                                            d="M472,432h-24V280c-0.003-4.418-3.588-7.997-8.006-7.994c-2.607,0.002-5.05,1.274-6.546,3.41l-112,160 c-2.532,3.621-1.649,8.609,1.972,11.14c1.343,0.939,2.941,1.443,4.58,1.444h104v24c0,4.418,3.582,8,8,8s8-3.582,8-8v-24h24 c4.418,0,8-3.582,8-8S476.418,432,472,432z M432,432h-88.64L432,305.376V432z"
-                                            fill="#ec8951" />
-                                        <path
-                                            d="M328,464h-94.712l88.056-103.688c0.2-0.238,0.387-0.486,0.56-0.744c16.566-24.518,11.048-57.713-12.56-75.552 c-28.705-20.625-68.695-14.074-89.319,14.631C212.204,309.532,207.998,322.597,208,336c0,4.418,3.582,8,8,8s8-3.582,8-8 c-0.003-26.51,21.486-48.002,47.995-48.005c10.048-0.001,19.843,3.151,28.005,9.013c16.537,12.671,20.388,36.007,8.8,53.32 l-98.896,116.496c-2.859,3.369-2.445,8.417,0.924,11.276c1.445,1.226,3.277,1.899,5.172,1.9h112c4.418,0,8-3.582,8-8 S332.418,464,328,464z"
-                                            fill="#ec8951" />
-                                        <path
-                                            d="M216.176,424.152c0.167-4.415-3.278-8.129-7.693-8.296c-0.001,0-0.002,0-0.003,0 C104.11,411.982,20.341,328.363,16.28,224H48c4.418,0,8-3.582,8-8s-3.582-8-8-8H16.28C20.283,103.821,103.82,20.287,208,16.288 V40c0,4.418,3.582,8,8,8s8-3.582,8-8V16.288c102.754,3.974,185.686,85.34,191.616,188l-31.2-31.2 c-3.178-3.07-8.242-2.982-11.312,0.196c-2.994,3.1-2.994,8.015,0,11.116l44.656,44.656c0.841,1.018,1.925,1.807,3.152,2.296 c0.313,0.094,0.631,0.172,0.952,0.232c0.549,0.198,1.117,0.335,1.696,0.408c0.08,0,0.152,0,0.232,0c0.08,0,0.152,0,0.224,0 c0.609-0.046,1.211-0.164,1.792-0.352c0.329-0.04,0.655-0.101,0.976-0.184c1.083-0.385,2.069-1.002,2.888-1.808l45.264-45.248 c3.069-3.178,2.982-8.242-0.196-11.312c-3.1-2.994-8.015-2.994-11.116,0l-31.976,31.952 C425.933,90.37,331.38,0.281,216.568,0.112C216.368,0.104,216.2,0,216,0s-0.368,0.104-0.568,0.112 C96.582,0.275,0.275,96.582,0.112,215.432C0.112,215.632,0,215.8,0,216s0.104,0.368,0.112,0.568 c0.199,115.917,91.939,210.97,207.776,215.28h0.296C212.483,431.847,216.013,428.448,216.176,424.152z"
-                                            fill="#ec8951" />
-                                        <path
-                                            d="M323.48,108.52c-3.124-3.123-8.188-3.123-11.312,0L226.2,194.48c-6.495-2.896-13.914-2.896-20.408,0l-40.704-40.704 c-3.178-3.069-8.243-2.981-11.312,0.197c-2.994,3.1-2.994,8.015,0,11.115l40.624,40.624c-5.704,11.94-0.648,26.244,11.293,31.947 c9.165,4.378,20.095,2.501,27.275-4.683c7.219-7.158,9.078-18.118,4.624-27.256l85.888-85.888 C326.603,116.708,326.603,111.644,323.48,108.52z M221.658,221.654c-0.001,0.001-0.001,0.001-0.002,0.002 c-3.164,3.025-8.148,3.025-11.312,0c-3.125-3.124-3.125-8.189-0.002-11.314c3.124-3.125,8.189-3.125,11.314-0.002 C224.781,213.464,224.781,218.53,221.658,221.654z"
-                                            fill="#ec8951" />
-                                    </g>
-                                </g>
-                            </g>
-                        </svg>
-                        <div class="media-body">
-                            <h4>24 X 7 service</h4>
-                            <p>online service for new customer</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 service-block">
-                    <div class="media">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -14 512.00001 512">
-                            <path
-                                d="m136.964844 308.234375c4.78125-2.757813 6.417968-8.878906 3.660156-13.660156-2.761719-4.777344-8.878906-6.417969-13.660156-3.660157-4.78125 2.761719-6.421875 8.882813-3.660156 13.660157 2.757812 4.78125 8.878906 6.421875 13.660156 3.660156zm0 0"
-                                fill="#ec8951" />
-                            <path
-                                d="m95.984375 377.253906 50.359375 87.230469c10.867188 18.84375 35.3125 25.820313 54.644531 14.644531 19.128907-11.054687 25.703125-35.496094 14.636719-54.640625l-30-51.96875 25.980469-15c4.78125-2.765625 6.421875-8.878906 3.660156-13.660156l-13.003906-22.523437c1.550781-.300782 11.746093-2.300782 191.539062-37.570313 22.226563-1.207031 35.542969-25.515625 24.316407-44.949219l-33.234376-57.5625 21.238282-32.167968c2.085937-3.164063 2.210937-7.230469.316406-10.511719l-20-34.640625c-1.894531-3.28125-5.492188-5.203125-9.261719-4.980469l-38.472656 2.308594-36.894531-63.90625c-5.34375-9.257813-14.917969-14.863281-25.605469-14.996094-.128906-.003906-.253906-.003906-.382813-.003906-10.328124 0-19.703124 5.140625-25.257812 13.832031l-130.632812 166.414062-84.925782 49.03125c-33.402344 19.277344-44.972656 62.128907-25.621094 95.621094 17.679688 30.625 54.953126 42.671875 86.601563 30zm102.324219 57.238282c5.523437 9.554687 2.253906 21.78125-7.328125 27.316406-9.613281 5.558594-21.855469 2.144531-27.316407-7.320313l-50-86.613281 34.640626-20c57.867187 100.242188 49.074218 85.011719 50.003906 86.617188zm-22.683594-79.296876-10-17.320312 17.320312-10 10 17.320312zm196.582031-235.910156 13.820313 23.9375-12.324219 18.664063-23.820313-41.261719zm-104.917969-72.132812c2.683594-4.390625 6.941407-4.84375 8.667969-4.796875 1.707031.019531 5.960938.550781 8.527344 4.996093l116.3125 201.464844c3.789063 6.558594-.816406 14.804688-8.414063 14.992188-1.363281.03125-1.992187.277344-5.484374.929687l-123.035157-213.105469c2.582031-3.320312 2.914063-3.640624 3.425781-4.480468zm-16.734374 21.433594 115.597656 200.222656-174.460938 34.21875-53.046875-91.878906zm-223.851563 268.667968c-4.390625-7.597656-6.710937-16.222656-6.710937-24.949218 0-17.835938 9.585937-34.445313 25.011718-43.351563l77.941406-45 50 86.601563-77.941406 45.003906c-23.878906 13.78125-54.515625 5.570312-68.300781-18.304688zm0 0"
-                                fill="#ec8951" />
-                            <path
-                                d="m105.984375 314.574219c-2.761719-4.78125-8.878906-6.421875-13.660156-3.660157l-17.320313 10c-4.773437 2.757813-10.902344 1.113282-13.660156-3.660156-2.761719-4.78125-8.878906-6.421875-13.660156-3.660156s-6.421875 8.878906-3.660156 13.660156c8.230468 14.257813 26.589843 19.285156 40.980468 10.980469l17.320313-10c4.78125-2.761719 6.421875-8.875 3.660156-13.660156zm0 0"
-                                fill="#ec8951" />
-                            <path
-                                d="m497.136719 43.746094-55.722657 31.007812c-4.824218 2.6875-6.5625 8.777344-3.875 13.601563 2.679688 4.820312 8.765626 6.566406 13.601563 3.875l55.71875-31.007813c4.828125-2.6875 6.5625-8.777344 3.875-13.601562-2.683594-4.828125-8.773437-6.5625-13.597656-3.875zm0 0"
-                                fill="#ec8951" />
-                            <path
-                                d="m491.292969 147.316406-38.636719-10.351562c-5.335938-1.429688-10.820312 1.734375-12.25 7.070312-1.429688 5.335938 1.738281 10.816406 7.074219 12.246094l38.640625 10.351562c5.367187 1.441407 10.824218-1.773437 12.246094-7.070312 1.429687-5.335938-1.738282-10.820312-7.074219-12.246094zm0 0"
-                                fill="#ec8951" />
-                            <path
-                                d="m394.199219 7.414062-10.363281 38.640626c-1.429688 5.335937 1.734374 10.816406 7.070312 12.25 5.332031 1.425781 10.816406-1.730469 12.25-7.070313l10.359375-38.640625c1.429687-5.335938-1.734375-10.820312-7.070313-12.25-5.332031-1.429688-10.816406 1.734375-12.246093 7.070312zm0 0"
-                                fill="#ec8951" />
-                        </svg>
-                        <div class="media-body">
-                            <h4>festival offer</h4>
-                            <p>new online special festival offer</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <div class="nl-bg"></div>
+  <div class="nl-bubbles">
+    <div class="nl-bub"></div><div class="nl-bub"></div><div class="nl-bub"></div>
+  </div>
+  <div class="nl-text">
+    <h2>Get <span class="wv">Early Access</span><br>to New Drops</h2>
+    <p>Subscribe for exclusive discounts, style tips, and first look at new arrivals for your little ones.</p>
+  </div>
+  <form action="{{ route('newsletter.subscribe') }}" method="POST" class="nl-form" id="homepageNewsletterForm">
+    @csrf
+    <div class="nl-input-wrap">
+      <input class="nl-input" type="email" name="email" placeholder="Enter your email address" required>
+      <button type="submit" class="nl-btn">Subscribe 📨</button>
     </div>
-    <!-- service layout  end -->
+    <p class="nl-note">🔒 No spam, ever. Unsubscribe anytime. We respect your privacy.</p>
+  </form>
+</div>
 
-
-    <!-- blog section -->
-    
-
-   
-    
-
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop">↑</button>
 
 @endsection
-@push('json_ld')
-<script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@@type": "WebSite",
-    "name": "Jango Kidswear",
-    "url": "{{ config('app.url') }}",
-    "potentialAction": {
-        "@@type": "SearchAction",
-        "target": {
-            "@@type": "EntryPoint",
-            "urlTemplate": "{{ url('/products') }}?search={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-    }
+
+@push('scripts')
+<script>
+// ── HERO SLIDER ──────────────────────────────────
+const slides   = document.querySelectorAll('.slide');
+const dots     = document.querySelectorAll('.dot');
+const curNum   = document.getElementById('curNum');
+const progLine = document.getElementById('progressLine');
+let cur        = 0;
+let autoTimer  = null;
+const DELAY    = 5000;
+
+const pad = n => String(n + 1).padStart(2, '0');
+
+function goTo(idx) {
+  if (!slides.length) return;
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('active');
+  cur = (idx + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('active');
+  curNum.textContent = pad(cur);
+  resetProgress();
+}
+
+function resetProgress() {
+  if (!progLine) return;
+  clearInterval(autoTimer);
+  progLine.style.transition = 'none';
+  progLine.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      progLine.style.transition = `width ${DELAY}ms linear`;
+      progLine.style.width = '100%';
+    });
+  });
+  autoTimer = setInterval(() => goTo(cur + 1), DELAY);
+}
+
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+
+if (nextBtn) nextBtn.addEventListener('click', () => goTo(cur + 1));
+if (prevBtn) prevBtn.addEventListener('click', () => goTo(cur - 1));
+
+dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+});
+
+// Swipe support
+let tx = 0;
+const hw = document.getElementById('heroWrap');
+if (hw) {
+  hw.addEventListener('touchstart', e => { tx = e.changedTouches[0].clientX; }, { passive: true });
+  hw.addEventListener('touchend',   e => {
+    const dx = tx - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 50) goTo(dx > 0 ? cur + 1 : cur - 1);
+  }, { passive: true });
+
+  hw.addEventListener('mouseenter', () => clearInterval(autoTimer));
+  hw.addEventListener('mouseleave', resetProgress);
+}
+
+if (slides.length > 0) {
+  resetProgress();
+}
+
+// ── BACK TO TOP ──────────────────────────────────
+const backTop = document.getElementById('backTop');
+if (backTop) {
+  window.addEventListener('scroll', () => {
+    backTop.classList.toggle('show', window.scrollY > 300);
+  });
+  backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 </script>
 @endpush

@@ -21,12 +21,14 @@ class CartComposer
         $cartItems = $cart ? $cart->items : collect();
         $cartCount = $cart ? $cart->item_count : 0;
         $cartTotal = $cart ? $cart->total : 0;
+        $wishlistCount = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0;
 
         $view->with([
             'sharedCart' => $cart,
             'sharedCartItems' => $cartItems,
             'sharedCartCount' => $cartCount,
-            'sharedCartTotal' => $cartTotal
+            'sharedCartTotal' => $cartTotal,
+            'sharedWishlistCount' => $wishlistCount
         ]);
     }
 

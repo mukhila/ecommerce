@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jango Kidswear | Premium Kids Fashion</title>
+<style>
+/* ═══════════════════════════════════════════════
+   RESET & VARIABLES
+═══════════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+:root {
+  --coral:    #FF4757;
+  --orange:   #FF6348;
+  --yellow:   #FFA502;
+  --teal:     #1E90FF;
+  --mint:     #2ED573;
+  --purple:   #7B2FBE;
+  --navy:     #1A1F36;
+  --light:    #FFF8F0;
+  --white:    #FFFFFF;
+  --gray:     #6B7280;
+  --border:   #F0E8D8;
+}
+
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--light);
+  color: var(--navy);
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════════════ */
+.topbar {
+  background: var(--navy);
+  color: #C8D1E0;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  padding: 9px 20px;
+  text-align: center;
+}
+.topbar b { color: var(--yellow); }
+.topbar a { color: var(--coral); text-decoration: none; margin-left:8px; }
+
+/* ═══════════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════════ */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 2px 24px rgba(0,0,0,.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 68px;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  text-decoration: none;
+  letter-spacing: -1px;
+}
+.logo .j  { color: var(--coral); }
+.logo .an { color: var(--orange); }
+.logo .go { color: var(--yellow); }
+.logo .k  { color: var(--teal); }
+.logo .ids{ color: var(--purple); }
+
+.nav-menu { display:flex; list-style:none; gap:30px; align-items:center; }
+.nav-menu a {
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  transition: color .2s;
+}
+.nav-menu a:hover { color: var(--coral); }
+.nav-menu .shop-btn {
+  background: linear-gradient(135deg, var(--coral), var(--orange));
+  color: #fff !important;
+  padding: 9px 22px;
+  border-radius: 50px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(255,71,87,.35);
+  transition: transform .2s, box-shadow .2s;
+}
+.nav-menu .shop-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,71,87,.45);
+}
+
+.nav-actions { display:flex; align-items:center; gap:18px; }
+.nav-actions .icon-btn {
+  position: relative;
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: #F7F0E8;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 18px;
+  text-decoration: none;
+  color: var(--navy);
+  transition: background .2s;
+  cursor: pointer;
+  border: none;
+}
+.nav-actions .icon-btn:hover { background: #FFE5E7; color: var(--coral); }
+.icon-btn .badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items:center; justify-content:center;
+}
+
+/* ═══════════════════════════════════════════════
+   HERO SLIDER  — Summer Beach Events Inspired
+═══════════════════════════════════════════════ */
+.hero-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 105px);
+  min-height: 580px;
+  overflow: hidden;
+}
+
+/* Individual Slides */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .9s cubic-bezier(.4,0,.2,1);
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* SLIDE BACKGROUNDS */
+.sl-1 { background: linear-gradient(140deg, #FF9A3C 0%, #FF4757 45%, #C0392B 100%); }
+.sl-2 { background: linear-gradient(140deg, #0084FF 0%, #00C6FF 55%, #7B2FBE 100%); }
+.sl-3 { background: linear-gradient(140deg, #11998E 0%, #38EF7D 55%, #06D6A0 100%); }
+.sl-4 { background: linear-gradient(140deg, #A855F7 0%, #EC4899 55%, #F97316 100%); }
+
+/* ── Large decorative circle behind content ── */
+.hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.circle-main {
+  width: 680px; height: 680px;
+  right: -60px; top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.09);
+  border: 3px solid rgba(255,255,255,.15);
+}
+.circle-inner {
+  width: 500px; height: 500px;
+  right: 30px; top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.07);
+  border: 2px solid rgba(255,255,255,.12);
+}
+.circle-sm {
+  width: 260px; height: 260px;
+  right: 160px; top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.06);
+}
+
+/* ── Floating bubbles (parallax decor) ── */
+.bubbles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.bub {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  animation: bubFloat linear infinite;
+}
+.bub:nth-child(1)  { width:80px;  height:80px;  left:5%;   animation-duration:8s;  animation-delay:0s; }
+.bub:nth-child(2)  { width:50px;  height:50px;  left:12%;  animation-duration:11s; animation-delay:2s; }
+.bub:nth-child(3)  { width:120px; height:120px; left:22%;  animation-duration:14s; animation-delay:4s; }
+.bub:nth-child(4)  { width:35px;  height:35px;  left:70%;  animation-duration:9s;  animation-delay:1s; }
+.bub:nth-child(5)  { width:65px;  height:65px;  left:80%;  animation-duration:12s; animation-delay:3s; }
+.bub:nth-child(6)  { width:90px;  height:90px;  left:60%;  animation-duration:16s; animation-delay:5s; }
+.bub:nth-child(7)  { width:40px;  height:40px;  left:45%;  animation-duration:10s; animation-delay:0s; }
+.bub:nth-child(8)  { width:100px; height:100px; left:90%;  animation-duration:13s; animation-delay:2s; }
+@keyframes bubFloat {
+  0%   { transform: translateY(110vh) scale(0); opacity:0; }
+  10%  { opacity: 1; }
+  90%  { opacity: .6; }
+  100% { transform: translateY(-20vh) scale(1.2); opacity:0; }
+}
+
+/* ── Wave at bottom ── */
+.wave-bottom {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 100px;
+  overflow: hidden;
+  z-index: 4;
+}
+.wave-bottom svg { position:absolute; bottom:0; left:0; }
+
+/* ── Slide inner grid ── */
+.slide-inner {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  align-items: center;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 60px;
+  width: 100%;
+  height: 100%;
+  gap: 30px;
+}
+
+/* ── Text Side ── */
+.slide-text { display:flex; flex-direction:column; gap:22px; }
+
+.slide-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.35);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 50px;
+  width: fit-content;
+}
+.eyebrow-dot {
+  width: 7px; height: 7px;
+  background: var(--yellow);
+  border-radius: 50%;
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.4; transform:scale(.7); }
+}
+
+.slide-headline {
+  font-size: clamp(42px, 5.5vw, 82px);
+  font-weight: 900;
+  line-height: 1.0;
+  color: #fff;
+  letter-spacing: -2px;
+  text-shadow: 0 4px 30px rgba(0,0,0,.2);
+}
+.slide-headline .line-accent {
+  display: block;
+  background: linear-gradient(90deg, var(--yellow) 0%, #FFD700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slide-desc {
+  font-size: 16px;
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+  line-height: 1.65;
+  max-width: 430px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.15);
+}
+
+/* Price pill */
+.price-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 60px;
+  padding: 10px 22px 10px 10px;
+  width: fit-content;
+}
+.price-pill .pill-icon {
+  width: 42px; height: 42px;
+  background: var(--yellow);
+  border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 20px;
+}
+.price-pill .pill-label { font-size:11px; color:rgba(255,255,255,.75); font-weight:700; }
+.price-pill .pill-value { font-size:20px; font-weight:900; color:#fff; }
+
+/* CTA buttons */
+.slide-cta { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.btn-hero {
+  padding: 15px 34px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .25s;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+.btn-hero-solid {
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 8px 30px rgba(0,0,0,.2);
+}
+.btn-hero-solid:hover { transform:translateY(-3px); box-shadow:0 14px 40px rgba(0,0,0,.28); }
+.btn-hero-outline {
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,.5);
+  backdrop-filter: blur(8px);
+}
+.btn-hero-outline:hover { background:rgba(255,255,255,.28); transform:translateY(-3px); }
+
+/* Trust badges */
+.trust-row { display:flex; gap:20px; flex-wrap:wrap; }
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.15);
+  border-radius: 50px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,.9);
+  border: 1px solid rgba(255,255,255,.2);
+}
+.trust-badge span { font-size:14px; }
+
+/* ── Visual Side ── */
+.slide-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Product showcase card */
+.showcase-card {
+  position: relative;
+  width: clamp(260px, 30vw, 400px);
+  height: clamp(300px, 40vw, 500px);
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,.3), 0 0 0 8px rgba(255,255,255,.12);
+  z-index: 3;
+  transition: transform .8s cubic-bezier(.4,0,.2,1), opacity .8s ease;
+}
+.showcase-card-inner {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 90px;
+  position: relative;
+}
+/* slide-specific card backgrounds */
+.sl-1 .showcase-card-inner { background: linear-gradient(160deg, #FFE0CC, #FFB3A7); }
+.sl-2 .showcase-card-inner { background: linear-gradient(160deg, #BFE6FF, #C3DEFF); }
+.sl-3 .showcase-card-inner { background: linear-gradient(160deg, #C8F7DC, #ABEECF); }
+.sl-4 .showcase-card-inner { background: linear-gradient(160deg, #F5D0FE, #FBCFE8); }
+
+.card-bottom-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,.65));
+  padding: 40px 22px 20px;
+  color: #fff;
+}
+.card-bottom-label small { font-size:10px; opacity:.75; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.card-bottom-label strong { display:block; font-size:18px; font-weight:900; }
+
+/* Offer burst sticker */
+.burst {
+  position: absolute;
+  top: -10px; right: -14px;
+  width: 80px; height: 80px;
+  background: var(--yellow);
+  border-radius: 50%;
+  display: flex; flex-direction:column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.2;
+  z-index: 6;
+  box-shadow: 0 4px 18px rgba(0,0,0,.2);
+  animation: burstPop 3.5s ease-in-out infinite;
+}
+@keyframes burstPop {
+  0%,100% { transform: rotate(-8deg) scale(1); }
+  50%      { transform: rotate(8deg)  scale(1.1); }
+}
+
+/* Floating info chips */
+.chip {
+  position: absolute;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 12px 18px;
+  display: flex; align-items:center; gap:12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.18);
+  z-index: 6;
+  animation: chipFloat 5s ease-in-out infinite;
+  min-width: 150px;
+}
+.chip:nth-child(odd)  { animation-direction: normal; }
+.chip:nth-child(even) { animation-direction: reverse; animation-delay: 1.5s; }
+@keyframes chipFloat {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-10px); }
+}
+.chip-tl { top:10%;  left:-16%; }
+.chip-br { bottom:14%; right:-14%; }
+.chip-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.ci-yellow { background:#FFF3CC; }
+.ci-coral  { background:#FFE4E6; }
+.ci-teal   { background:#DBEFFE; }
+.ci-purple { background:#F3E8FF; }
+.chip-label p    { font-size:10px; color:#888; font-weight:700; margin-bottom:2px; }
+.chip-label strong { font-size:14px; color:var(--navy); font-weight:900; }
+
+/* ── Slide text animations ── */
+.slide-eyebrow, .slide-headline, .slide-desc,
+.price-pill, .slide-cta, .trust-row {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.slide.active .slide-eyebrow { opacity:1; transform:none; transition-delay:.05s; }
+.slide.active .slide-headline { opacity:1; transform:none; transition-delay:.2s; }
+.slide.active .slide-desc     { opacity:1; transform:none; transition-delay:.35s; }
+.slide.active .price-pill     { opacity:1; transform:none; transition-delay:.45s; }
+.slide.active .slide-cta      { opacity:1; transform:none; transition-delay:.55s; }
+.slide.active .trust-row      { opacity:1; transform:none; transition-delay:.65s; }
+
+.showcase-card {
+  opacity:0;
+  transform: translateY(40px) scale(.95);
+  transition: opacity .7s ease .3s, transform .7s ease .3s;
+}
+.slide.active .showcase-card { opacity:1; transform:none; }
+
+.chip { opacity:0; transition: opacity .5s ease; }
+.slide.active .chip { opacity:1; }
+.slide.active .chip.chip-tl { transition-delay:.75s; }
+.slide.active .chip.chip-br { transition-delay:.95s; }
+
+/* ── Slider Controls ── */
+.slider-controls {
+  position: absolute;
+  bottom: 110px;
+  left: 60px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ctrl-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255,255,255,.4);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items:center; justify-content:center;
+  transition: all .2s;
+}
+.ctrl-btn:hover { background: rgba(255,255,255,.35); transform:scale(1.1); }
+
+.dots-wrap {
+  position: absolute;
+  bottom: 118px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.4);
+  cursor: pointer;
+  border: none;
+  transition: all .3s;
+}
+.dot.active {
+  width: 32px;
+  border-radius: 5px;
+  background: #fff;
+}
+
+/* Slide counter */
+.slide-counter {
+  position: absolute;
+  bottom: 112px;
+  right: 60px;
+  z-index: 10;
+  color: rgba(255,255,255,.8);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.slide-counter .cur { font-size: 24px; color: #fff; }
+
+/* Progress line */
+.progress-line {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--yellow), var(--coral));
+  z-index: 10;
+  width: 0%;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURE STRIP  (below slider)
+═══════════════════════════════════════════════ */
+.feature-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--navy);
+  padding: 0;
+}
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 30px;
+  border-right: 1px solid rgba(255,255,255,.07);
+  transition: background .2s;
+}
+.feature-item:last-child { border-right: none; }
+.feature-item:hover { background: rgba(255,255,255,.04); }
+.fi-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+.fi-text small { display:block; font-size:11px; color:#7A8BB0; font-weight:700; letter-spacing:.5px; text-transform:uppercase; }
+.fi-text strong { display:block; font-size:14px; color:#fff; font-weight:800; margin-top:2px; }
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════════════════ */
+.sec-head {
+  text-align: center;
+  margin-bottom: 44px;
+}
+.sec-pill {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFE4E6, #FFF3CD);
+  color: var(--coral);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255,71,87,.15);
+}
+.sec-title {
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.sec-title .hi { color: var(--coral); }
+.sec-sub {
+  font-size: 15px;
+  color: var(--gray);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════
+   CATEGORIES
+═══════════════════════════════════════════════ */
+.categories { padding: 72px 60px 60px; }
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.cat-card {
+  border-radius: 24px;
+  height: 210px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .3s, box-shadow .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cat-card:hover { transform:translateY(-8px); box-shadow:0 24px 60px rgba(0,0,0,.18); }
+.cat-card .cat-emoji { font-size: 64px; z-index:1; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); transition: transform .3s; }
+.cat-card:hover .cat-emoji { transform:scale(1.15) translateY(-6px); }
+.cat-label {
+  position: absolute;
+  bottom: 0; left:0; right:0;
+  padding: 36px 18px 18px;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+  color: #fff;
+}
+.cat-label small { font-size:10px; opacity:.75; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.cat-label strong { display:block; font-size:18px; font-weight:900; }
+
+.c1 { background: linear-gradient(160deg, #FF9A9E, #FAD0C4); }
+.c2 { background: linear-gradient(160deg, #A1C4FD, #C2E9FB); }
+.c3 { background: linear-gradient(160deg, #D4EDDA, #A8D8A8); }
+.c4 { background: linear-gradient(160deg, #FFF9C4, #FFEB8E); }
+.c5 { background: linear-gradient(160deg, #E2C9F8, #D0A8F0); }
+
+/* ═══════════════════════════════════════════════
+   PROMO BANNERS
+═══════════════════════════════════════════════ */
+.promos { padding: 0 60px 60px; }
+.promo-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.promo {
+  border-radius: 28px;
+  padding: 52px 48px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 270px;
+  justify-content: flex-end;
+}
+.p1 { background: linear-gradient(135deg, var(--navy) 0%, #2D3A6A 100%); }
+.p2 { background: linear-gradient(135deg, #FF4757 0%, #FF6348 100%); }
+
+.promo-bg-text {
+  position: absolute;
+  top: -10px; right: -10px;
+  font-size: 140px;
+  opacity: .07;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.promo small {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.p1 small { color: rgba(255,255,255,.5); }
+.p2 small { color: rgba(255,255,255,.65); }
+.promo h2 {
+  font-size: clamp(26px, 3vw, 44px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.p1 h2 { color: var(--yellow); }
+.p2 h2 { color: #fff; }
+.promo p { font-size: 14px; max-width: 300px; }
+.p1 p { color: rgba(255,255,255,.65); }
+.p2 p { color: rgba(255,255,255,.75); }
+.promo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  width: fit-content;
+  margin-top: 4px;
+  transition: all .2s;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+.p1 .promo-btn { background: var(--coral); color: #fff; box-shadow:0 6px 20px rgba(255,71,87,.4); }
+.p2 .promo-btn { background: #fff; color: var(--coral); box-shadow:0 6px 20px rgba(0,0,0,.15); }
+.promo-btn:hover { transform:translateY(-2px); }
+
+/* ═══════════════════════════════════════════════
+   PRODUCTS GRID
+═══════════════════════════════════════════════ */
+.products { padding: 0 60px 72px; }
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.pcard {
+  background: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  transition: all .3s;
+  cursor: pointer;
+  position: relative;
+}
+.pcard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(0,0,0,.12);
+}
+.pcard-img {
+  height: 230px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  overflow: hidden;
+  transition: transform .4s;
+}
+.pcard:hover .pcard-img { transform: scale(1.03); }
+.pcard-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  z-index: 2;
+}
+.badge-sale { background: var(--coral); color:#fff; }
+.badge-new  { background: var(--teal);  color:#fff; }
+.badge-hot  { background: var(--orange);color:#fff; }
+
+.pcard-actions {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: flex; flex-direction:column; gap:8px;
+  opacity:0; transform:translateX(8px);
+  transition: all .25s;
+  z-index: 2;
+}
+.pcard:hover .pcard-actions { opacity:1; transform:none; }
+.act-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.12);
+  transition: all .2s;
+}
+.act-btn:hover { background:var(--coral); }
+
+.pcard-info { padding: 16px 18px 18px; }
+.pcard-cat  { font-size:10px; color:#9CA3AF; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; }
+.pcard-name { font-size:14px; font-weight:800; color:var(--navy); line-height:1.3; margin-bottom:10px; }
+.pcard-foot { display:flex; align-items:center; justify-content:space-between; }
+.pcard-price { font-size:18px; font-weight:900; color:var(--coral); }
+.pcard-price del { font-size:12px; color:#D1D5DB; font-weight:500; margin-left:4px; }
+.pcard-stars { font-size:11px; color:#FBBF24; font-weight:700; }
+
+/* product bg colours */
+.pb1 { background:linear-gradient(160deg,#FFE4E8,#FFC5CC); }
+.pb2 { background:linear-gradient(160deg,#DBEFFE,#C5E2FF); }
+.pb3 { background:linear-gradient(160deg,#D1FAE5,#A7F3D0); }
+.pb4 { background:linear-gradient(160deg,#FEF3C7,#FDE68A); }
+.pb5 { background:linear-gradient(160deg,#EDE9FE,#DDD6FE); }
+.pb6 { background:linear-gradient(160deg,#FCE7F3,#FBCFE8); }
+.pb7 { background:linear-gradient(160deg,#FFF3CC,#FFE899); }
+.pb8 { background:linear-gradient(160deg,#CCFBF1,#99F6E4); }
+
+/* ═══════════════════════════════════════════════
+   NEWSLETTER
+═══════════════════════════════════════════════ */
+.newsletter {
+  margin: 0 60px 72px;
+  border-radius: 36px;
+  background: linear-gradient(135deg, #FF4757 0%, #FF6348 40%, #FFA502 100%);
+  padding: 72px 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.nl-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 50%, rgba(255,255,255,.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+.nl-bubbles { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.nl-bub {
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+}
+.nl-bub:nth-child(1) { width:200px;height:200px;right:-40px;top:-60px; }
+.nl-bub:nth-child(2) { width:120px;height:120px;right:100px;bottom:-30px; }
+.nl-bub:nth-child(3) { width:60px;height:60px;right:220px;top:20px; }
+
+.nl-text h2 { font-size:clamp(26px,3vw,42px); font-weight:900; color:#fff; letter-spacing:-1px; line-height:1.15; }
+.nl-text h2 .wv { color:var(--yellow); }
+.nl-text p  { font-size:15px; color:rgba(255,255,255,.8); margin-top:10px; line-height:1.6; }
+.nl-form { display:flex; flex-direction:column; gap:14px; }
+.nl-input-wrap { display:flex; gap:10px; }
+.nl-input {
+  flex:1;
+  padding: 15px 22px;
+  border-radius: 50px;
+  border: 2px solid rgba(255,255,255,.3);
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+  font-size: 14px;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+}
+.nl-input::placeholder { color:rgba(255,255,255,.6); }
+.nl-input:focus { border-color:rgba(255,255,255,.7); }
+.nl-btn {
+  padding: 15px 28px;
+  background: #fff;
+  color: var(--coral);
+  border-radius: 50px;
+  border: none;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(0,0,0,.15);
+}
+.nl-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.2); }
+.nl-note { font-size:12px; color:rgba(255,255,255,.65); }
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
+footer {
+  background: var(--navy);
+  padding: 60px 60px 28px;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 50px;
+  max-width: 1280px;
+  margin: 0 auto 48px;
+}
+.ft-brand .brand-logo { font-size:28px; font-weight:900; letter-spacing:-1px; margin-bottom:14px; }
+.ft-brand .brand-logo .j  { color:var(--coral); }
+.ft-brand .brand-logo .an { color:var(--orange); }
+.ft-brand .brand-logo .go { color:var(--yellow); }
+.ft-brand .brand-logo .k  { color:var(--teal); }
+.ft-brand .brand-logo .ids{ color:#A78BFA; }
+.ft-brand p { font-size:13px; color:#6B7EB0; line-height:1.7; max-width:260px; }
+.ft-socials { display:flex; gap:10px; margin-top:20px; }
+.soc-btn {
+  width:38px; height:38px;
+  border-radius:10px;
+  background:rgba(255,255,255,.07);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  text-decoration:none;
+  color:#6B7EB0;
+  transition:all .2s;
+}
+.soc-btn:hover { background:var(--coral); color:#fff; }
+.ft-col h4 { font-size:13px; font-weight:800; color:#fff; margin-bottom:18px; letter-spacing:.5px; text-transform:uppercase; }
+.ft-col ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.ft-col a  { font-size:13px; color:#6B7EB0; text-decoration:none; transition:color .2s; }
+.ft-col a:hover { color:var(--yellow); }
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #4A5680;
+}
+.footer-bottom a { color:#4A5680; text-decoration:none; transition:color .2s; }
+.footer-bottom a:hover { color:var(--yellow); }
+.payment-icons { display:flex; gap:8px; align-items:center; }
+.pay-badge {
+  background: rgba(255,255,255,.07);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8A9AC0;
+}
+
+/* ═══════════════════════════════════════════════
+   BACK TO TOP
+═══════════════════════════════════════════════ */
+.back-top {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--coral), var(--orange));
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(255,71,87,.5);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all .3s;
+  z-index: 998;
+  border: none;
+  text-decoration: none;
+}
+.back-top.show { opacity:1; transform:none; }
+.back-top:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(255,71,87,.6); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .slide-inner { grid-template-columns: 1fr; }
+  .slide-visual { display: none; }
+  .slide-headline { font-size: 52px; }
+}
+@media (max-width: 768px) {
+  .navbar { padding: 0 20px; }
+  .nav-menu { display: none; }
+  .hero-wrap { min-height: 500px; height: 80vh; }
+  .slide-inner { padding: 0 24px; }
+  .slider-controls { left: 24px; bottom: 90px; }
+  .dots-wrap { bottom: 96px; }
+  .slide-counter { right: 24px; bottom: 96px; }
+  .feature-strip { grid-template-columns: 1fr 1fr; }
+  .categories { padding: 48px 20px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .promos { padding: 0 20px 48px; }
+  .promo-grid { grid-template-columns: 1fr; }
+  .products { padding: 0 20px 48px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .newsletter { margin: 0 20px 48px; padding: 40px 28px; grid-template-columns: 1fr; }
+  footer { padding: 48px 20px 24px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .back-top { bottom: 16px; right: 16px; }
+}
+@media (max-width: 480px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .nl-input-wrap { flex-direction: column; }
+  .feature-strip { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  🚀 <b>FREE SHIPPING</b> on orders above ₹999 &nbsp;|&nbsp; Use <b>JANGO10</b> for 10% off &nbsp;|&nbsp; <a href="#">Shop Now ›</a>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="logo">
+    <span class="j">J</span><span class="an">an</span><span class="go">go</span><span class="k">K</span><span class="ids">ids</span>
+  </a>
+  <ul class="nav-menu">
+    <li><a href="#">New Arrivals</a></li>
+    <li><a href="#">Boys</a></li>
+    <li><a href="#">Girls</a></li>
+    <li><a href="#">Babies</a></li>
+    <li><a href="#">Sale 🔥</a></li>
+    <li><a href="#" class="shop-btn">Shop Now ›</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="icon-btn">🔍</button>
+    <button class="icon-btn" style="position:relative">
+      ❤️
+      <span class="badge">2</span>
+    </button>
+    <button class="icon-btn" style="position:relative">
+      🛍️
+      <span class="badge">3</span>
+    </button>
+    <button class="icon-btn">👤</button>
+  </div>
+</nav>
+
+<!-- ═══════ HERO SLIDER ═══════ -->
+<section class="hero-wrap" id="heroWrap">
+
+  <!-- ── SLIDE 1: Summer Glow ── -->
+  <div class="slide sl-1 active">
+    <div class="bubbles">
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+      <div class="bub"></div><div class="bub"></div>
+    </div>
+    <div class="hero-circle circle-main"></div>
+    <div class="hero-circle circle-inner"></div>
+    <div class="hero-circle circle-sm"></div>
+    <div class="wave-bottom">
+      <svg viewBox="0 0 1440 100" width="100%" height="100" preserveAspectRatio="none">
+        <path fill="#FFF8F0" d="M0,60 C360,110 720,10 1080,55 C1260,78 1380,30 1440,40 L1440,100 L0,100Z"/>
+      </svg>
+    </div>
+    <div class="slide-inner">
+      <div class="slide-text">
+        <div class="slide-eyebrow"><div class="eyebrow-dot"></div> ☀️ Summer 2025 Collection</div>
+        <h1 class="slide-headline">
+          Dress Them In<br>
+          <span class="line-accent">Sunshine & Joy</span>
+        </h1>
+        <p class="slide-desc">Vibrant, breathable summer styles crafted for kids who love to run, jump, and explore every single sunny day.</p>
+        <div class="price-pill">
+          <div class="pill-icon">🏷️</div>
+          <div>
+            <div class="pill-label">Starting from</div>
+            <div class="pill-value">₹299 onwards</div>
+          </div>
+        </div>
+        <div class="slide-cta">
+          <a href="#" class="btn-hero btn-hero-solid">🛍️ Shop Summer</a>
+          <a href="#" class="btn-hero btn-hero-outline">View Lookbook →</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust-badge"><span>🌿</span> 100% Cotton</div>
+          <div class="trust-badge"><span>🚚</span> Free Shipping</div>
+          <div class="trust-badge"><span>↩️</span> Easy Returns</div>
+        </div>
+      </div>
+      <div class="slide-visual">
+        <div class="showcase-card">
+          <div class="showcase-card-inner">👗</div>
+          <div class="burst">FLAT<br>30%<br>OFF</div>
+          <div class="card-bottom-label">
+            <small>New Arrival</small>
+            <strong>Floral Summer Dress</strong>
+          </div>
+        </div>
+        <div class="chip chip-tl">
+          <div class="chip-icon ci-yellow">⭐</div>
+          <div class="chip-label"><p>Rating</p><strong>4.9 / 5.0</strong></div>
+        </div>
+        <div class="chip chip-br">
+          <div class="chip-icon ci-coral">❤️</div>
+          <div class="chip-label"><p>Wishlist</p><strong>1.2k Saves</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: Bold Adventure ── -->
+  <div class="slide sl-2">
+    <div class="bubbles">
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+    </div>
+    <div class="hero-circle circle-main"></div>
+    <div class="hero-circle circle-inner"></div>
+    <div class="hero-circle circle-sm"></div>
+    <div class="wave-bottom">
+      <svg viewBox="0 0 1440 100" width="100%" height="100" preserveAspectRatio="none">
+        <path fill="#FFF8F0" d="M0,40 C360,90 720,5 1080,50 C1260,73 1380,25 1440,38 L1440,100 L0,100Z"/>
+      </svg>
+    </div>
+    <div class="slide-inner">
+      <div class="slide-text">
+        <div class="slide-eyebrow"><div class="eyebrow-dot"></div> 🚀 Boys Collection 2025</div>
+        <h1 class="slide-headline">
+          Adventure<br>Starts With<br>
+          <span class="line-accent">Bold Style</span>
+        </h1>
+        <p class="slide-desc">From sporty casuals to school-ready looks — everything your little explorer needs to conquer the day in style.</p>
+        <div class="price-pill">
+          <div class="pill-icon">⚡</div>
+          <div>
+            <div class="pill-label">Flash Sale — Ends Soon!</div>
+            <div class="pill-value">Up to 50% OFF</div>
+          </div>
+        </div>
+        <div class="slide-cta">
+          <a href="#" class="btn-hero btn-hero-solid">👦 Shop Boys</a>
+          <a href="#" class="btn-hero btn-hero-outline">See All →</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust-badge"><span>🧴</span> Stain Resistant</div>
+          <div class="trust-badge"><span>♻️</span> Eco Fabric</div>
+          <div class="trust-badge"><span>⭐</span> 5000+ Reviews</div>
+        </div>
+      </div>
+      <div class="slide-visual">
+        <div class="showcase-card">
+          <div class="showcase-card-inner">👕</div>
+          <div class="burst" style="background:#FFF;color:var(--navy)">NEW<br>IN<br>2025</div>
+          <div class="card-bottom-label">
+            <small>Best Seller</small>
+            <strong>Adventure Tee Set</strong>
+          </div>
+        </div>
+        <div class="chip chip-tl">
+          <div class="chip-icon ci-teal">🚚</div>
+          <div class="chip-label"><p>Delivery</p><strong>2–3 Days</strong></div>
+        </div>
+        <div class="chip chip-br">
+          <div class="chip-icon ci-yellow">🏅</div>
+          <div class="chip-label"><p>Quality</p><strong>Premium+</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: Girls Paradise ── -->
+  <div class="slide sl-3">
+    <div class="bubbles">
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+    </div>
+    <div class="hero-circle circle-main"></div>
+    <div class="hero-circle circle-inner"></div>
+    <div class="hero-circle circle-sm"></div>
+    <div class="wave-bottom">
+      <svg viewBox="0 0 1440 100" width="100%" height="100" preserveAspectRatio="none">
+        <path fill="#FFF8F0" d="M0,50 C360,100 720,15 1080,60 C1260,83 1380,35 1440,45 L1440,100 L0,100Z"/>
+      </svg>
+    </div>
+    <div class="slide-inner">
+      <div class="slide-text">
+        <div class="slide-eyebrow"><div class="eyebrow-dot"></div> ✨ Girls Collection</div>
+        <h1 class="slide-headline">
+          Pretty, Playful<br>
+          <span class="line-accent">& Perfectly You</span>
+        </h1>
+        <p class="slide-desc">Twirl-worthy dresses, trendy co-ords, and accessories made with love for your little fashionista.</p>
+        <div class="price-pill">
+          <div class="pill-icon">🎁</div>
+          <div>
+            <div class="pill-label">Bundle Offer</div>
+            <div class="pill-value">Buy 2 Get 1 FREE</div>
+          </div>
+        </div>
+        <div class="slide-cta">
+          <a href="#" class="btn-hero btn-hero-solid">👧 Shop Girls</a>
+          <a href="#" class="btn-hero btn-hero-outline">Trending Now →</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust-badge"><span>🎨</span> 50+ Colors</div>
+          <div class="trust-badge"><span>✂️</span> Custom Sizing</div>
+          <div class="trust-badge"><span>🔒</span> Secure Pay</div>
+        </div>
+      </div>
+      <div class="slide-visual">
+        <div class="showcase-card">
+          <div class="showcase-card-inner">🌸</div>
+          <div class="burst" style="background:var(--yellow)">BUY 2<br>GET 1<br>FREE</div>
+          <div class="card-bottom-label">
+            <small>Fan Favourite</small>
+            <strong>Princess Party Dress</strong>
+          </div>
+        </div>
+        <div class="chip chip-tl">
+          <div class="chip-icon ci-purple">✨</div>
+          <div class="chip-label"><p>Top Pick</p><strong>#1 This Week</strong></div>
+        </div>
+        <div class="chip chip-br">
+          <div class="chip-icon ci-coral">🎟️</div>
+          <div class="chip-label"><p>Offer Ends</p><strong>48 hrs left</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: Baby Love ── -->
+  <div class="slide sl-4">
+    <div class="bubbles">
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+      <div class="bub"></div><div class="bub"></div><div class="bub"></div>
+    </div>
+    <div class="hero-circle circle-main"></div>
+    <div class="hero-circle circle-inner"></div>
+    <div class="hero-circle circle-sm"></div>
+    <div class="wave-bottom">
+      <svg viewBox="0 0 1440 100" width="100%" height="100" preserveAspectRatio="none">
+        <path fill="#FFF8F0" d="M0,45 C360,95 720,10 1080,55 C1260,78 1380,30 1440,40 L1440,100 L0,100Z"/>
+      </svg>
+    </div>
+    <div class="slide-inner">
+      <div class="slide-text">
+        <div class="slide-eyebrow"><div class="eyebrow-dot"></div> 💛 Baby & Infant</div>
+        <h1 class="slide-headline">
+          Soft as a Hug<br>
+          <span class="line-accent">Safe as Love</span>
+        </h1>
+        <p class="slide-desc">Hypoallergenic, ultra-soft baby clothes tested for sensitive skin — because their comfort is our greatest priority.</p>
+        <div class="price-pill">
+          <div class="pill-icon">🌿</div>
+          <div>
+            <div class="pill-label">100% Organic Cotton</div>
+            <div class="pill-value">Baby Sets ₹499+</div>
+          </div>
+        </div>
+        <div class="slide-cta">
+          <a href="#" class="btn-hero btn-hero-solid">🍼 Shop Baby</a>
+          <a href="#" class="btn-hero btn-hero-outline">Gift Ideas →</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust-badge"><span>🧪</span> Derma Tested</div>
+          <div class="trust-badge"><span>🌱</span> Organic</div>
+          <div class="trust-badge"><span>🛡️</span> BIS Certified</div>
+        </div>
+      </div>
+      <div class="slide-visual">
+        <div class="showcase-card">
+          <div class="showcase-card-inner">🍼</div>
+          <div class="burst" style="background:#fff;color:var(--navy)">100%<br>SAFE<br>ORGANIC</div>
+          <div class="card-bottom-label">
+            <small>Soft & Safe</small>
+            <strong>Organic Onesie Set</strong>
+          </div>
+        </div>
+        <div class="chip chip-tl">
+          <div class="chip-icon" style="background:#D1FAE5">🌿</div>
+          <div class="chip-label"><p>Material</p><strong>100% Organic</strong></div>
+        </div>
+        <div class="chip chip-br">
+          <div class="chip-icon ci-yellow">🏆</div>
+          <div class="chip-label"><p>Certified</p><strong>GOTS Organic</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="slider-controls">
+    <button class="ctrl-btn" id="prevBtn">&#8592;</button>
+    <button class="ctrl-btn" id="nextBtn">&#8594;</button>
+  </div>
+  <div class="dots-wrap" id="dotsWrap">
+    <button class="dot active" data-i="0"></button>
+    <button class="dot" data-i="1"></button>
+    <button class="dot" data-i="2"></button>
+    <button class="dot" data-i="3"></button>
+  </div>
+  <div class="slide-counter">
+    <span class="cur" id="curNum">01</span> / <span id="totNum">04</span>
+  </div>
+  <div class="progress-line" id="progressLine"></div>
+</section>
+
+<!-- FEATURE STRIP -->
+<div class="feature-strip">
+  <div class="feature-item">
+    <div class="fi-icon">🚚</div>
+    <div class="fi-text"><small>Free Shipping</small><strong>Orders ₹999+</strong></div>
+  </div>
+  <div class="feature-item">
+    <div class="fi-icon">↩️</div>
+    <div class="fi-text"><small>Easy Returns</small><strong>7-Day Policy</strong></div>
+  </div>
+  <div class="feature-item">
+    <div class="fi-icon">🔒</div>
+    <div class="fi-text"><small>Secure Payment</small><strong>100% Encrypted</strong></div>
+  </div>
+  <div class="feature-item">
+    <div class="fi-icon">🎧</div>
+    <div class="fi-text"><small>24×7 Support</small><strong>Always Here</strong></div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories">
+  <div class="sec-head">
+    <div class="sec-pill">Browse by Category</div>
+    <h2 class="sec-title">Shop by <span class="hi">Age & Style</span></h2>
+    <p class="sec-sub">Find the perfect outfit for every kid, every occasion</p>
+  </div>
+  <div class="cat-grid">
+    <a href="#" class="cat-card c1">
+      <div class="cat-emoji">👧</div>
+      <div class="cat-label"><small>3–12 Years</small><strong>Girls Fashion</strong></div>
+    </a>
+    <a href="#" class="cat-card c2">
+      <div class="cat-emoji">👦</div>
+      <div class="cat-label"><small>3–12 Years</small><strong>Boys Fashion</strong></div>
+    </a>
+    <a href="#" class="cat-card c3">
+      <div class="cat-emoji">🍼</div>
+      <div class="cat-label"><small>0–3 Years</small><strong>Baby Wear</strong></div>
+    </a>
+    <a href="#" class="cat-card c4">
+      <div class="cat-emoji">🎒</div>
+      <div class="cat-label"><small>All Ages</small><strong>School Wear</strong></div>
+    </a>
+    <a href="#" class="cat-card c5">
+      <div class="cat-emoji">🎉</div>
+      <div class="cat-label"><small>All Ages</small><strong>Party Wear</strong></div>
+    </a>
+  </div>
+</section>
+
+<!-- PROMO BANNERS -->
+<section class="promos">
+  <div class="promo-grid">
+    <div class="promo p1">
+      <div class="promo-bg-text">☀️</div>
+      <small>Limited Time Offer</small>
+      <h2>Mega Summer<br>Clearance Sale</h2>
+      <p>Grab top styles at up to 60% off before they're gone. Limited stock — don't miss it!</p>
+      <a href="#" class="promo-btn">⚡ Shop Sale Now</a>
+    </div>
+    <div class="promo p2">
+      <div class="promo-bg-text">🎒</div>
+      <small>Exclusive Collection</small>
+      <h2>Back-to-School<br>Essentials</h2>
+      <p>Uniforms, bags, and everyday wear — everything your child needs for a great school year.</p>
+      <a href="#" class="promo-btn">📚 Explore Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products">
+  <div class="sec-head">
+    <div class="sec-pill">Fresh Drops</div>
+    <h2 class="sec-title">Latest <span class="hi">Arrivals</span></h2>
+    <p class="sec-sub">Hand-picked styles added this week</p>
+  </div>
+  <div class="product-grid">
+
+    <div class="pcard">
+      <div class="pcard-img pb1">
+        👗
+        <span class="pcard-badge badge-sale">-30%</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Girls · 4–6 yrs</div>
+        <div class="pcard-name">Floral Wrap Summer Dress</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹699 <del>₹999</del></div>
+          <div class="pcard-stars">★★★★★ 4.9</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb2">
+        👕
+        <span class="pcard-badge badge-new">New</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Boys · 6–8 yrs</div>
+        <div class="pcard-name">Dino Graphic Tee Combo</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹499 <del>₹799</del></div>
+          <div class="pcard-stars">★★★★★ 4.8</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb3">
+        🧸
+        <span class="pcard-badge badge-new">New</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Baby · 0–12 mo</div>
+        <div class="pcard-name">Organic Cotton Onesie Set</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹799 <del>₹1,199</del></div>
+          <div class="pcard-stars">★★★★★ 5.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb4">
+        🎀
+        <span class="pcard-badge badge-sale">-25%</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Girls · 8–12 yrs</div>
+        <div class="pcard-name">Tutu Party Dress with Bow</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹1,299 <del>₹1,699</del></div>
+          <div class="pcard-stars">★★★★☆ 4.7</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb5">
+        🩳
+        <span class="pcard-badge badge-hot">Hot</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Boys · 4–10 yrs</div>
+        <div class="pcard-name">Cargo Shorts Summer Set</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹599 <del>₹899</del></div>
+          <div class="pcard-stars">★★★★★ 4.9</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb6">
+        🦋
+        <span class="pcard-badge badge-sale">-40%</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Girls · 2–5 yrs</div>
+        <div class="pcard-name">Butterfly Printed Leggings</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹349 <del>₹599</del></div>
+          <div class="pcard-stars">★★★★★ 4.8</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb7">
+        🏫
+        <span class="pcard-badge badge-new">New</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">All · 4–12 yrs</div>
+        <div class="pcard-name">School Uniform 3-Piece Set</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹899 <del>₹1,399</del></div>
+          <div class="pcard-stars">★★★★☆ 4.6</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="pcard-img pb8">
+        🎽
+        <span class="pcard-badge badge-sale">-20%</span>
+        <div class="pcard-actions">
+          <button class="act-btn">❤️</button>
+          <button class="act-btn">👁️</button>
+        </div>
+      </div>
+      <div class="pcard-info">
+        <div class="pcard-cat">Boys · 6–12 yrs</div>
+        <div class="pcard-name">Sports Jersey Track Set</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">₹799 <del>₹999</del></div>
+          <div class="pcard-stars">★★★★★ 4.9</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <div class="nl-bg"></div>
+  <div class="nl-bubbles">
+    <div class="nl-bub"></div><div class="nl-bub"></div><div class="nl-bub"></div>
+  </div>
+  <div class="nl-text">
+    <h2>Get <span class="wv">Early Access</span><br>to New Drops</h2>
+    <p>Subscribe for exclusive discounts, style tips, and first look at new arrivals for your little ones.</p>
+  </div>
+  <div class="nl-form">
+    <div class="nl-input-wrap">
+      <input class="nl-input" type="email" placeholder="Enter your email address">
+      <button class="nl-btn">Subscribe 📨</button>
+    </div>
+    <p class="nl-note">🔒 No spam, ever. Unsubscribe anytime. We respect your privacy.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="ft-brand">
+      <div class="brand-logo">
+        <span class="j">J</span><span class="an">an</span><span class="go">go</span><span class="k">K</span><span class="ids">ids</span>
+      </div>
+      <p>Premium kids fashion combining comfort, style, and affordability. Dressed for every adventure from 0 to 12 years.</p>
+      <div class="ft-socials">
+        <a href="#" class="soc-btn">📷</a>
+        <a href="#" class="soc-btn">👍</a>
+        <a href="#" class="soc-btn">▶️</a>
+        <a href="#" class="soc-btn">📌</a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">New Arrivals</a></li>
+        <li><a href="#">Girls Fashion</a></li>
+        <li><a href="#">Boys Fashion</a></li>
+        <li><a href="#">Baby Wear</a></li>
+        <li><a href="#">Party Wear</a></li>
+        <li><a href="#">Sale 🔥</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="#">Size Guide</a></li>
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Returns & Exchange</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms & Conditions</a></li>
+        <li><a href="#">Shipping Policy</a></li>
+        <li><a href="#">Sitemap</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 JangoKids. All rights reserved.</span>
+    <div class="payment-icons">
+      <span class="pay-badge">UPI</span>
+      <span class="pay-badge">Visa</span>
+      <span class="pay-badge">Mastercard</span>
+      <span class="pay-badge">COD</span>
+    </div>
+    <div style="display:flex;gap:16px">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop">↑</button>
+
+<script>
+// ── HERO SLIDER ──────────────────────────────────
+const slides   = document.querySelectorAll('.slide');
+const dots     = document.querySelectorAll('.dot');
+const curNum   = document.getElementById('curNum');
+const progLine = document.getElementById('progressLine');
+let cur        = 0;
+let autoTimer  = null;
+const DELAY    = 5000;
+
+const pad = n => String(n + 1).padStart(2, '0');
+
+function goTo(idx) {
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('active');
+  cur = (idx + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('active');
+  curNum.textContent = pad(cur);
+  resetProgress();
+}
+
+function resetProgress() {
+  clearInterval(autoTimer);
+  progLine.style.transition = 'none';
+  progLine.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      progLine.style.transition = `width ${DELAY}ms linear`;
+      progLine.style.width = '100%';
+    });
+  });
+  autoTimer = setInterval(() => goTo(cur + 1), DELAY);
+}
+
+document.getElementById('nextBtn').addEventListener('click', () => goTo(cur + 1));
+document.getElementById('prevBtn').addEventListener('click', () => goTo(cur - 1));
+
+dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+});
+
+// Swipe support
+let tx = 0;
+const hw = document.getElementById('heroWrap');
+hw.addEventListener('touchstart', e => { tx = e.changedTouches[0].clientX; }, { passive: true });
+hw.addEventListener('touchend',   e => {
+  const dx = tx - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 50) goTo(dx > 0 ? cur + 1 : cur - 1);
+}, { passive: true });
+
+hw.addEventListener('mouseenter', () => clearInterval(autoTimer));
+hw.addEventListener('mouseleave', resetProgress);
+
+resetProgress();
+
+// ── BACK TO TOP ──────────────────────────────────
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('show', window.scrollY > 300);
+});
+backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
