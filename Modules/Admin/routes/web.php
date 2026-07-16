@@ -132,6 +132,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Contact Messages Routes
         Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+        Route::post('contact-messages/bulk-delete', [ContactMessageController::class, 'bulkDelete'])->name('contact-messages.bulk-delete');
         Route::get('contact-messages/{id}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
         Route::delete('contact-messages/{id}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
 

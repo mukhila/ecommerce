@@ -6,14 +6,14 @@
   <ul class="nav-menu">
     @if(isset($mainMenus) && $mainMenus->isNotEmpty())
         @foreach($mainMenus as $menu)
-            <li>
+            <li class="{{ $menu->children->isNotEmpty() ? 'has-dropdown' : '' }}">
                 <a href="{{ $menu->url }}" class="{{ Str::contains(strtolower($menu->name), ['shop', 'now', 'buy']) ? 'shop-btn' : '' }}">
                     {{ $menu->name }}
                 </a>
                 @if($menu->children->isNotEmpty())
                     <ul>
                         @foreach($menu->children as $child)
-                            <li>
+                            <li class="{{ $child->children->isNotEmpty() ? 'has-dropdown' : '' }}">
                                 <a href="{{ $child->url }}">{{ $child->name }}</a>
                                 @if($child->children->isNotEmpty())
                                     <ul>
@@ -43,7 +43,7 @@
     <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#searchModal" title="Search">
       <i class="ri-search-line"></i>
     </button>
-    
+
     <!-- Wishlist button redirects to wishlist index -->
     <a href="{{ route('wishlist.index') }}" class="icon-btn" style="position:relative" title="Wishlist">
       <i class="ri-heart-line"></i>
@@ -51,13 +51,13 @@
         <span class="badge" id="wishlist-count-badge">{{ $sharedWishlistCount }}</span>
       @endif
     </a>
-    
+
     <!-- Cart button triggers cartOffcanvas -->
     <button class="icon-btn" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" style="position:relative" title="Cart">
       <i class="ri-shopping-cart-line"></i>
       <span class="badge cart_qty_cls" id="offcanvas-cart-badge" style="{{ ($sharedCartCount ?? 0) > 0 ? '' : 'display: none;' }}">{{ $sharedCartCount ?? 0 }}</span>
     </button>
-    
+
     <!-- User Account drop menu -->
     <div class="account-menu-container">
       <button class="icon-btn" id="accountMenuBtn" title="Account">
@@ -85,25 +85,141 @@
         @endguest
       </div>
     </div>
+
+    <!-- Hamburger (mobile only) -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </div>
 </nav>
 
-<!-- JavaScript to control the account dropdown toggle -->
+<!-- ── MOBILE NAV PANEL ───────────────────────── -->
+<div class="mobile-nav" id="mobileNav" aria-hidden="true">
+  <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+  <div class="mobile-nav-panel" role="dialog" aria-label="Navigation menu">
+    <div class="mobile-nav-header">
+      <a href="{{ route('home') }}" class="mobile-nav-logo">
+        <span class="j">J</span><span class="an">an</span><span class="go">go</span><span class="k">K</span><span class="ids">ids</span>
+      </a>
+      <button class="mobile-nav-close-btn" id="mobileNavClose" aria-label="Close menu">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+
+    <ul class="mobile-nav-list">
+      @if(isset($mainMenus) && $mainMenus->isNotEmpty())
+        @foreach($mainMenus as $menu)
+          <li>
+            @if($menu->children->isNotEmpty())
+              <div class="mobile-nav-item-row">
+                <a href="{{ $menu->url }}">{{ $menu->name }}</a>
+                <button class="mobile-submenu-toggle" aria-label="Toggle submenu">
+                  <i class="ri-arrow-down-s-line"></i>
+                </button>
+              </div>
+              <ul class="mobile-submenu">
+                @foreach($menu->children as $child)
+                  <li><a href="{{ $child->url }}">{{ $child->name }}</a></li>
+                @endforeach
+              </ul>
+            @else
+              <a href="{{ $menu->url }}" class="mobile-nav-simple-link">{{ $menu->name }}</a>
+            @endif
+          </li>
+        @endforeach
+      @else
+        <li><a href="{{ route('products.index') }}" class="mobile-nav-simple-link">New Arrivals</a></li>
+        <li><a href="{{ route('category.show', 'boys-clothing') }}" class="mobile-nav-simple-link">Boys</a></li>
+        <li><a href="{{ route('category.show', 'girls-clothing') }}" class="mobile-nav-simple-link">Girls</a></li>
+        <li><a href="{{ route('products.index', ['search' => 'baby']) }}" class="mobile-nav-simple-link">Babies</a></li>
+        <li><a href="{{ route('products.index', ['filter' => 'sale']) }}" class="mobile-nav-simple-link">Sale 🔥</a></li>
+      @endif
+    </ul>
+
+    <div class="mobile-nav-footer">
+      @guest
+        <a href="{{ route('login') }}"><i class="ri-user-line"></i> Login</a>
+        <a href="{{ route('register') }}"><i class="ri-user-add-line"></i> Register</a>
+      @else
+        <a href="{{ route('dashboard') }}"><i class="ri-dashboard-line"></i> My Account</a>
+        <a href="{{ route('wishlist.index') }}"><i class="ri-heart-line"></i> Wishlist</a>
+        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('mobile-logout-form').submit();">
+          <i class="ri-logout-box-line"></i> Logout
+        </a>
+        <form id="mobile-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+      @endguest
+    </div>
+  </div>
+</div>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const btn = document.getElementById('accountMenuBtn');
-  const dropdown = document.getElementById('accountDropdown');
-  if (btn && dropdown) {
-    btn.addEventListener('click', function(e) {
+document.addEventListener('DOMContentLoaded', function () {
+  // ── Account dropdown ─────────────────────────
+  const accountBtn      = document.getElementById('accountMenuBtn');
+  const accountDropdown = document.getElementById('accountDropdown');
+  if (accountBtn && accountDropdown) {
+    accountBtn.addEventListener('click', function (e) {
       e.stopPropagation();
-      dropdown.classList.toggle('show');
+      accountDropdown.classList.toggle('show');
     });
-    document.addEventListener('click', function(e) {
-      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('show');
+    document.addEventListener('click', function (e) {
+      if (!accountBtn.contains(e.target) && !accountDropdown.contains(e.target)) {
+        accountDropdown.classList.remove('show');
       }
     });
   }
+
+  // ── Mobile nav open/close ────────────────────
+  const hamburger      = document.getElementById('hamburgerBtn');
+  const mobileNav      = document.getElementById('mobileNav');
+  const mobileOverlay  = document.getElementById('mobileNavOverlay');
+  const mobileClose    = document.getElementById('mobileNavClose');
+
+  function openMobileNav() {
+    mobileNav.classList.add('open');
+    mobileNav.setAttribute('aria-hidden', 'false');
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileNav() {
+    mobileNav.classList.remove('open');
+    mobileNav.setAttribute('aria-hidden', 'true');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  if (hamburger)     hamburger.addEventListener('click', openMobileNav);
+  if (mobileClose)   mobileClose.addEventListener('click', closeMobileNav);
+  if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileNav);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeMobileNav();
+  });
+
+  // ── Mobile submenu accordions ────────────────
+  document.querySelectorAll('.mobile-submenu-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const submenu = this.closest('li').querySelector('.mobile-submenu');
+      if (!submenu) return;
+      const isOpen = submenu.classList.contains('open');
+      // Close all open submenus first
+      document.querySelectorAll('.mobile-submenu.open').forEach(function (el) {
+        el.classList.remove('open');
+      });
+      document.querySelectorAll('.mobile-submenu-toggle.open').forEach(function (el) {
+        el.classList.remove('open');
+      });
+      if (!isOpen) {
+        submenu.classList.add('open');
+        this.classList.add('open');
+      }
+    });
+  });
 });
 </script>
 <!-- header end -->
