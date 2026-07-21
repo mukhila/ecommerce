@@ -1104,6 +1104,10 @@ body {
   margin: 0 auto;
 }
 
+.cat-grid.cat-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .cat-card {
   border-radius: 24px;
   height: 210px;

@@ -1,4 +1,4 @@
-@extends('admin::layouts.master')
+@extends('admin::layouts.main')
 
 @section('title', 'Ticket – ' . $ticket->ticket_number)
 

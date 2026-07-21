@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
 @section('title', 'Home')
-@section('meta_description', 'Jango Kidswear - Shop premium kids clothing online. Trendy, comfortable & affordable fashion for boys, girls & babies. Free shipping above ₹3000. COD available.')
-@section('meta_keywords', 'kids fashion online India, children clothing, boys clothes, girls clothes, baby wear, affordable kids fashion, Jango Kidswear')
+@section('meta_description', 'Jango Kidswear - Shop premium kids clothing online. Trendy, comfortable & affordable fashion for boys & babies. Free shipping above ₹3000. COD available.')
+@section('meta_keywords', 'kids fashion online India, children clothing, boys clothes, baby wear, affordable kids fashion, Jango Kidswear')
 @section('og_title', 'Jango Kidswear | Premium Kids Fashion Online')
 @section('og_description', 'Shop trendy and affordable kids clothing at Jango Kidswear. New arrivals every week. Free shipping above ₹3000.')
 @section('og_type', 'website')
@@ -14,12 +14,12 @@
     $slidesData = [];
     if (isset($sliders) && $sliders->isNotEmpty()) {
         foreach ($sliders as $index => $slider) {
-            $slideIndex = $index % 4;
-            $emojis = ['👗', '👕', '🌸', '🍼'];
-            $pillIcons = ['🏷️', '⚡', '🎁', '🌿'];
-            $bgClasses = ['sl-1', 'sl-2', 'sl-3', 'sl-4'];
-            $btnLabels = ['Shop Now', 'See All', 'Trending', 'Shop Baby'];
-            $badges = ['FLAT 30% OFF', 'NEW IN 2025', 'BUY 2 GET 1 FREE', '100% ORGANIC'];
+            $slideIndex = $index % 3;
+            $emojis = ['👕', '🧢', '🍼'];
+            $pillIcons = ['🏷️', '⚡', '🌿'];
+            $bgClasses = ['sl-1', 'sl-2', 'sl-4'];
+            $btnLabels = ['Shop Now', 'Shop Boys', 'Shop Baby'];
+            $badges = ['FLAT 30% OFF', 'NEW IN 2025', '100% ORGANIC'];
             
             $slidesData[] = [
                 'bg_class' => $bgClasses[$slideIndex],
@@ -37,38 +37,35 @@
                 'image' => asset('uploads/'.$slider->image),
                 'chips' => $slideIndex === 0 ? [
                     ['icon' => '⭐', 'label' => 'Rating', 'val' => '4.9 / 5.0', 'cls' => 'ci-yellow'],
-                    ['icon' => '❤️', 'label' => 'Wishlist', 'val' => '1.2k Saves', 'cls' => 'ci-coral']
+                    ['icon' => '🚚', 'label' => 'Delivery', 'val' => '2-3 Days', 'cls' => 'ci-teal']
                 ] : ($slideIndex === 1 ? [
-                    ['icon' => '🚚', 'label' => 'Delivery', 'val' => '2-3 Days', 'cls' => 'ci-teal'],
-                    ['icon' => '🏅', 'label' => 'Quality', 'val' => 'Premium+', 'cls' => 'ci-yellow']
-                ] : ($slideIndex === 2 ? [
-                    ['icon' => '✨', 'label' => 'Top Pick', 'val' => '#1 This Week', 'cls' => 'ci-purple'],
-                    ['icon' => '🎟️', 'label' => 'Offer Ends', 'val' => '48 hrs left', 'cls' => 'ci-coral']
+                    ['icon' => '🏅', 'label' => 'Quality', 'val' => 'Premium+', 'cls' => 'ci-yellow'],
+                    ['icon' => '⚡', 'label' => 'Flash Sale', 'val' => 'Up to 50% OFF', 'cls' => 'ci-coral']
                 ] : [
                     ['icon' => '🌿', 'label' => 'Material', 'val' => '100% Organic', 'cls' => 'ci-teal'],
                     ['icon' => '🏆', 'label' => 'Certified', 'val' => 'GOTS Organic', 'cls' => 'ci-yellow']
-                ]))
+                ])
             ];
         }
     } else {
-        // Fallback to static slides from newui.html
+        // Fallback static slides — boys & baby only
         $slidesData = [
             [
                 'bg_class' => 'sl-1',
-                'eyebrow' => '☀️ Summer 2025 Collection',
-                'headline' => 'Dress Them In <br><span class="line-accent">Sunshine & Joy</span>',
-                'desc' => 'Vibrant, breathable summer styles crafted for kids who love to run, jump, and explore every single sunny day.',
+                'eyebrow' => '☀️ Boys Summer 2025',
+                'headline' => 'Cool Styles For<br><span class="line-accent">Bold Boys</span>',
+                'desc' => 'Vibrant, breathable summer styles crafted for boys who love to run, jump, and explore every single sunny day.',
                 'pill_icon' => '🏷️',
                 'pill_label' => 'Starting from',
                 'pill_value' => '₹299 onwards',
                 'cta_url' => route('products.index'),
-                'cta_text' => '🛍️ Shop Summer',
-                'emoji' => '👗',
+                'cta_text' => '👦 Shop Summer',
+                'emoji' => '👕',
                 'badge' => 'FLAT<br>30%<br>OFF',
-                'card_title' => 'Floral Summer Dress',
+                'card_title' => 'Summer Tee Collection',
                 'chips' => [
                     ['icon' => '⭐', 'label' => 'Rating', 'val' => '4.9 / 5.0', 'cls' => 'ci-yellow'],
-                    ['icon' => '❤️', 'label' => 'Wishlist', 'val' => '1.2k Saves', 'cls' => 'ci-coral']
+                    ['icon' => '🚚', 'label' => 'Delivery', 'val' => '2–3 Days', 'cls' => 'ci-teal']
                 ]
             ],
             [
@@ -85,26 +82,8 @@
                 'badge' => 'NEW<br>IN<br>2025',
                 'card_title' => 'Adventure Tee Set',
                 'chips' => [
-                    ['icon' => '🚚', 'label' => 'Delivery', 'val' => '2–3 Days', 'cls' => 'ci-teal'],
-                    ['icon' => '🏅', 'label' => 'Quality', 'val' => 'Premium+', 'cls' => 'ci-yellow']
-                ]
-            ],
-            [
-                'bg_class' => 'sl-3',
-                'eyebrow' => '✨ Girls Collection',
-                'headline' => 'Pretty, Playful<br><span class="line-accent">& Perfectly You</span>',
-                'desc' => 'Twirl-worthy dresses, trendy co-ords, and accessories made with love for your little fashionista.',
-                'pill_icon' => '🎁',
-                'pill_label' => 'Bundle Offer',
-                'pill_value' => 'Buy 2 Get 1 FREE',
-                'cta_url' => route('products.index'),
-                'cta_text' => '👧 Shop Girls',
-                'emoji' => '🌸',
-                'badge' => 'BUY 2<br>GET 1<br>FREE',
-                'card_title' => 'Princess Party Dress',
-                'chips' => [
-                    ['icon' => '✨', 'label' => 'Top Pick', 'val' => '#1 This Week', 'cls' => 'ci-purple'],
-                    ['icon' => '🎟️', 'label' => 'Offer Ends', 'val' => '48 hrs left', 'cls' => 'ci-coral']
+                    ['icon' => '🏅', 'label' => 'Quality', 'val' => 'Premium+', 'cls' => 'ci-yellow'],
+                    ['icon' => '⚡', 'label' => 'Flash Sale', 'val' => 'Up to 50% OFF', 'cls' => 'ci-coral']
                 ]
             ],
             [
@@ -242,11 +221,7 @@
     <h2 class="sec-title">Shop by <span class="hi">Age & Style</span></h2>
     <p class="sec-sub">Find the perfect outfit for every kid, every occasion</p>
   </div>
-  <div class="cat-grid">
-    <a href="{{ route('category.show', 'girls-clothing') }}" class="cat-card c1">
-      <div class="cat-emoji">👧</div>
-      <div class="cat-label"><small>3–12 Years</small><strong>Girls Fashion</strong></div>
-    </a>
+  <div class="cat-grid cat-grid-4">
     <a href="{{ route('category.show', 'boys-clothing') }}" class="cat-card c2">
       <div class="cat-emoji">👦</div>
       <div class="cat-label"><small>3–12 Years</small><strong>Boys Fashion</strong></div>

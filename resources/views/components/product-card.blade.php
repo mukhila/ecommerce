@@ -14,7 +14,7 @@
 
 <div class="pcard" onclick="window.location='{{ route('product.show', $product->slug) }}'">
     <div class="pcard-img {{ $gradientClass }}">
-        <img src="{{ $imagePath }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+        <img src="{{ $imagePath }}" class="img-fluid blur-up lazyload" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
         
         @if($product->sale_price)
             @php

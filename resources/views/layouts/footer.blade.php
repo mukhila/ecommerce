@@ -37,17 +37,11 @@
     </div>
 
     <!-- Shop Column -->
-    <div class="ft-col">
+    <!--div class="ft-col">
       <h4>Shop</h4>
       <ul>
-        <li><a href="{{ route('products.index') }}">New Arrivals</a></li>
-        <li><a href="{{ route('category.show', 'girls-clothing') }}">Girls Fashion</a></li>
-        <li><a href="{{ route('category.show', 'boys-clothing') }}">Boys Fashion</a></li>
-        <li><a href="{{ route('products.index', ['search' => 'baby']) }}">Baby Wear</a></li>
-        <li><a href="{{ route('products.index', ['search' => 'party']) }}">Party Wear</a></li>
-        <li><a href="{{ route('products.index', ['filter' => 'sale']) }}">Sale 🔥</a></li>
       </ul>
-    </div>
+    </div-->
 
     <!-- Help Column -->
     <div class="ft-col">
@@ -57,6 +51,7 @@
         <li><a href="{{ route('order.track') }}">Track Order</a></li>
         <li><a href="{{ route('return-policy') }}">Returns & Exchange</a></li>
         <li><a href="{{ route('faqs') }}">FAQ</a></li>
+        <li><a href="{{ route('support.index') }}">Support</a></li>
         <li><a href="{{ route('contact') }}">Contact Us</a></li>
       </ul>
     </div>
@@ -69,7 +64,7 @@
         <li><a href="{{ route('privacy-policy') }}">Privacy Policy</a></li>
         <li><a href="{{ route('terms-and-conditions') }}">Terms & Conditions</a></li>
         <li><a href="{{ route('shipping-policy') }}">Shipping Policy</a></li>
-        <li><a href="{{ route('sitemap') }}">Sitemap</a></li>
+        <!--li><a href="{{ route('sitemap') }}">Sitemap</a></li-->
       </ul>
     </div>
   </div>

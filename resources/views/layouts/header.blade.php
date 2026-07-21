@@ -32,9 +32,9 @@
         <!-- Fallback static menus mapping to actual routes -->
         <li><a href="{{ route('products.index') }}">New Arrivals</a></li>
         <li><a href="{{ route('category.show', 'boys-clothing') }}">Boys</a></li>
-        <li><a href="{{ route('category.show', 'girls-clothing') }}">Girls</a></li>
         <li><a href="{{ route('products.index', ['search' => 'baby']) }}">Babies</a></li>
         <li><a href="{{ route('products.index', ['filter' => 'sale']) }}">Sale 🔥</a></li>
+        <li><a href="{{ route('support.index') }}">Support</a></li>
         <li><a href="{{ route('products.index') }}" class="shop-btn">Shop Now ›</a></li>
     @endif
   </ul>
@@ -132,9 +132,9 @@
       @else
         <li><a href="{{ route('products.index') }}" class="mobile-nav-simple-link">New Arrivals</a></li>
         <li><a href="{{ route('category.show', 'boys-clothing') }}" class="mobile-nav-simple-link">Boys</a></li>
-        <li><a href="{{ route('category.show', 'girls-clothing') }}" class="mobile-nav-simple-link">Girls</a></li>
         <li><a href="{{ route('products.index', ['search' => 'baby']) }}" class="mobile-nav-simple-link">Babies</a></li>
         <li><a href="{{ route('products.index', ['filter' => 'sale']) }}" class="mobile-nav-simple-link">Sale 🔥</a></li>
+        <li><a href="{{ route('support.index') }}" class="mobile-nav-simple-link">Support</a></li>
       @endif
     </ul>
 
