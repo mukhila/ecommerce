@@ -1811,7 +1811,7 @@ footer {
   }
 
   .slide-headline {
-    font-size: 52px;
+    font-size: clamp(32px, 5vw, 52px);
   }
 }
 
@@ -1826,25 +1826,85 @@ footer {
 
   .hero-wrap {
     min-height: 500px;
-    height: 80vh;
+    height: 85vh;
   }
 
   .slide-inner {
     padding: 0 24px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .slide-text {
+    gap: 14px;
+  }
+
+  .slide-eyebrow {
+    font-size: 10px;
+    padding: 5px 13px;
+    letter-spacing: 1.5px;
+  }
+
+  .slide-headline {
+    font-size: clamp(26px, 8vw, 38px);
+    letter-spacing: -1px;
+  }
+
+  .slide-headline .line-accent {
+    font-size: clamp(22px, 6.5vw, 32px);
+  }
+
+  .slide-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    max-width: 100%;
+  }
+
+  .price-pill {
+    padding: 7px 16px 7px 7px;
+  }
+
+  .price-pill .pill-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+  }
+
+  .price-pill .pill-value {
+    font-size: 16px;
+  }
+
+  .price-pill .pill-label {
+    font-size: 10px;
+  }
+
+  .btn-hero {
+    padding: 12px 26px;
+    font-size: 14px;
+  }
+
+  .trust-row {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .trust-badge {
+    font-size: 11px;
+    padding: 4px 10px;
   }
 
   .slider-controls {
     left: 24px;
-    bottom: 90px;
+    bottom: 72px;
   }
 
   .dots-wrap {
-    bottom: 96px;
+    bottom: 78px;
   }
 
   .slide-counter {
     right: 24px;
-    bottom: 96px;
+    bottom: 78px;
   }
 
   .feature-strip {
@@ -1915,6 +1975,42 @@ footer {
 
   .feature-strip {
     grid-template-columns: 1fr;
+  }
+
+  .slide-text {
+    gap: 10px;
+  }
+
+  .slide-headline {
+    font-size: clamp(22px, 7.5vw, 28px);
+    letter-spacing: -0.5px;
+  }
+
+  .slide-headline .line-accent {
+    font-size: clamp(18px, 6vw, 24px);
+  }
+
+  .slide-eyebrow {
+    font-size: 9px;
+    padding: 4px 12px;
+    letter-spacing: 1px;
+  }
+
+  .slide-desc {
+    font-size: 13px;
+  }
+
+  .trust-row {
+    display: none;
+  }
+
+  .price-pill .pill-value {
+    font-size: 14px;
+  }
+
+  .btn-hero {
+    padding: 11px 22px;
+    font-size: 13px;
   }
 }
 
