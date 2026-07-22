@@ -40,7 +40,7 @@
   </ul>
   <div class="nav-actions">
     <!-- Desktop-only: Wishlist + Account (hidden on mobile — both live in the slide-out nav) -->
-    <div class="desktop-nav-icons">
+    <div class="desktop-nav-icons d-none d-md-flex align-items-center gap-3">
       <a href="{{ route('wishlist.index') }}" class="icon-btn nav-wishlist-btn" style="position:relative" title="Wishlist">
         <i class="ri-heart-line"></i>
         @if(($sharedWishlistCount ?? 0) > 0)
