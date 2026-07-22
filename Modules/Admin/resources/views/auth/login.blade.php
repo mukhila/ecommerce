@@ -1,169 +1,415 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <title>Login Admin Dashboard</title>
+    <meta charset="utf-8">
+    <title>JangoKids — Admin Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('adminassets/images/favicon.ico') }}">
+    <link href="{{ asset('adminassets/css/icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('adminassets/css/app.min.css') }}" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
 
-    <!-- Bootstrap Css -->
-     <link href="{{ asset('adminassets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="{{ asset('adminassets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            font-family: 'Nunito', 'Inter', sans-serif;
+            background: #f4f6fa;
+        }
+
+        /* ── Left Brand Panel ─────────────────────────── */
+        .jk-panel {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 46%;
+            min-height: 100vh;
+            padding: 48px 52px;
+            background: linear-gradient(150deg, #ec8951 0%, #d4640a 55%, #a84e08 100%);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        @media (min-width: 960px) { .jk-panel { display: flex; } }
+
+        /* decorative blobs */
+        .jk-panel::before,
+        .jk-panel::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            opacity: .18;
+        }
+        .jk-panel::before {
+            width: 420px; height: 420px;
+            background: #fff;
+            top: -120px; right: -130px;
+        }
+        .jk-panel::after {
+            width: 300px; height: 300px;
+            background: #fff;
+            bottom: -80px; left: -80px;
+        }
+
+        .jk-brand {
+            position: relative; z-index: 1;
+        }
+        .jk-brand-name {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin: 0 0 4px;
+        }
+        .jk-brand-name span { opacity: .75; font-weight: 400; }
+        .jk-badge {
+            display: inline-block;
+            background: rgba(255,255,255,.2);
+            border: 1px solid rgba(255,255,255,.35);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .jk-mid { position: relative; z-index: 1; }
+        .jk-mid h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0 0 14px;
+        }
+        .jk-mid p {
+            font-size: .95rem;
+            opacity: .85;
+            line-height: 1.7;
+            margin: 0 0 32px;
+        }
+
+        .jk-stats {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .jk-stat {
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 12px;
+            padding: 14px 18px;
+            min-width: 100px;
+        }
+        .jk-stat-num {
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: block;
+        }
+        .jk-stat-lbl {
+            font-size: .72rem;
+            opacity: .8;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .jk-foot {
+            position: relative; z-index: 1;
+            font-size: .8rem;
+            opacity: .65;
+        }
+
+        /* ── Right Form Panel ─────────────────────────── */
+        .jk-form-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            background: #f4f6fa;
+        }
+
+        .jk-card {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(0,0,0,.07);
+            padding: 40px 36px;
+        }
+
+        /* mobile brand (shown only < 960px) */
+        .jk-mobile-brand {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ec8951;
+            margin-bottom: 4px;
+        }
+        @media (min-width: 960px) { .jk-mobile-brand { display: none; } }
+
+        .jk-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0 0 6px;
+        }
+        .jk-card .sub {
+            color: #6c757d;
+            font-size: .88rem;
+            margin: 0 0 28px;
+        }
+
+        /* inputs */
+        .jk-field { margin-bottom: 20px; }
+        .jk-field label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+        .jk-field .input-wrap { position: relative; }
+        .jk-field .input-wrap i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 16px;
+            pointer-events: none;
+        }
+        .jk-field input {
+            width: 100%;
+            height: 46px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0 42px 0 40px;
+            font-size: .9rem;
+            color: #1a1a2e;
+            background: #fafbfc;
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+        }
+        .jk-field input:focus {
+            border-color: #ec8951;
+            box-shadow: 0 0 0 3px rgba(236,137,81,.12);
+            background: #fff;
+        }
+        .jk-field input.is-invalid { border-color: #dc3545; }
+        .jk-field .toggle-pw {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            padding: 0;
+            font-size: 17px;
+            line-height: 1;
+        }
+        .jk-field .toggle-pw:hover { color: #ec8951; }
+        .invalid-feedback { display: block; color: #dc3545; font-size: .8rem; margin-top: 4px; }
+
+        /* remember + forgot row */
+        .jk-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .jk-check { display: flex; align-items: center; gap: 7px; font-size: .85rem; color: #555; }
+        .jk-check input[type=checkbox] { accent-color: #ec8951; width: 15px; height: 15px; cursor: pointer; }
+        .jk-forgot { font-size: .82rem; color: #ec8951; text-decoration: none; font-weight: 600; }
+        .jk-forgot:hover { text-decoration: underline; }
+
+        /* submit button */
+        .jk-btn {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(90deg, #ec8951, #d4640a);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: .95rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: .3px;
+            transition: opacity .2s, transform .1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .jk-btn:hover  { opacity: .92; }
+        .jk-btn:active { transform: scale(.98); }
+
+        .jk-copy {
+            text-align: center;
+            margin-top: 24px;
+            font-size: .78rem;
+            color: #aaa;
+        }
+
+        /* alert flash */
+        .jk-alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: .85rem;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .jk-alert-error  { background: #fff0f0; border: 1px solid #f5c6cb; color: #721c24; }
+        .jk-alert-success { background: #f0fff4; border: 1px solid #c3e6cb; color: #155724; }
+    </style>
 </head>
+<body>
 
-<body class="bg-light-subtle">
-     <div class="account-page">
-            <div class="container-fluid p-0">
-                <div class="row g-0 px-3 py-3 vh-100">
+    {{-- ── Left Brand Panel ──────────────────────────────────────────────────── --}}
+    <div class="jk-panel">
+        <div class="jk-brand">
+            <div class="jk-brand-name">Jango<span>Kids</span></div>
+            <div class="jk-badge">Admin Portal</div>
+        </div>
 
-                       <div class="col-xl-6 col-lg-6 col-md-6 d-md-block d-none body-color justify-content-center align-content-center rounded-4">
-                        <div class="">
-                            <div class="swiper testi-swiper auth-user-review">
-                                <div class="swiper-wrapper">
-
-                                    <div class="swiper-slide">
-                                        <div class="carousel-images mb-5">
-                                            <img src="assets/images/auth/login_first.svg" alt="" class="img-fluid">
-                                        </div>
-                                        <p class="prelead mb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621c.537-.278 1.24-.375 1.929-.311c1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5a3.87 3.87 0 0 1-2.748-1.179m10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621c.537-.278 1.24-.375 1.929-.311c1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5a3.87 3.87 0 0 1-2.748-1.179"/></svg> 
-                                                Venix made it incredibly easy to set up our internal tools. The UI is clean, and the components are flexible and well-documented.
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M19.417 6.679C20.447 7.773 21 9 21 10.989c0 3.5-2.456 6.637-6.03 8.188l-.893-1.378c3.335-1.804 3.987-4.145 4.248-5.621c-.537.278-1.24.375-1.93.311c-1.804-.167-3.226-1.648-3.226-3.489a3.5 3.5 0 0 1 3.5-3.5c1.073 0 2.1.49 2.748 1.179m-10 0C10.447 7.773 11 9 11 10.989c0 3.5-2.456 6.637-6.03 8.188l-.893-1.378c3.335-1.804 3.987-4.145 4.247-5.621c-.537.278-1.24.375-1.929.311C4.591 12.323 3.17 10.842 3.17 9a3.5 3.5 0 0 1 3.5-3.5c1.073 0 2.1.49 2.748 1.179"/></svg>
-                                        </p>
-                                     
-                                    </div>
-                                    
-                                    <div class="swiper-slide">
-                                        <div class="carousel-images mb-5">
-                                            <img src="assets/images/auth/login_second.svg" alt="" class="img-fluid">
-                                        </div>
-                                        <p class="prelead mb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621c.537-.278 1.24-.375 1.929-.311c1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5a3.87 3.87 0 0 1-2.748-1.179m10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621c.537-.278 1.24-.375 1.929-.311c1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5a3.87 3.87 0 0 1-2.748-1.179"/></svg> 
-                                                We built our dashboard 2x faster using Venix. The modular structure and reusable widgets saved us hours of work.
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M19.417 6.679C20.447 7.773 21 9 21 10.989c0 3.5-2.456 6.637-6.03 8.188l-.893-1.378c3.335-1.804 3.987-4.145 4.248-5.621c-.537.278-1.24.375-1.93.311c-1.804-.167-3.226-1.648-3.226-3.489a3.5 3.5 0 0 1 3.5-3.5c1.073 0 2.1.49 2.748 1.179m-10 0C10.447 7.773 11 9 11 10.989c0 3.5-2.456 6.637-6.03 8.188l-.893-1.378c3.335-1.804 3.987-4.145 4.247-5.621c-.537.278-1.24.375-1.929.311C4.591 12.323 3.17 10.842 3.17 9a3.5 3.5 0 0 1 3.5-3.5c1.073 0 2.1.49 2.748 1.179"/></svg>
-                                        </p>
-                                       
-                                    </div>
-
-                                    <div class="swiper-slide">
-                                        <div class="carousel-images mb-5">
-                                            <img src="assets/images/auth/login_third.svg" alt="" class="img-fluid">
-                                        </div>
-                                        <p class="prelead mb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621c.537-.278 1.24-.375 1.929-.311c1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5a3.87 3.87 0 0 1-2.748-1.179m10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621c.537-.278 1.24-.375 1.929-.311c1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5a3.87 3.87 0 0 1-2.748-1.179"/></svg> 
-                                            I highly recommend Venix for any developer looking to build scalable admin panels. Everything just works.
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M19.417 6.679C20.447 7.773 21 9 21 10.989c0 3.5-2.456 6.637-6.03 8.188l-.893-1.378c3.335-1.804 3.987-4.145 4.248-5.621c-.537.278-1.24.375-1.93.311c-1.804-.167-3.226-1.648-3.226-3.489a3.5 3.5 0 0 1 3.5-3.5c1.073 0 2.1.49 2.748 1.179m-10 0C10.447 7.773 11 9 11 10.989c0 3.5-2.456 6.637-6.03 8.188l-.893-1.378c3.335-1.804 3.987-4.145 4.247-5.621c-.537.278-1.24.375-1.929.311C4.591 12.323 3.17 10.842 3.17 9a3.5 3.5 0 0 1 3.5-3.5c1.073 0 2.1.49 2.748 1.179"/></svg>
-                                        </p>
-                                    
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                  <div class="col-xl-5 col-md-5 col-xxl-5 justify-content-center align-content-center mx-auto">
-                    <div class="row">
-                            <div class="col-xl-8 mx-auto">
-
-                                <div class="mb-3 p-0 text-start">
-                                    <div class="auth-brand">
-                                        <a href="#" class="logo logo-light">
-                                            <span class="logo-sm">
-                                                <img src="{{ asset('adminassets/images/logo-sm.png') }}" height="40">
-                                            </span>
-                                        </a>
-                                        <a href="index.html" class="logo logo-dark">
-                                            <span class="logo-sm">
-                                                <img src="{{ asset('adminassets/images/logo-sm.png') }}" alt="" height="40">
-                                            </span>
-                                        </a>
-                                    </div>
-                                </div>
-								
-								  <div class="auth-title-section mb-3 text-start">
-                                    <h4 class="text-dark fw-medium mb-2">Welcome Admin</h4>
-                                    <p class="text-muted fs-14 mb-0">Please enter your detail</p>
-                                </div>
-        
-                           <div class="card mb-0 shadow-none border">
-                                    <div class="card-body p-lg-4">
-                                        <div class="mb-0">
-                                <form class="form-horizontal" action="{{ route('admin.login.submit') }}" method="POST">
-                                    @csrf
-
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter email" value="{{ old('email') }}" required autofocus>
-                                        @error('email')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Password</label>
-                                        <div class="input-group auth-pass-inputgroup">
-                                            <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter password" name="password" required>
-                                            <button class="btn btn-light " type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button>
-                                        </div>
-                                        @error('password')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                        <label class="form-check-label" for="remember">
-                                            Remember me
-                                        </label>
-                                    </div>
-
-                                    <div class="mt-3 d-grid">
-                                        <button class="btn btn-primary waves-effect waves-light" type="submit">Log In</button>
-                                    </div>
-
-                                    <div class="mt-4 text-center">
-                                        <a href="#" class="text-muted"><i class="mdi mdi-lock me-1"></i> Forgot your password?</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-5 text-center">
-                        <p>© <script>document.write(new Date().getFullYear())</script> Admin. Crafted with <i class="mdi mdi-heart text-danger"></i> by Admin</p>
-                    </div>
-
+        <div class="jk-mid">
+            <h2>Your store,<br>fully in control.</h2>
+            <p>
+                Manage orders, products, customers, coupons,
+                and analytics — all from one powerful dashboard
+                built for JangoKids.
+            </p>
+            <div class="jk-stats">
+                <div class="jk-stat">
+                    <span class="jk-stat-num">Orders</span>
+                    <span class="jk-stat-lbl">Real-time tracking</span>
+                </div>
+                <div class="jk-stat">
+                    <span class="jk-stat-num">Products</span>
+                    <span class="jk-stat-lbl">Full inventory</span>
+                </div>
+                <div class="jk-stat">
+                    <span class="jk-stat-num">Reports</span>
+                    <span class="jk-stat-lbl">Sales analytics</span>
                 </div>
             </div>
         </div>
+
+        <div class="jk-foot">
+            &copy; {{ date('Y') }} JangoKids. All rights reserved.
+        </div>
     </div>
-</div>
-    <!-- JAVASCRIPT -->
+
+    {{-- ── Right Form Panel ──────────────────────────────────────────────────── --}}
+    <div class="jk-form-wrap">
+        <div class="jk-card">
+
+            {{-- Mobile-only brand --}}
+            <div class="jk-mobile-brand">JangoKids</div>
+
+            <h3>Welcome back</h3>
+            <p class="sub">Sign in to your admin account to continue</p>
+
+            {{-- Flash messages --}}
+            @if(session('error'))
+                <div class="jk-alert jk-alert-error">
+                    <i class="mdi mdi-alert-circle-outline"></i>
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if(session('success'))
+                <div class="jk-alert jk-alert-success">
+                    <i class="mdi mdi-check-circle-outline"></i>
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <form action="{{ route('admin.login.submit') }}" method="POST" autocomplete="on">
+                @csrf
+
+                {{-- Email --}}
+                <div class="jk-field">
+                    <label for="email">Email address</label>
+                    <div class="input-wrap">
+                        <i class="mdi mdi-email-outline"></i>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               placeholder="admin@jangokids.com"
+                               value="{{ old('email') }}"
+                               class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
+                               autocomplete="email"
+                               required
+                               autofocus>
+                    </div>
+                    @error('email')
+                        <div class="invalid-feedback"><i class="mdi mdi-alert-outline"></i> {{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Password --}}
+                <div class="jk-field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <i class="mdi mdi-lock-outline"></i>
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               placeholder="••••••••"
+                               class="{{ $errors->has('password') ? 'is-invalid' : '' }}"
+                               autocomplete="current-password"
+                               required>
+                        <button type="button" class="toggle-pw" id="togglePw" title="Show / hide password">
+                            <i class="mdi mdi-eye-outline" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                    @error('password')
+                        <div class="invalid-feedback"><i class="mdi mdi-alert-outline"></i> {{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Remember + Forgot --}}
+                <div class="jk-row">
+                    <label class="jk-check">
+                        <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                        Remember me
+                    </label>
+                    <span class="jk-forgot" style="cursor:default;opacity:.6;font-size:.78rem;">Contact super admin</span>
+                </div>
+
+                <button type="submit" class="jk-btn">
+                    <i class="mdi mdi-login"></i>
+                    Sign in to Dashboard
+                </button>
+            </form>
+
+            <div class="jk-copy">
+                &copy; {{ date('Y') }} JangoKids Admin &mdash; Secure access only
+            </div>
+        </div>
+    </div>
+
     <script src="{{ asset('adminassets/libs/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('adminassets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('adminassets/libs/metismenu/metisMenu.min.js') }}"></script>
-    <script src="{{ asset('adminassets/libs/simplebar/simplebar.min.js') }}"></script>
-    <script src="{{ asset('adminassets/libs/node-waves/waves.min.js') }}"></script>
-    
-    <!-- App js -->
-    <script src="{{ asset('adminassets/js/app.js') }}"></script>
     <script>
-        document.getElementById('password-addon').addEventListener('click', function () {
-            var passwordInput = document.querySelector('input[name="password"]');
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
+        // Toggle password visibility
+        document.getElementById('togglePw').addEventListener('click', function () {
+            const pw  = document.getElementById('password');
+            const eye = document.getElementById('eyeIcon');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                eye.className = 'mdi mdi-eye-off-outline';
+                this.title = 'Hide password';
             } else {
-                passwordInput.type = "password";
+                pw.type = 'password';
+                eye.className = 'mdi mdi-eye-outline';
+                this.title = 'Show password';
             }
         });
     </script>

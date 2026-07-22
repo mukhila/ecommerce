@@ -17,6 +17,8 @@ use App\Notifications\OrderPlaced;
 use App\Notifications\NewOrderNotification;
 use App\Models\User;
 use App\Services\RazorpayService;
+use Carbon\Carbon;
+use Modules\Product\Models\Coupon;
 use Exception;
 
 class CheckoutController extends Controller
@@ -77,9 +79,9 @@ class CheckoutController extends Controller
 
             $validated = $request->validate([
                 'full_name'       => 'required|string|max:255',
-                'email'           => 'required|email|max:255',
-                'phone'           => 'required|string|max:20',
-                'alternate_phone' => 'nullable|string|max:20',
+                'email'           => 'required|email:rfc,dns|max:255',
+                'phone'           => ['required', 'string', 'regex:/^[6-9]\d{9}$/'],
+                'alternate_phone' => ['nullable', 'string', 'regex:/^[6-9]\d{9}$/'],
                 'address_line1'   => 'required|string|max:255',
                 'address_line2'   => 'nullable|string|max:255',
                 'city'            => 'required|string|max:100',
@@ -88,6 +90,7 @@ class CheckoutController extends Controller
                 'country'         => 'required|string|max:100',
                 'payment_method'  => 'required|in:' . $allowedMethods,
                 'notes'           => 'nullable|string|max:500',
+                'coupon_code'     => 'nullable|string|max:50',
             ]);
 
             DB::beginTransaction();
@@ -105,7 +108,47 @@ class CheckoutController extends Controller
             $cartTotal    = $cart->total;
             $shippingCost = $cartTotal >= 3000 ? 0 : 100;
             $discount     = 0;
-            $total        = $cartTotal + $shippingCost - $discount;
+            $appliedCouponCode = null;
+
+            // Apply coupon if provided
+            if (!empty($validated['coupon_code'])) {
+                $code   = strtoupper(trim($validated['coupon_code']));
+                $coupon = Coupon::where('code', $code)->where('status', true)->first();
+                $today  = Carbon::today();
+
+                $couponValid = $coupon
+                    && (!$coupon->start_date  || !Carbon::parse($coupon->start_date)->isAfter($today))
+                    && (!$coupon->expiry_date || !Carbon::parse($coupon->expiry_date)->isBefore($today));
+
+                // One-time use enforcement (server-side)
+                if ($couponValid) {
+                    if (!$isGuest) {
+                        $alreadyUsed = Order::where('user_id', Auth::id())
+                            ->where('coupon_code', $code)
+                            ->whereNotIn('status', ['cancelled'])
+                            ->exists();
+                    } else {
+                        $alreadyUsed = Order::where('guest_email', $validated['email'])
+                            ->where('coupon_code', $code)
+                            ->whereNotIn('status', ['cancelled'])
+                            ->exists();
+                    }
+
+                    if ($alreadyUsed) {
+                        DB::rollBack();
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'This coupon has already been used and cannot be applied again.');
+                    }
+
+                    $discount = $coupon->type === 'percent'
+                        ? round(($coupon->value / 100) * $cartTotal, 2)
+                        : min((float) $coupon->value, $cartTotal);
+                    $appliedCouponCode = $coupon->code;
+                }
+            }
+
+            $total = max(0, $cartTotal + $shippingCost - $discount);
 
             // Create order — user_id is null for guests
             $order = Order::create([
@@ -119,6 +162,7 @@ class CheckoutController extends Controller
                 'tax'            => $gstAmount,
                 'shipping_cost'  => $shippingCost,
                 'discount'       => $discount,
+                'coupon_code'    => $appliedCouponCode,
                 'total'          => $total,
                 'status'         => 'pending',
                 'payment_status' => 'pending',

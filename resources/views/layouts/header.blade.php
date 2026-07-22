@@ -34,7 +34,7 @@
         <li><a href="{{ route('category.show', 'boys-clothing') }}">Boys</a></li>
         <li><a href="{{ route('products.index', ['search' => 'baby']) }}">Babies</a></li>
         <li><a href="{{ route('products.index', ['filter' => 'sale']) }}">Sale 🔥</a></li>
-        <li><a href="{{ route('support.index') }}">Support</a></li>
+        <li><a href="{{ auth()->check() ? route('support.index') : route('support.create') }}">Support</a></li>
         <li><a href="{{ route('products.index') }}" class="shop-btn">Shop Now ›</a></li>
     @endif
   </ul>
@@ -134,7 +134,7 @@
         <li><a href="{{ route('category.show', 'boys-clothing') }}" class="mobile-nav-simple-link">Boys</a></li>
         <li><a href="{{ route('products.index', ['search' => 'baby']) }}" class="mobile-nav-simple-link">Babies</a></li>
         <li><a href="{{ route('products.index', ['filter' => 'sale']) }}" class="mobile-nav-simple-link">Sale 🔥</a></li>
-        <li><a href="{{ route('support.index') }}" class="mobile-nav-simple-link">Support</a></li>
+        <li><a href="{{ auth()->check() ? route('support.index') : route('support.create') }}" class="mobile-nav-simple-link">Support</a></li>
       @endif
     </ul>
 

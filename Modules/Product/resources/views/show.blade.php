@@ -163,7 +163,7 @@
         <nav class="theme-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('product.index') }}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Products</a></li>
                 @if($product->category)
                     <li class="breadcrumb-item">{{ $product->category->name }}</li>
                 @endif

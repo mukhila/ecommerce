@@ -27,6 +27,7 @@ class Order extends Model
         'tax',
         'shipping_cost',
         'discount',
+        'coupon_code',
         'total',
         'status',
         'tracking_number',

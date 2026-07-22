@@ -51,7 +51,7 @@
         <li><a href="{{ route('order.track') }}">Track Order</a></li>
         <li><a href="{{ route('return-policy') }}">Returns & Exchange</a></li>
         <li><a href="{{ route('faqs') }}">FAQ</a></li>
-        <li><a href="{{ route('support.index') }}">Support</a></li>
+        <li><a href="{{ auth()->check() ? route('support.index') : route('support.create') }}">Support</a></li>
         <li><a href="{{ route('contact') }}">Contact Us</a></li>
       </ul>
     </div>

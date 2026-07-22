@@ -72,11 +72,16 @@
                                        class="form-control @error('phone') is-invalid @enderror"
                                        id="phone"
                                        name="phone"
+                                       placeholder="10-digit mobile number"
+                                       maxlength="10"
                                        value="{{ old('phone') }}"
                                        required>
                                 @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="invalid-feedback" id="phone-client-error"></div>
                                 @enderror
+                                <small class="text-muted">Enter 10-digit Indian mobile number (e.g. 9876543210)</small>
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="alternate_phone" class="form-label">Alternate Phone</label>
@@ -84,9 +89,13 @@
                                        class="form-control @error('alternate_phone') is-invalid @enderror"
                                        id="alternate_phone"
                                        name="alternate_phone"
+                                       placeholder="10-digit mobile number (optional)"
+                                       maxlength="10"
                                        value="{{ old('alternate_phone') }}">
                                 @error('alternate_phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="invalid-feedback" id="alt-phone-client-error"></div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-12">
@@ -211,6 +220,18 @@
                                         </li>
                                     @endforeach
                                 </ul>
+                                {{-- Coupon Input --}}
+                                <div class="coupon-box mt-3 mb-2">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="couponCodeInput" class="form-control"
+                                               placeholder="Coupon code" maxlength="50"
+                                               style="text-transform:uppercase;">
+                                        <button class="btn btn-solid btn-sm" type="button" id="applyCouponBtn">Apply</button>
+                                    </div>
+                                    <div id="couponMessage" class="small mt-1"></div>
+                                </div>
+                                <input type="hidden" name="coupon_code" id="appliedCouponCode" value="">
+
                                 <ul class="sub-total">
                                     <li>Subtotal (Excl. GST) <span class="count">₹{{ number_format($cart->subtotal, 2) }}</span></li>
 
@@ -237,9 +258,14 @@
                                             @endif
                                         </span>
                                     </li>
+
+                                    <li id="couponDiscountLine" style="display:none; color:#28a745;">
+                                        Coupon (<span id="couponCodeLabel"></span>)
+                                        <span class="count text-success" id="couponDiscountAmt"></span>
+                                    </li>
                                 </ul>
                                 <ul class="total">
-                                    <li>Grand Total <span class="count">₹{{ number_format($cart->total + $shippingCost, 2) }}</span></li>
+                                    <li>Grand Total <span class="count" id="grandTotalDisplay">₹{{ number_format($cart->total + $shippingCost, 2) }}</span></li>
                                 </ul>
                             </div>
 
@@ -278,25 +304,144 @@
 
 @push('scripts')
 <script>
-    // Form validation
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-        const phone = document.getElementById('phone').value;
-        const postalCode = document.getElementById('postal_code').value;
+(function () {
+    const cartTotal   = {{ $cart->total }};
+    const shippingCost = {{ $shippingCost }};
+    let   appliedDiscount = 0;
 
-        // Basic phone validation
-        if (phone && !/^\d{10}$/.test(phone.replace(/\D/g, ''))) {
-            e.preventDefault();
-            alert('Please enter a valid 10-digit phone number');
-            return false;
+    // ── Coupon ────────────────────────────────────────────────────────────────
+    document.getElementById('applyCouponBtn').addEventListener('click', function () {
+        const code = document.getElementById('couponCodeInput').value.trim().toUpperCase();
+        const msg  = document.getElementById('couponMessage');
+
+        if (!code) {
+            msg.innerHTML = '<span class="text-danger">Please enter a coupon code.</span>';
+            return;
         }
 
-        // Postal code validation for India
-        const country = document.getElementById('country').value;
-        if (country === 'India' && postalCode && !/^\d{6}$/.test(postalCode)) {
+        this.disabled = true;
+        this.textContent = '…';
+
+        const emailVal = (document.getElementById('email').value || '').trim();
+        const phoneVal = (document.getElementById('phone').value || '').trim();
+
+        fetch('{{ route('coupon.apply') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({
+                code,
+                cart_total: cartTotal,
+                email: emailVal || null,
+                phone: phoneVal || null,
+            }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                appliedDiscount = data.discount;
+                document.getElementById('appliedCouponCode').value = data.code;
+                document.getElementById('couponCodeLabel').textContent = data.code;
+                document.getElementById('couponDiscountAmt').textContent = '−₹' + data.discount.toFixed(2);
+                document.getElementById('couponDiscountLine').style.display = '';
+                updateGrandTotal();
+                msg.innerHTML = '<span class="text-success"><i class="ri-checkbox-circle-line"></i> ' + data.message + '</span>';
+            } else {
+                msg.innerHTML = '<span class="text-danger"><i class="ri-error-warning-line"></i> ' + data.message + '</span>';
+            }
+        })
+        .catch(() => {
+            msg.innerHTML = '<span class="text-danger">Something went wrong. Try again.</span>';
+        })
+        .finally(() => {
+            this.disabled = false;
+            this.textContent = 'Apply';
+        });
+    });
+
+    function updateGrandTotal() {
+        const grand = Math.max(0, cartTotal + shippingCost - appliedDiscount);
+        document.getElementById('grandTotalDisplay').textContent = '₹' + grand.toFixed(2);
+    }
+
+    // Allow applying coupon with Enter key
+    document.getElementById('couponCodeInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
             e.preventDefault();
-            alert('Please enter a valid 6-digit postal code');
-            return false;
+            document.getElementById('applyCouponBtn').click();
         }
     });
+
+    // ── Form validation ───────────────────────────────────────────────────────
+    const phoneRegex    = /^[6-9]\d{9}$/;
+    const postalRegex   = /^\d{6}$/;
+
+    function setFieldError(inputId, errorId, message) {
+        const input = document.getElementById(inputId);
+        const err   = document.getElementById(errorId);
+        if (!input) return;
+        if (message) {
+            input.classList.add('is-invalid');
+            if (err) { err.textContent = message; err.style.display = 'block'; }
+        } else {
+            input.classList.remove('is-invalid');
+            if (err) { err.textContent = ''; err.style.display = ''; }
+        }
+    }
+
+    // Live phone validation
+    document.getElementById('phone').addEventListener('input', function () {
+        const val = this.value.trim();
+        if (val && !phoneRegex.test(val)) {
+            setFieldError('phone', 'phone-client-error', 'Enter a valid 10-digit mobile number starting with 6–9.');
+        } else {
+            setFieldError('phone', 'phone-client-error', null);
+        }
+    });
+
+    // Live alternate phone validation
+    const altPhoneEl = document.getElementById('alternate_phone');
+    if (altPhoneEl) {
+        altPhoneEl.addEventListener('input', function () {
+            const val = this.value.trim();
+            if (val && !phoneRegex.test(val)) {
+                setFieldError('alternate_phone', 'alt-phone-client-error', 'Enter a valid 10-digit mobile number starting with 6–9.');
+            } else {
+                setFieldError('alternate_phone', 'alt-phone-client-error', null);
+            }
+        });
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+        let hasError = false;
+
+        const phone      = document.getElementById('phone').value.trim();
+        const altPhone   = document.getElementById('alternate_phone')?.value.trim();
+        const postalCode = document.getElementById('postal_code').value.trim();
+        const country    = document.getElementById('country').value;
+
+        if (!phoneRegex.test(phone)) {
+            setFieldError('phone', 'phone-client-error', 'Enter a valid 10-digit Indian mobile number starting with 6–9.');
+            document.getElementById('phone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            hasError = true;
+        }
+
+        if (altPhone && !phoneRegex.test(altPhone)) {
+            setFieldError('alternate_phone', 'alt-phone-client-error', 'Enter a valid 10-digit Indian mobile number starting with 6–9.');
+            if (!hasError) document.getElementById('alternate_phone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            hasError = true;
+        }
+
+        if (country === 'India' && !postalRegex.test(postalCode)) {
+            document.getElementById('postal_code').classList.add('is-invalid');
+            if (!hasError) document.getElementById('postal_code').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            hasError = true;
+        }
+
+        if (hasError) e.preventDefault();
+    });
+})();
 </script>
 @endpush
