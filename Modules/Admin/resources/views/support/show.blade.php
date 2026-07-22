@@ -13,7 +13,7 @@
                 <p class="text-muted mb-0">{{ $ticket->subject }}</p>
             </div>
             <a href="{{ route('admin.support.index') }}" class="btn btn-secondary btn-sm">
-                <i class="ri-arrow-left-line"></i> Back to Tickets
+                <i class="mdi mdi-arrow-left"></i> Back to Tickets
             </a>
         </div>
     </div>
@@ -64,7 +64,7 @@
                             @if($ticket->attachment)
                                 <div class="mt-2">
                                     <a href="{{ Storage::disk('public')->url($ticket->attachment) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                        <i class="ri-attachment-line"></i> View Attachment
+                                        <i class="mdi mdi-paperclip"></i> View Attachment
                                     </a>
                                 </div>
                             @endif
@@ -123,7 +123,7 @@
                                 <small class="text-muted">The customer will be notified by email.</small>
                             </div>
                             <button type="submit" class="btn btn-primary">
-                                <i class="ri-send-plane-line"></i> Send Reply
+                                <i class="mdi mdi-send"></i> Send Reply
                             </button>
                         </form>
                     </div>
@@ -141,12 +141,12 @@
                     <h6 class="m-0 font-weight-bold text-primary">Customer</h6>
                 </div>
                 <div class="card-body">
-                    <p class="mb-1"><i class="ri-user-line me-2 text-muted"></i><strong>{{ $ticket->name }}</strong></p>
-                    <p class="mb-1"><i class="ri-mail-line me-2 text-muted"></i>
+                    <p class="mb-1"><i class="mdi mdi-account-outline me-2 text-muted"></i><strong>{{ $ticket->name }}</strong></p>
+                    <p class="mb-1"><i class="mdi mdi-email-outline me-2 text-muted"></i>
                         <a href="mailto:{{ $ticket->email }}">{{ $ticket->email }}</a>
                     </p>
                     @if($ticket->phone)
-                        <p class="mb-1"><i class="ri-phone-line me-2 text-muted"></i>{{ $ticket->phone }}</p>
+                        <p class="mb-1"><i class="mdi mdi-phone-outline me-2 text-muted"></i>{{ $ticket->phone }}</p>
                     @endif
                     @if($ticket->user)
                         <p class="mb-0">

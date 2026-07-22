@@ -40,7 +40,7 @@
   </ul>
   <div class="nav-actions">
     <!-- Search button triggers searchModal -->
-    <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#searchModal" title="Search">
+    <button class="icon-btn nav-search-btn" data-bs-toggle="modal" data-bs-target="#searchModal" title="Search">
       <i class="ri-search-line"></i>
     </button>
 

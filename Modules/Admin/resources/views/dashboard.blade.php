@@ -346,7 +346,7 @@
                                     </td>
                                     <td class="text-end">
                                         <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary">
-                                            <i class="ri-eye-line"></i>
+                                            <i class="mdi mdi-eye-outline"></i>
                                         </a>
                                     </td>
                                 </tr>

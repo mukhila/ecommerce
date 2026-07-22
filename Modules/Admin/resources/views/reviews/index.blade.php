@@ -42,7 +42,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Avg Rating</h5>
-                    <h2 class="mb-0">{{ number_format($stats['average_rating'], 1) }} <i class="ri-star-fill text-warning"></i></h2>
+                    <h2 class="mb-0">{{ number_format($stats['average_rating'], 1) }} <i class="mdi mdi-star text-warning"></i></h2>
                 </div>
             </div>
         </div>
@@ -128,14 +128,14 @@
                                                 <small class="text-muted">{{ $review->user->email }}</small>
                                                 @if($review->is_verified_purchase)
                                                     <br><small class="text-success">
-                                                        <i class="ri-checkbox-circle-line"></i> Verified
+                                                        <i class="mdi mdi-check-circle-outline"></i> Verified
                                                     </small>
                                                 @endif
                                             </td>
                                             <td>
                                                 <div class="rating">
                                                     @for ($i = 1; $i <= 5; $i++)
-                                                        <i class="ri-star-{{ $i <= $review->star_rating ? 'fill' : 'line' }} text-warning"></i>
+                                                        <i class="mdi mdi-star{{ $i <= $review->star_rating ? '' : '-outline' }} text-warning"></i>
                                                     @endfor
                                                 </div>
                                                 <small>{{ $review->formatted_rating }}</small>
@@ -145,7 +145,7 @@
                                                 <small class="text-muted">{{ Str::limit($review->review_text, 60) }}</small>
                                                 @if($review->images->count() > 0)
                                                     <br><small class="text-info">
-                                                        <i class="ri-image-line"></i> {{ $review->images->count() }} images
+                                                        <i class="mdi mdi-image-outline"></i> {{ $review->images->count() }} images
                                                     </small>
                                                 @endif
                                             </td>
@@ -163,7 +163,7 @@
                                             <td>
                                                 <a href="{{ route('admin.reviews.show', $review) }}"
                                                    class="btn btn-sm btn-primary">
-                                                    <i class="ri-eye-line"></i> View
+                                                    <i class="mdi mdi-eye-outline"></i> View
                                                 </a>
                                             </td>
                                         </tr>

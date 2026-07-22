@@ -127,7 +127,7 @@
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary">
-                                                <i class="ri-eye-line"></i> View
+                                                <i class="mdi mdi-eye-outline"></i> View
                                             </a>
                                         </td>
                                     </tr>

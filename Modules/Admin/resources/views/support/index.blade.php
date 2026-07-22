@@ -23,7 +23,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="ri-file-list-line fa-2x text-gray-300"></i>
+                            <i class="mdi mdi-file-document-outline fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['open'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="ri-mail-open-line fa-2x text-gray-300"></i>
+                            <i class="mdi mdi-email-open-outline fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['in_progress'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="ri-timer-line fa-2x text-gray-300"></i>
+                            <i class="mdi mdi-timer-outline fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['resolved'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="ri-checkbox-circle-line fa-2x text-gray-300"></i>
+                            <i class="mdi mdi-check-circle-outline fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['closed'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="ri-close-circle-line fa-2x text-gray-300"></i>
+                            <i class="mdi mdi-close-circle-outline fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['high_priority'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="ri-alert-line fa-2x text-gray-300"></i>
+                            <i class="mdi mdi-alert-outline fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -189,7 +189,7 @@
             <h6 class="m-0 font-weight-bold text-primary">All Tickets ({{ $tickets->total() }})</h6>
             <div>
                 <button type="button" class="btn btn-sm btn-secondary" onclick="toggleBulkActions()">
-                    <i class="ri-checkbox-multiple-line"></i> Bulk Actions
+                    <i class="mdi mdi-checkbox-multiple-marked-outline"></i> Bulk Actions
                 </button>
             </div>
         </div>
@@ -231,7 +231,7 @@
 
             @if($tickets->isEmpty())
                 <div class="text-center py-5">
-                    <i class="ri-inbox-line" style="font-size: 48px; color: #ccc;"></i>
+                    <i class="mdi mdi-inbox" style="font-size: 48px; color: #ccc;"></i>
                     <p class="text-muted mt-3">No tickets found</p>
                 </div>
             @else
@@ -301,7 +301,7 @@
                                     <td>
                                         <a href="{{ route('admin.support.show', $ticket->ticket_number) }}"
                                            class="btn btn-sm btn-primary" title="View Details">
-                                            <i class="ri-eye-line"></i>
+                                            <i class="mdi mdi-eye-outline"></i>
                                         </a>
                                     </td>
                                 </tr>

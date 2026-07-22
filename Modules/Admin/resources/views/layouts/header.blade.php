@@ -35,13 +35,16 @@
                 <!-- User Dropdown -->
                 <li class="dropdown notification-list topbar-dropdown">
                     <a class="nav-link dropdown-toggle nav-user me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                        <img src="{{ asset('adminassets/images/users/avatar/avatar-1.svg') }}" alt="user-image" class="img-fluid " />
+                        <span class="d-flex align-items-center gap-1">
+                            <i class="mdi mdi-account-circle fs-22 text-muted"></i>
+                            <span class="d-none d-sm-inline fw-semibold small">{{ session('admin_name', 'Admin') }}</span>
+                        </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end profile-dropdown">
                         <!-- item-->
                         <div class="dropdown-header noti-title border-bottom border-dashed d-flex align-items-center">
-                            <img src="{{ asset('adminassets/images/users/avatar/avatar-1.svg') }}" alt="user-image" class="avatar avatar-xs rounded-circle me-2" />
-                            <h6 class="text-overflow m-0">Welcome {{ session('admin_name') }}!</h6>
+                            <i class="mdi mdi-account-circle fs-22 text-muted me-2"></i>
+                            <h6 class="text-overflow m-0">Welcome {{ session('admin_name', 'Admin') }}!</h6>
                         </div>
 
                         <!-- item-->

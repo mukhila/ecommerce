@@ -9,7 +9,7 @@
             <div class="page-title-box d-flex justify-content-between align-items-center">
                 <h4 class="page-title">Review Details</h4>
                 <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary">
-                    <i class="ri-arrow-left-line"></i> Back to Reviews
+                    <i class="mdi mdi-arrow-left"></i> Back to Reviews
                 </a>
             </div>
         </div>
@@ -64,7 +64,7 @@
                         <label class="form-label">Rating</label>
                         <div class="rating">
                             @for ($i = 1; $i <= 5; $i++)
-                                <i class="ri-star-{{ $i <= $review->star_rating ? 'fill' : 'line' }} text-warning" style="font-size: 24px;"></i>
+                                <i class="mdi mdi-star{{ $i <= $review->star_rating ? '' : '-outline' }} text-warning" style="font-size: 24px;"></i>
                             @endfor
                             <span class="ms-2">{{ $review->formatted_rating }}/5.0</span>
                         </div>
@@ -104,7 +104,7 @@
                     {{-- Helpful Count --}}
                     <div class="mb-3">
                         <label class="form-label">Helpful Votes</label>
-                        <p><i class="ri-thumb-up-line"></i> {{ $review->helpful_count }} users found this helpful</p>
+                        <p><i class="mdi mdi-thumb-up-outline"></i> {{ $review->helpful_count }} users found this helpful</p>
                     </div>
 
                     {{-- Admin Reply Section --}}
@@ -130,7 +130,7 @@
                         @else
                             <button type="button" class="btn btn-primary"
                                     data-bs-toggle="modal" data-bs-target="#replyModal">
-                                <i class="ri-reply-line"></i> Reply to Review
+                                <i class="mdi mdi-reply"></i> Reply to Review
                             </button>
                         @endif
                     </div>
@@ -159,7 +159,7 @@
                         <p>
                             @if($review->is_verified_purchase)
                                 <span class="badge bg-success">
-                                    <i class="ri-checkbox-circle-line"></i> Verified
+                                    <i class="mdi mdi-check-circle-outline"></i> Verified
                                 </span>
                             @else
                                 <span class="badge bg-secondary">Not Verified</span>
@@ -192,7 +192,7 @@
                             <form action="{{ route('admin.reviews.approve', $review) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-success w-100">
-                                    <i class="ri-check-line"></i> Approve Review
+                                    <i class="mdi mdi-check"></i> Approve Review
                                 </button>
                             </form>
                         @endif
@@ -201,7 +201,7 @@
                             <form action="{{ route('admin.reviews.reject', $review) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-warning w-100">
-                                    <i class="ri-close-line"></i> Reject Review
+                                    <i class="mdi mdi-close"></i> Reject Review
                                 </button>
                             </form>
                         @endif
@@ -212,7 +212,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger w-100">
-                                <i class="ri-delete-bin-line"></i> Delete Review
+                                <i class="mdi mdi-delete-outline"></i> Delete Review
                             </button>
                         </form>
                     </div>

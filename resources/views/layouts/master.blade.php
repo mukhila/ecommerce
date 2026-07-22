@@ -264,6 +264,32 @@
     <!-- Cart Offcanvas End -->
 
 
+    <!-- ── PWA Install Banner ──────────────────────────────────── -->
+    <div id="pwaInstallBanner" class="pwa-banner" role="dialog" aria-label="Install JangoKids App" hidden>
+        <div class="pwa-banner-inner">
+            <div class="pwa-banner-icon">🛍️</div>
+            <div class="pwa-banner-text">
+                <strong>Install JangoKids</strong>
+                <span>Shop faster — add to home screen</span>
+            </div>
+            <button class="pwa-install-btn" id="pwaInstallBtn" aria-label="Install app">Install</button>
+            <button class="pwa-dismiss-btn" id="pwaDismissBtn" aria-label="Dismiss">✕</button>
+        </div>
+    </div>
+
+    <!-- iOS-specific hint banner -->
+    <div id="pwaIosBanner" class="pwa-banner pwa-ios-banner" role="dialog" aria-label="Add to Home Screen" hidden>
+        <div class="pwa-banner-inner">
+            <div class="pwa-banner-icon">🛍️</div>
+            <div class="pwa-banner-text">
+                <strong>Add to Home Screen</strong>
+                <span>Tap <strong>Share</strong> then <strong>Add to Home Screen</strong></span>
+            </div>
+            <button class="pwa-dismiss-btn" id="pwaIosDismissBtn" aria-label="Dismiss">✕</button>
+        </div>
+    </div>
+    <!-- ── /PWA Install Banner ─────────────────────────────────── -->
+
     <!-- cookie bar start -->
     <div class="cookie-bar" id="cookieBar" style="display: none;">
         <p>We use cookies to improve our site and your shopping experience. By continuing to browse our site you accept
@@ -282,6 +308,98 @@
 
 
     
+
+    <!-- ── PWA styles ──────────────────────────────────── -->
+    <style>
+    .pwa-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: #fff;
+        box-shadow: 0 -4px 24px rgba(0,0,0,.13);
+        border-top: 3px solid #FF4757;
+        transform: translateY(100%);
+        transition: transform .35s cubic-bezier(.4,0,.2,1);
+        padding: 14px 16px;
+    }
+    .pwa-banner:not([hidden]) {
+        transform: translateY(0);
+    }
+    .pwa-banner-inner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        max-width: 540px;
+        margin: 0 auto;
+    }
+    .pwa-banner-icon {
+        font-size: 28px;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+    .pwa-banner-text {
+        flex: 1;
+        min-width: 0;
+    }
+    .pwa-banner-text strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 800;
+        color: #1A1F36;
+        line-height: 1.2;
+    }
+    .pwa-banner-text span {
+        font-size: 12px;
+        color: #6B7280;
+        display: block;
+        margin-top: 2px;
+    }
+    .pwa-install-btn {
+        flex-shrink: 0;
+        padding: 9px 20px;
+        background: linear-gradient(135deg, #FF4757, #FF6348);
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+        box-shadow: 0 4px 14px rgba(255,71,87,.35);
+        transition: transform .2s, box-shadow .2s;
+    }
+    .pwa-install-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(255,71,87,.45);
+    }
+    .pwa-dismiss-btn {
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        background: #F3F4F6;
+        border: none;
+        border-radius: 50%;
+        font-size: 13px;
+        color: #6B7280;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .2s;
+        padding: 0;
+    }
+    .pwa-dismiss-btn:hover {
+        background: #E5E7EB;
+        color: #1A1F36;
+    }
+    .pwa-ios-banner .pwa-banner-text strong { font-size: 13px; }
+    @media (min-width: 768px) {
+        .pwa-banner { padding: 14px 32px; }
+    }
+    </style>
 
     <!-- facebook chat section start -->
     <!-- <div id="fb-root"></div>
@@ -377,6 +495,106 @@
             });
         });
     </script>
+
+    <!-- ── PWA Service Worker + Install Logic ───────────────── -->
+    <script>
+    (function () {
+        // ── 1. Register Service Worker ────────────────────────
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .catch(function (err) { console.warn('SW registration failed:', err); });
+            });
+        }
+
+        // ── 2. Dismiss helpers ────────────────────────────────
+        var DISMISS_KEY  = 'jk_pwa_dismissed';
+        var DISMISS_DAYS = 7;
+
+        function wasDismissed() {
+            var ts = localStorage.getItem(DISMISS_KEY);
+            if (!ts) return false;
+            return (Date.now() - parseInt(ts, 10)) < DISMISS_DAYS * 864e5;
+        }
+        function saveDismiss() {
+            localStorage.setItem(DISMISS_KEY, Date.now().toString());
+        }
+
+        function showBanner(id) {
+            var el = document.getElementById(id);
+            if (el) { el.hidden = false; }
+        }
+        function hideBanner(id) {
+            var el = document.getElementById(id);
+            if (el) { el.hidden = true; }
+        }
+
+        // ── 3. Android / Chrome – beforeinstallprompt ─────────
+        var deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            if (wasDismissed()) return;
+            deferredPrompt = e;
+
+            // Show banner after a short delay so page load feels complete
+            setTimeout(function () { showBanner('pwaInstallBanner'); }, 2500);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var installBtn  = document.getElementById('pwaInstallBtn');
+            var dismissBtn  = document.getElementById('pwaDismissBtn');
+            var iosDismiss  = document.getElementById('pwaIosDismissBtn');
+
+            // Install button clicked
+            if (installBtn) {
+                installBtn.addEventListener('click', function () {
+                    hideBanner('pwaInstallBanner');
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(function (choice) {
+                        if (choice.outcome === 'accepted') {
+                            saveDismiss();
+                        }
+                        deferredPrompt = null;
+                    });
+                });
+            }
+
+            // Dismiss button (Android)
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', function () {
+                    hideBanner('pwaInstallBanner');
+                    saveDismiss();
+                });
+            }
+
+            // Dismiss button (iOS)
+            if (iosDismiss) {
+                iosDismiss.addEventListener('click', function () {
+                    hideBanner('pwaIosBanner');
+                    saveDismiss();
+                });
+            }
+
+            // ── 4. iOS Safari hint ────────────────────────────
+            var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            var isStandalone = ('standalone' in navigator) && navigator.standalone;
+
+            if (isIos && isSafari && !isStandalone && !wasDismissed()) {
+                setTimeout(function () { showBanner('pwaIosBanner'); }, 3000);
+            }
+        });
+
+        // ── 5. Hide banner once installed ─────────────────────
+        window.addEventListener('appinstalled', function () {
+            hideBanner('pwaInstallBanner');
+            saveDismiss();
+        });
+    }());
+    </script>
+    <!-- ── /PWA ──────────────────────────────────────────────── -->
 
 </body>
 

@@ -1828,6 +1828,10 @@ footer {
     display: none;
   }
 
+  .nav-search-btn {
+    display: none;
+  }
+
   .hero-wrap {
     min-height: 500px;
     height: 85vh;
@@ -1971,6 +1975,38 @@ footer {
 
   .cat-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cat-grid.cat-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+    align-items: center;
+    padding-top: 20px;
+  }
+
+  .footer-bottom > div {
+    justify-content: center;
+  }
+
+  .payment-icons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ft-brand p {
+    max-width: 100%;
+  }
+
+  .ft-brand .brand-logo {
+    display: block;
+    line-height: 1.2;
+    word-break: break-word;
+    margin-bottom: 12px;
   }
 
   .nl-input-wrap {

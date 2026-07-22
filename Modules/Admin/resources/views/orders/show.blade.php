@@ -9,7 +9,7 @@
             <div class="page-title-box">
                 <div class="page-title-right">
                     <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">
-                        <i class="ri-arrow-left-line"></i> Back to Orders
+                        <i class="mdi mdi-arrow-left"></i> Back to Orders
                     </a>
                 </div>
                 <h4 class="page-title">Order Details - {{ $order->order_number }}</h4>
@@ -106,14 +106,14 @@
                             <div class="col-md-3">
                                 <label class="form-label">&nbsp;</label>
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="ri-save-line"></i> Update Tracking
+                                    <i class="mdi mdi-content-save-outline"></i> Update Tracking
                                 </button>
                             </div>
                         </div>
                     </form>
                     @if($order->tracking_number)
                         <div class="alert alert-success mt-3 mb-0">
-                            <i class="ri-checkbox-circle-line"></i>
+                            <i class="mdi mdi-check-circle-outline"></i>
                             <strong>Tracking Active:</strong> {{ $order->courier_name }} - {{ $order->tracking_number }}
                             @if($order->estimated_delivery_date)
                                 | Expected by: {{ \Carbon\Carbon::parse($order->estimated_delivery_date)->format('d M Y') }}
