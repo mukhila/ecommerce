@@ -143,6 +143,12 @@ body {
   gap: 18px;
 }
 
+.desktop-nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
 .nav-actions .icon-btn {
   position: relative;
   width: 40px;
@@ -1843,12 +1849,8 @@ footer {
     gap: 10px;
   }
 
-  /* Hide account icon + wishlist icon from top navbar — they live in the mobile nav panel */
-  .account-menu-container {
-    display: none !important;
-  }
-
-  .nav-wishlist-btn {
+  /* Hide wishlist + account from top bar on mobile — both live in the slide-out nav panel */
+  .desktop-nav-icons {
     display: none !important;
   }
 

@@ -39,47 +39,48 @@
     @endif
   </ul>
   <div class="nav-actions">
-    <!-- Wishlist button redirects to wishlist index -->
-    <a href="{{ route('wishlist.index') }}" class="icon-btn nav-wishlist-btn" style="position:relative" title="Wishlist">
-      <i class="ri-heart-line"></i>
-      @if(($sharedWishlistCount ?? 0) > 0)
-        <span class="badge" id="wishlist-count-badge">{{ $sharedWishlistCount }}</span>
-      @endif
-    </a>
+    <!-- Desktop-only: Wishlist + Account (hidden on mobile — both live in the slide-out nav) -->
+    <div class="desktop-nav-icons">
+      <a href="{{ route('wishlist.index') }}" class="icon-btn nav-wishlist-btn" style="position:relative" title="Wishlist">
+        <i class="ri-heart-line"></i>
+        @if(($sharedWishlistCount ?? 0) > 0)
+          <span class="badge" id="wishlist-count-badge">{{ $sharedWishlistCount }}</span>
+        @endif
+      </a>
 
-    <!-- Cart button triggers cartOffcanvas -->
+      <div class="account-menu-container">
+        <button class="icon-btn" id="accountMenuBtn" title="Account">
+          <i class="ri-user-line"></i>
+        </button>
+        <div class="account-dropdown" id="accountDropdown">
+          @guest
+            <h6>Account</h6>
+            <ul>
+              <li><a href="{{ route('login') }}">Login</a></li>
+              <li><a href="{{ route('register') }}">Register</a></li>
+            </ul>
+          @else
+            <h6>{{ Auth::user()->name }}</h6>
+            <ul>
+              <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+              <li><a href="{{ route('wishlist.index') }}">Wishlist</a></li>
+              <li>
+                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                  @csrf
+                </form>
+              </li>
+            </ul>
+          @endguest
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart button (always visible) -->
     <button class="icon-btn" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" style="position:relative" title="Cart">
       <i class="ri-shopping-cart-line"></i>
       <span class="badge cart_qty_cls" id="offcanvas-cart-badge" style="{{ ($sharedCartCount ?? 0) > 0 ? '' : 'display: none;' }}">{{ $sharedCartCount ?? 0 }}</span>
     </button>
-
-    <!-- User Account drop menu -->
-    <div class="account-menu-container">
-      <button class="icon-btn" id="accountMenuBtn" title="Account">
-        <i class="ri-user-line"></i>
-      </button>
-      <div class="account-dropdown" id="accountDropdown">
-        @guest
-          <h6>Account</h6>
-          <ul>
-            <li><a href="{{ route('login') }}">Login</a></li>
-            <li><a href="{{ route('register') }}">Register</a></li>
-          </ul>
-        @else
-          <h6>{{ Auth::user()->name }}</h6>
-          <ul>
-            <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ route('wishlist.index') }}">Wishlist</a></li>
-            <li>
-              <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-              </form>
-            </li>
-          </ul>
-        @endguest
-      </div>
-    </div>
 
     <!-- Hamburger (mobile only) -->
     <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
