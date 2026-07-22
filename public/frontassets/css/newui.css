@@ -1751,6 +1751,12 @@ footer {
   color: var(--yellow);
 }
 
+.footer-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 .payment-icons {
   display: flex;
   gap: 8px;
@@ -1826,6 +1832,15 @@ footer {
 
   .nav-menu {
     display: none;
+  }
+
+  /* nav-actions: cart + hamburger only, floated right */
+  .nav-actions {
+    float: right;
+    position: relative;
+    width: 40%;
+    justify-content: flex-end;
+    gap: 10px;
   }
 
   /* Hide account icon + wishlist icon from top navbar — they live in the mobile nav panel */
@@ -1999,32 +2014,64 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .footer-bottom {
+  /* ── ft-brand: explicit flex column so logo never overlaps p ── */
+  .ft-brand {
+    display: flex;
     flex-direction: column;
-    gap: 14px;
-    text-align: center;
-    align-items: center;
-    padding-top: 20px;
+    gap: 10px;
   }
 
-  .footer-bottom > div {
-    justify-content: center;
-  }
-
-  .payment-icons {
-    flex-wrap: wrap;
-    justify-content: center;
+  .ft-brand .brand-logo {
+    font-size: 26px;
+    line-height: 1;
+    margin-bottom: 0;
+    word-break: normal;
   }
 
   .ft-brand p {
     max-width: 100%;
+    margin-bottom: 0;
   }
 
-  .ft-brand .brand-logo {
-    display: block;
-    line-height: 1.2;
-    word-break: break-word;
-    margin-bottom: 12px;
+  .ft-socials {
+    margin-top: 4px;
+  }
+
+  /* ── footer-bottom: column, all children full-width centred ── */
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    padding-top: 16px;
+  }
+
+  .footer-bottom > *,
+  .footer-bottom > span {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* ── payment-icons: single centred row, no wrap ── */
+  .payment-icons {
+    display: flex !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .pay-badge {
+    padding: 5px 10px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  /* ── Privacy / Terms link row ── */
+  .footer-links {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 16px;
   }
 
   .nl-input-wrap {

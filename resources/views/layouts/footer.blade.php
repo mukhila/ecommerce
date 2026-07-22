@@ -78,7 +78,7 @@
       <span class="pay-badge">Mastercard</span>
       <span class="pay-badge">COD</span>
     </div>
-    <div style="display:flex;gap:16px">
+    <div class="footer-links">
       <a href="{{ route('privacy-policy') }}">Privacy</a>
       <a href="{{ route('terms-and-conditions') }}">Terms</a>
     </div>
