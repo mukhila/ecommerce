@@ -1828,8 +1828,26 @@ footer {
     display: none;
   }
 
-  .nav-search-btn {
-    display: none;
+  /* Hide account icon + wishlist icon from top navbar — they live in the mobile nav panel */
+  .account-menu-container {
+    display: none !important;
+  }
+
+  .nav-wishlist-btn {
+    display: none !important;
+  }
+
+  /* Force mobile nav list items to block — Venix style.css has scoped li{display:inline-block!important} */
+  .mobile-nav-list li,
+  .mobile-nav-list > li {
+    display: block !important;
+    width: 100%;
+    float: none !important;
+  }
+
+  .mobile-nav-footer a {
+    display: flex !important;
+    width: 100%;
   }
 
   .hero-wrap {
@@ -2348,12 +2366,56 @@ footer {
 .mobile-submenu li:last-child a { border-bottom: none; }
 .mobile-submenu li a:hover { color: var(--coral); }
 
+/* ── Mobile nav separator ──────────────────────────── */
+.mobile-nav-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 20px;
+  border-bottom: none !important;
+}
+
+/* ── Account / Wishlist nav items ─────────────────── */
+.mobile-nav-user-link {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  color: var(--navy) !important;
+}
+
+.mobile-nav-user-link i {
+  font-size: 18px;
+  color: var(--coral);
+  flex-shrink: 0;
+}
+
+.mobile-nav-user-link:hover { color: var(--coral) !important; }
+
+.mobile-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--coral);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50px;
+  padding: 0 5px;
+  margin-left: auto;
+}
+
+/* ── Mobile nav footer (Logout only) ─────────────── */
 .mobile-nav-footer {
   padding: 16px 20px;
   border-top: 2px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.mobile-nav-footer:empty {
+  display: none;
 }
 
 .mobile-nav-footer a {

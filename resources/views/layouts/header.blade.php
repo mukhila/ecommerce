@@ -39,13 +39,8 @@
     @endif
   </ul>
   <div class="nav-actions">
-    <!-- Search button triggers searchModal -->
-    <button class="icon-btn nav-search-btn" data-bs-toggle="modal" data-bs-target="#searchModal" title="Search">
-      <i class="ri-search-line"></i>
-    </button>
-
     <!-- Wishlist button redirects to wishlist index -->
-    <a href="{{ route('wishlist.index') }}" class="icon-btn" style="position:relative" title="Wishlist">
+    <a href="{{ route('wishlist.index') }}" class="icon-btn nav-wishlist-btn" style="position:relative" title="Wishlist">
       <i class="ri-heart-line"></i>
       @if(($sharedWishlistCount ?? 0) > 0)
         <span class="badge" id="wishlist-count-badge">{{ $sharedWishlistCount }}</span>
@@ -136,20 +131,45 @@
         <li><a href="{{ route('products.index', ['filter' => 'sale']) }}" class="mobile-nav-simple-link">Sale 🔥</a></li>
         <li><a href="{{ auth()->check() ? route('support.index') : route('support.create') }}" class="mobile-nav-simple-link">Support</a></li>
       @endif
+
+      {{-- ── Account & Wishlist nav items ── --}}
+      <li class="mobile-nav-sep" aria-hidden="true"></li>
+
+      @guest
+        <li>
+          <a href="{{ route('login') }}" class="mobile-nav-simple-link mobile-nav-user-link">
+            <i class="ri-user-line"></i> Login
+          </a>
+        </li>
+        <li>
+          <a href="{{ route('register') }}" class="mobile-nav-simple-link mobile-nav-user-link">
+            <i class="ri-user-add-line"></i> Register
+          </a>
+        </li>
+      @else
+        <li>
+          <a href="{{ route('dashboard') }}" class="mobile-nav-simple-link mobile-nav-user-link">
+            <i class="ri-user-line"></i> My Account
+          </a>
+        </li>
+        <li>
+          <a href="{{ route('wishlist.index') }}" class="mobile-nav-simple-link mobile-nav-user-link">
+            <i class="ri-heart-line"></i> Wishlist
+            @if(($sharedWishlistCount ?? 0) > 0)
+              <span class="mobile-nav-badge">{{ $sharedWishlistCount }}</span>
+            @endif
+          </a>
+        </li>
+      @endguest
     </ul>
 
     <div class="mobile-nav-footer">
-      @guest
-        <a href="{{ route('login') }}"><i class="ri-user-line"></i> Login</a>
-        <a href="{{ route('register') }}"><i class="ri-user-add-line"></i> Register</a>
-      @else
-        <a href="{{ route('dashboard') }}"><i class="ri-dashboard-line"></i> My Account</a>
-        <a href="{{ route('wishlist.index') }}"><i class="ri-heart-line"></i> Wishlist</a>
+      @auth
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('mobile-logout-form').submit();">
           <i class="ri-logout-box-line"></i> Logout
         </a>
         <form id="mobile-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
-      @endguest
+      @endauth
     </div>
   </div>
 </div>
