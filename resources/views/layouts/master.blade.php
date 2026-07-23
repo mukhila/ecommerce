@@ -26,43 +26,102 @@
 <meta name="msapplication-TileImage" content="{{ asset('frontassets/images/ms-icon-144x144.png') }}">
 <meta name="theme-color" content="#ffffff">
 
+    @php
+        // Priority: child @section() → DB seo_data → site-wide default
+        $metaTitle = $__env->hasSection('title')
+            ? trim($__env->yieldContent('title'))
+            : (isset($seo_data) && $seo_data->title
+                ? $seo_data->title
+                : 'Jango Kidswear | Premium Kids Fashion Online');
+
+        $metaDesc = $__env->hasSection('meta_description')
+            ? trim($__env->yieldContent('meta_description'))
+            : (isset($seo_data) && $seo_data->description
+                ? $seo_data->description
+                : 'Jango Kidswear - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.');
+
+        $metaKeywords = $__env->hasSection('meta_keywords')
+            ? trim($__env->yieldContent('meta_keywords'))
+            : (isset($seo_data) && $seo_data->keywords
+                ? $seo_data->keywords
+                : 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, Jango Kidswear');
+
+        $metaRobots = $__env->hasSection('robots')
+            ? trim($__env->yieldContent('robots'))
+            : (isset($seo_data) && $seo_data->robots
+                ? $seo_data->robots
+                : 'index, follow');
+
+        $canonicalUrl = $__env->hasSection('canonical')
+            ? trim($__env->yieldContent('canonical'))
+            : (isset($seo_data) && $seo_data->canonical_url
+                ? $seo_data->canonical_url
+                : url()->current());
+
+        $ogType = $__env->hasSection('og_type')
+            ? trim($__env->yieldContent('og_type'))
+            : (isset($seo_data) && $seo_data->type ? $seo_data->type : 'website');
+
+        $ogTitle = $__env->hasSection('og_title')
+            ? trim($__env->yieldContent('og_title'))
+            : $metaTitle;
+
+        $ogDesc = $__env->hasSection('og_description')
+            ? trim($__env->yieldContent('og_description'))
+            : $metaDesc;
+
+        $ogImage = $__env->hasSection('og_image')
+            ? trim($__env->yieldContent('og_image'))
+            : (isset($seo_data) && $seo_data->image
+                ? asset($seo_data->image)
+                : asset('frontassets/images/logo.png'));
+
+        $ogUrl = $__env->hasSection('og_url')
+            ? trim($__env->yieldContent('og_url'))
+            : $canonicalUrl;
+    @endphp
+
     <!-- Primary SEO -->
-    <title>{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'Jango Kidswear | Premium Kids Fashion Online' }}</title>
-    <meta name="description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'Jango Kidswear - Shop premium, stylish and affordable kids clothing online. Wide range of boys, girls and baby fashion. Free shipping above ₹3000. COD available.' }}">
-    <meta name="keywords" content="{{ isset($seo_data) && $seo_data->keywords ? $seo_data->keywords : 'kids fashion, children clothing, boys clothes, girls clothes, baby clothes, kids wear, children apparel online India, Jango Kidswear' }}">
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDesc }}">
+    <meta name="keywords" content="{{ $metaKeywords }}">
     <meta name="author" content="Jango Kidswear">
-    <meta name="robots" content="{{ isset($seo_data) && $seo_data->robots ? $seo_data->robots : 'index, follow' }}">
-    <link rel="canonical" href="{{ isset($seo_data) && $seo_data->canonical_url ? $seo_data->canonical_url : url()->current() }}">
+    <meta name="robots" content="{{ $metaRobots }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="{{ isset($seo_data) && $seo_data->type ? $seo_data->type : 'website' }}">
+    <meta property="og:type" content="{{ $ogType }}">
     <meta property="og:site_name" content="Jango Kidswear">
     <meta property="og:locale" content="en_IN">
-    <meta property="og:title" content="{{ isset($seo_data) && $seo_data->title ? $seo_data->title : 'Jango Kidswear | Premium Kids Fashion Online' }}">
-    <meta property="og:description" content="{{ isset($seo_data) && $seo_data->description ? $seo_data->description : 'Shop premium kids clothing online at Jango Kidswear. Free shipping above ₹3000.' }}">
-    <meta property="og:image" content="{{ isset($seo_data) && $seo_data->image ? asset($seo_data->image) : asset('frontassets/images/logo.png') }}">
-    <meta property="og:url" content="{{ isset($seo_data) && $seo_data->canonical_url ? $seo_data->canonical_url : url()->current() }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDesc }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ $ogUrl }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@@jangokidswear">
-    <meta name="twitter:title" content="@yield('og_title', 'Jango Kidswear | Premium Kids Fashion Online')">
-    <meta name="twitter:description" content="@yield('og_description', 'Shop premium kids clothing online at Jango Kidswear.')">
-    <meta name="twitter:image" content="@yield('og_image', asset('frontassets/images/logo.png'))">
+    <meta name="twitter:title" content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDesc }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
     <!-- Favicons -->
     <link rel="icon" href="{{ asset('frontassets/images/favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('frontassets/images/favicon.ico') }}" type="image/x-icon">
 
-    <!-- JSON-LD Structured Data (default Organization schema) -->
+    <!-- JSON-LD: Organization (site-wide) -->
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "Organization",
         "name": "Jango Kidswear",
         "url": "{{ config('app.url') }}",
-        "logo": "{{ asset('frontassets/images/logo.png') }}",
-        "sameAs": [],
+        "logo": {
+            "@@type": "ImageObject",
+            "url": "{{ asset('frontassets/images/logo.png') }}"
+        },
         "contactPoint": {
             "@@type": "ContactPoint",
             "contactType": "customer service",
@@ -70,7 +129,7 @@
         }
     }
     </script>
-    <!-- Page-specific JSON-LD (product schema, website schema, etc.) -->
+    <!-- Page-specific JSON-LD (product, website, breadcrumb schemas, etc.) -->
     @stack('json_ld')
 
     <!--Google font-->

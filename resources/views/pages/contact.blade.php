@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'Contact Us | Jango Kidswear')
+@section('meta_description', 'Get in touch with Jango Kidswear. We are here to help with any questions about your orders, products or returns.')
+@section('meta_keywords', 'contact Jango Kidswear, kids wear customer support, Jango Kidswear help')
 
 @section('content')
 

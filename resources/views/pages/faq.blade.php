@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'FAQs | Jango Kidswear')
+@section('meta_description', 'Find answers to frequently asked questions about Jango Kidswear — shipping, returns, sizing, payments and more.')
+@section('meta_keywords', 'Jango Kidswear FAQ, kids wear questions, shipping FAQ, return policy FAQ')
 
 @section('content')
 

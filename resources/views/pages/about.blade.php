@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'About Us | Jango Kidswear')
+@section('meta_description', 'Learn about Jango Kidswear — our story, mission, and commitment to providing premium, stylish and affordable kids clothing in India.')
+@section('meta_keywords', 'about Jango Kidswear, kids clothing brand India, childrens fashion brand, kids wear story')
 
 @section('content')
 

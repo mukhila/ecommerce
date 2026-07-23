@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'Shipping Policy | Jango Kidswear')
+@section('meta_description', 'Learn about Jango Kidswear shipping policy — delivery timelines, shipping charges, free shipping above ₹3000 and COD availability.')
+@section('meta_keywords', 'Jango Kidswear shipping, free shipping kids wear, delivery policy India')
 
 @section('content')
 

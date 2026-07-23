@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'Terms & Conditions | Jango Kidswear')
+@section('meta_description', 'Read the Terms and Conditions for shopping at Jango Kidswear, including our policies on orders, payments and user responsibilities.')
+@section('robots', 'noindex, follow')
 
 @section('content')
 

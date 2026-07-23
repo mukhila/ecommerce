@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'Return & Refund Policy | Jango Kidswear')
+@section('meta_description', 'Understand Jango Kidswear return and refund policy — hassle-free returns within the eligible window, refund timelines and conditions.')
+@section('meta_keywords', 'Jango Kidswear returns, kids wear refund policy, return kids clothing India')
 
 @section('content')
 

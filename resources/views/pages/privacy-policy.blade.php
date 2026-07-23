@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('title', 'Privacy Policy | Jango Kidswear')
+@section('meta_description', 'Read the Jango Kidswear Privacy Policy to understand how we collect, use and protect your personal information.')
+@section('robots', 'noindex, follow')
 
 @section('content')
 

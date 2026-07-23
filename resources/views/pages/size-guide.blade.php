@@ -1,6 +1,8 @@
 @extends('layouts.master')
 
 @section('title', 'Size Guide | Jango Kidswear')
+@section('meta_description', 'Use the Jango Kidswear size guide to find the perfect fit for your child. Size charts for boys, girls and baby clothing by age and measurements.')
+@section('meta_keywords', 'kids size guide India, children clothing size chart, boys size chart, girls size chart, baby clothing sizes')
 
 @push('styles')
 <style>

@@ -1,6 +1,7 @@
 @extends('layouts.master')
 
 @section('title', 'Checkout')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
     <!-- breadcrumb start -->

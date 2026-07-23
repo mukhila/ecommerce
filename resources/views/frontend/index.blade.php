@@ -8,6 +8,25 @@
 @section('og_type', 'website')
 @section('og_url', url('/'))
 
+@push('json_ld')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "WebSite",
+    "name": "Jango Kidswear",
+    "url": "{{ url('/') }}",
+    "potentialAction": {
+        "@@type": "SearchAction",
+        "target": {
+            "@@type": "EntryPoint",
+            "urlTemplate": "{{ url('/search') }}?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+@endpush
+
 @section('content')
 
 @php

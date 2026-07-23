@@ -1,6 +1,7 @@
 @extends('layouts.master')
 
 @section('title', $query ? 'Search results for "' . e($query) . '" | Jango Kidswear' : 'Search | Jango Kidswear')
+@section('robots', 'noindex, follow')
 
 @section('content')
 
