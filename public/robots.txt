@@ -1,17 +1,48 @@
 User-agent: *
 Allow: /
+
+# Admin & private panels
 Disallow: /admin/
+
+# Authentication & account pages
+Disallow: /login
+Disallow: /login/verify
+Disallow: /register
+Disallow: /register/verify
+Disallow: /forgot-password
+Disallow: /logout
+Disallow: /email/verify
+Disallow: /dashboard/
+Disallow: /wishlist
+Disallow: /notifications/
+
+# Social auth callbacks
+Disallow: /auth/
+
+# E-commerce flow (not indexable)
 Disallow: /cart/
 Disallow: /checkout/
 Disallow: /payment/
-Disallow: /dashboard/
-Disallow: /notifications/
+Disallow: /order/
+
+# Reviews (authenticated)
+Disallow: /review/
+
+# Support (private interactions)
 Disallow: /support/store
 Disallow: /support/success/
 Disallow: /support/*/reply
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /logout
+
+# Newsletter actions
+Disallow: /newsletter/
+
+# Development & maintenance routes
+Disallow: /clear-cache
+Disallow: /db-check
+
+# Block direct access to sensitive directories
+Disallow: /storage/
+Disallow: /.env
+Disallow: /vendor/
 
 Sitemap: https://jangokids.com/sitemap.xml

@@ -4,6 +4,7 @@
     {{-- Static pages --}}
     <url>
         <loc>{{ url('/') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -18,9 +19,34 @@
         <priority>0.6</priority>
     </url>
     <url>
+        <loc>{{ url('/track-order') }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>{{ url('/search') }}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
         <loc>{{ url('/page/faqs') }}</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>{{ url('/page/size-guide') }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>{{ url('/page/shipping-policy') }}</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>{{ url('/page/return-policy') }}</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
     </url>
     <url>
         <loc>{{ url('/page/privacy-policy') }}</loc>
@@ -38,7 +64,7 @@
         <priority>0.4</priority>
     </url>
 
-    {{-- CMS Pages --}}
+    {{-- CMS Pages (published only) --}}
     @foreach($pages as $page)
     <url>
         <loc>{{ url('/page/' . $page->slug) }}</loc>
@@ -50,7 +76,7 @@
     </url>
     @endforeach
 
-    {{-- Categories --}}
+    {{-- Categories (active only) --}}
     @foreach($categories as $category)
     <url>
         <loc>{{ url('/category/' . $category->slug) }}</loc>
@@ -62,7 +88,7 @@
     </url>
     @endforeach
 
-    {{-- Products --}}
+    {{-- Products (active only) --}}
     @foreach($products as $product)
     <url>
         <loc>{{ url('/product/' . $product->slug) }}</loc>
